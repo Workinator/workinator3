@@ -7,4 +7,5 @@ public interface Service extends AutoCloseable {
     Service stop();
     Service onStopped(Consumer<Service> sender);
     Service onStarted(Consumer<Service> sender);
+    Service unsubscribe();
 }

@@ -54,6 +54,13 @@ public abstract class ServiceBase implements Service {
     }
 
     @Override
+    public Service unsubscribe() {
+        stopEvents.clear();
+        startEvents.clear();
+        return this;
+    }
+
+    @Override
     public void close() {
     }
 

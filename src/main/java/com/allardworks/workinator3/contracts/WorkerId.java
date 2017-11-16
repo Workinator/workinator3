@@ -7,6 +7,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @Data
 public class WorkerId {
-    private final ConsumerId consumerId;
-    private int listenerNumber;
+    private final ConsumerRegistration consumer;
+    private final int listenerNumber;
 }

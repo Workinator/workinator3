@@ -15,9 +15,9 @@ public class ConsumerCoordinatorTests {
                 .partitionType("test")
                 .build();
 
-        try(val z = new CoordinatorConsumer(ConsumerConfiguration.builder().build(), null).start()) {
-            out.println(z);
-        }
+        //try(val z = new CoordinatorConsumer(ConsumerConfiguration.builder().build(), null, null).start()) {
+        //    out.println(z);
+        //}
     }
 }
 

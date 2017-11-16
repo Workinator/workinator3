@@ -8,4 +8,5 @@ import lombok.Getter;
 public class ConsumerConfiguration {
     private final String consumerName;
     private final String partitionType;
+    private final int workerCount;
 }
