@@ -15,11 +15,17 @@ public abstract class ServiceBase implements Service {
     private final List<Consumer<Service>> startEvents = new ArrayList<>();
     private final List<Consumer<Service>> stopEvents = new ArrayList<>();
 
+    public Status getStatus() {
+        return status.getStatus();
+    }
+
     @Override
     public Service start() {
         status.start(() -> {
-            status.startComplete();
-            executeHandlers(startEvents);
+            startService(() -> {
+                status.startComplete();
+                executeHandlers(startEvents);
+            });
         });
         return this;
     }
@@ -27,8 +33,10 @@ public abstract class ServiceBase implements Service {
     @Override
     public Service stop() {
         status.stop(() -> {
-            status.stopComplete();
-            executeHandlers(stopEvents);
+            stopService(() -> {
+                status.stopComplete();
+                executeHandlers(stopEvents);
+            });
         });
         return this;
     }
