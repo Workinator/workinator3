@@ -1,12 +1,11 @@
 package com.allardworks.workinator3.contracts;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 @Builder
-@Data
+@Getter
 public class ConsumerConfiguration {
-    @Builder.Default
-    private final String consumerName = "yadda";
+    private final String consumerName;
     private final String partitionType;
 }
