@@ -1,10 +1,10 @@
 package com.allardworks.workinator3.contracts;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 @EqualsAndHashCode
-@Data
+@RequiredArgsConstructor
 public class ConsumerId {
     private final String name;
     private final String partitionType;
