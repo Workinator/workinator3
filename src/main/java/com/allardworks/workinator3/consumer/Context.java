@@ -15,7 +15,7 @@ public class Context implements WorkerContext {
     private final LocalTime startDate = LocalTime.now();
     private final Function<Context, Boolean> canContinue;
     private final Assignment assignment;
-    private final EventHandlers stopHandlers = new EventHandlers();
+    private final EventHandlers stopHandlers;
 
     private boolean hasMoreWork;
 
@@ -32,7 +32,7 @@ public class Context implements WorkerContext {
     }
 
     @Override
-    public void onStop(Runnable eventHandler) {
+    public void onStopping(Runnable eventHandler) {
         stopHandlers.add(eventHandler);
     }
 
@@ -43,6 +43,6 @@ public class Context implements WorkerContext {
 
     @Override
     public Assignment getAssignment() {
-        return null;
+        return assignment;
     }
 }

@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.core.EventHandlers;
 import com.allardworks.workinator3.core.ServiceBase;
 import com.allardworks.workinator3.core.ThreadService;
 import lombok.NonNull;
@@ -27,21 +28,20 @@ public class ThreadExecutor extends ServiceBase {
     private final Coordinator coordinator;
 
     private ThreadService thread;
-    private Runnable startComplete;
-    private Runnable stopComplete;
+    private final EventHandlers startComplete = new EventHandlers();
+    private final EventHandlers stopComplete = new EventHandlers();
 
     @Override
     protected void startService(@NonNull Runnable onStartComplete) {
-        startComplete = onStartComplete;
+        startComplete.add(onStartComplete);
         thread = new ThreadService(this::run);
         thread.start();
     }
 
     @Override
     protected void stopService(@NonNull Runnable onStopComplete) {
-        stopComplete = onStopComplete;
-        thread.close();
-        thread = null;
+        // save the stop event handler. fire it later when stop completes.
+        stopComplete.add(onStopComplete);
     }
 
     private boolean canContinue(final Context context) {
@@ -49,9 +49,10 @@ public class ThreadExecutor extends ServiceBase {
     }
 
     private void run() {
-        startComplete.run();
-        startComplete = null;
+        startComplete.execute();
+        startComplete.clear();
 
+        val contextStoppingHandlers = new EventHandlers();
         while (getStatus().isStarted()) {
             val assignment = coordinator.getAssignment(workerId);
             if (assignment == null) {
@@ -59,7 +60,7 @@ public class ThreadExecutor extends ServiceBase {
                 continue;
             }
 
-            val context = new Context(this::canContinue, assignment);
+            val context = new Context(this::canContinue, assignment, contextStoppingHandlers.clear());
             while (context.canContinue()) {
                 try {
                     worker.execute(context);
@@ -73,7 +74,16 @@ public class ThreadExecutor extends ServiceBase {
                 }
             }
         }
-        stopComplete.run();
-        stopComplete = null;
+        // execute the context's stopping event handlers.
+        contextStoppingHandlers.execute();
+        stopComplete.execute();
+        stopComplete.clear();
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        thread.close();
+        thread = null;
     }
 }

@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 @Slf4j
 public abstract class ServiceBase implements Service {
     private final ServiceStatus status = new ServiceStatus();
-    private final List<Consumer<Service>> startEvents = new ArrayList<>();
-    private final List<Consumer<Service>> stopEvents = new ArrayList<>();
+    private final List<Consumer<Service>> startedEvents = new ArrayList<>();
+    private final List<Consumer<Service>> stoppedEvents = new ArrayList<>();
 
     public Status getStatus() {
         return status.getStatus();
@@ -24,7 +24,7 @@ public abstract class ServiceBase implements Service {
         status.start(() -> {
             startService(() -> {
                 status.startComplete();
-                executeHandlers(startEvents);
+                executeHandlers(startedEvents);
             });
         });
         return this;
@@ -35,7 +35,7 @@ public abstract class ServiceBase implements Service {
         status.stop(() -> {
             stopService(() -> {
                 status.stopComplete();
-                executeHandlers(stopEvents);
+                executeHandlers(stoppedEvents);
             });
         });
         return this;
@@ -43,20 +43,20 @@ public abstract class ServiceBase implements Service {
 
     @Override
     public Service onStopped(@NonNull Consumer<Service> sender) {
-        stopEvents.add(sender);
+        stoppedEvents.add(sender);
         return this;
     }
 
     @Override
     public Service onStarted(@NonNull Consumer<Service> sender) {
-        startEvents.add(sender);
+        startedEvents.add(sender);
         return this;
     }
 
     @Override
     public Service unsubscribe() {
-        stopEvents.clear();
-        startEvents.clear();
+        stoppedEvents.clear();
+        startedEvents.clear();
         return this;
     }
 

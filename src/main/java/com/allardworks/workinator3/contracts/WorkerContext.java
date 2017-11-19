@@ -5,5 +5,5 @@ public interface WorkerContext {
     Assignment getAssignment();
     boolean getHasMoreWork();
     void setHasMoreWork(boolean hasMoreWork);
-    void onStop(Runnable eventHandler);
+    void onStopping(Runnable eventHandler);
 }

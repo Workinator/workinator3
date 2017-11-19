@@ -9,10 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ThreadExecutorSupplier implements ExecutorSupplier {
     private final Coordinator coordinator;
     private final WorkerSupplier workerSupplier;
+    private final ConsumerConfiguration configuration;
 
     @Override
     public Service create(WorkerId workerId) {
         val worker = workerSupplier.getWorker(workerId);
-        return new ThreadExecutor(workerId, worker, coordinator);
+        return new ThreadExecutor(configuration, workerId, worker, coordinator);
     }
 }

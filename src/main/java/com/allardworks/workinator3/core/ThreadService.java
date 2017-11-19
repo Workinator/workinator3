@@ -7,15 +7,16 @@ import lombok.val;
 
 @RequiredArgsConstructor
 public class ThreadService extends ServiceBase {
-    @NonNull private final Runnable method;
+    @NonNull
+    private final Runnable method;
     private Thread thread;
-    private Runnable onStart;
-    private Runnable onStop;
+    private EventHandlers onStart = new EventHandlers();
+    private EventHandlers onStop = new EventHandlers();
 
 
     @Override
     protected void startService(Runnable onStartComplete) {
-        onStart = onStartComplete;
+        onStart.add(onStartComplete);
         thread = new Thread(this::run);
         thread.start();
     }
@@ -24,24 +25,20 @@ public class ThreadService extends ServiceBase {
         // signal work has started
         val start = onStart;
         onStart = null;
-        if (start != null) {
-            start.run();
-        }
+        start.execute();
+        start.clear();
 
         // execute the work
         method.run();
 
         // signal work has completed
-        val stop = onStop;
-        onStop = null;
-        if (stop != null) {
-            stop.run();
-        }
+        onStop.execute();
+        onStop.clear();
     }
 
     @Override
     protected void stopService(Runnable onStopComplete) {
-        onStop = onStopComplete;
+        onStop.add(onStopComplete);
     }
 
     @Override
