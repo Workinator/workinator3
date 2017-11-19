@@ -28,20 +28,15 @@ public class ThreadExecutor extends ServiceBase {
     private final Coordinator coordinator;
 
     private ThreadService thread;
-    private final EventHandlers startComplete = new EventHandlers();
-    private final EventHandlers stopComplete = new EventHandlers();
 
     @Override
-    protected void startService(@NonNull Runnable onStartComplete) {
-        startComplete.add(onStartComplete);
+    protected void startingService() {
         thread = new ThreadService(this::run);
         thread.start();
     }
 
     @Override
-    protected void stopService(@NonNull Runnable onStopComplete) {
-        // save the stop event handler. fire it later when stop completes.
-        stopComplete.add(onStopComplete);
+    protected void stoppingService() {
     }
 
     private boolean canContinue(final Context context) {
@@ -49,9 +44,7 @@ public class ThreadExecutor extends ServiceBase {
     }
 
     private void run() {
-        startComplete.execute();
-        startComplete.clear();
-
+        signalStartingComplete();
         val contextStoppingHandlers = new EventHandlers();
         while (getStatus().isStarted()) {
             val assignment = coordinator.getAssignment(workerId);
@@ -74,15 +67,20 @@ public class ThreadExecutor extends ServiceBase {
                 }
             }
         }
+
         // execute the context's stopping event handlers.
         contextStoppingHandlers.execute();
-        stopComplete.execute();
-        stopComplete.clear();
+        close();
+        signalStoppingComplete();
     }
 
     @Override
     public void close() {
         super.close();
+        if (thread == null) {
+            return;
+        }
+
         thread.close();
         thread = null;
     }

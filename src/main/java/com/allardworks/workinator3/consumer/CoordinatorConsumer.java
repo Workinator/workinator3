@@ -1,7 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.core.EventHandlers;
 import com.allardworks.workinator3.core.ServiceBase;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -52,16 +51,6 @@ public class CoordinatorConsumer extends ServiceBase  {
     private ConsumerRegistration registration;
 
     /**
-     * Things to do when the service finishes starting.
-     */
-    private final EventHandlers onStart = new EventHandlers();
-
-    /**
-     * Things to do when the service finishes stopping.
-     */
-    private final EventHandlers onStop = new EventHandlers();
-
-    /**
      * Tracks how many executors have stopped. When 0, all done. Fire the stopped event.
      */
     private CountDownLatch startCount;
@@ -74,11 +63,9 @@ public class CoordinatorConsumer extends ServiceBase  {
     /**
      * Start the service.
      * Registers this consumer and sets up the executors.
-     * @param onStartComplete
      */
     @Override
-    protected void startService(Runnable onStartComplete) {
-        onStart.add(onStartComplete);
+    protected void startingService() {
         startCount = new CountDownLatch(configuration.getWorkerCount());
         stopCount = new CountDownLatch(configuration.getWorkerCount());
         setupConsumer();
@@ -86,12 +73,10 @@ public class CoordinatorConsumer extends ServiceBase  {
     }
 
     /**
-     * Stops the servic.e
-     * @param onStopComplete
+     * Stops the service.
      */
     @Override
-    protected void stopService(Runnable onStopComplete) {
-        onStop.add(onStopComplete);
+    protected void stoppingService() {
         for (val executor : executors) {
             executor.stop();
         }
@@ -140,8 +125,7 @@ public class CoordinatorConsumer extends ServiceBase  {
     private void onExecutorStarted(final Service executor) {
         startCount.countDown();
         if (startCount.getCount() == 0) {
-            onStart.execute();
-            onStart.clear();
+            signalStartingComplete();
         }
     }
 
@@ -153,8 +137,7 @@ public class CoordinatorConsumer extends ServiceBase  {
         stopCount.countDown();
         if (stopCount.getCount() == 0) {
             cleanupExecutors();
-            onStop.execute();
-            onStop.clear();
+            signalStoppingComplete();
         }
     }
 

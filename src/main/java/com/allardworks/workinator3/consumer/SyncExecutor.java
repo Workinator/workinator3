@@ -4,12 +4,12 @@ import com.allardworks.workinator3.core.ServiceBase;
 
 public class SyncExecutor extends ServiceBase {
     @Override
-    protected void startService(Runnable onStartComplete) {
+    protected void startingService() {
 
     }
 
     @Override
-    protected void stopService(Runnable onStopComplete) {
+    protected void stoppingService() {
 
     }
 }

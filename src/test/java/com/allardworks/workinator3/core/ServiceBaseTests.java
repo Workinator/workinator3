@@ -69,11 +69,10 @@ public class ServiceBaseTests {
 
 
     public class ServiceBaseTester extends ServiceBase {
-        private Runnable start;
         private Runnable stop;
 
         public void finishStart() {
-            start.run();
+            //start.run();
         }
 
         public void finishStop() {
@@ -89,19 +88,11 @@ public class ServiceBaseTests {
         public boolean autoStop;
 
         @Override
-        protected void startService(Runnable onStartComplete) {
-            start = onStartComplete;
-            if (autoStart) {
-                start.run();
-            }
+        protected void startingService() {
         }
 
         @Override
-        protected void stopService(Runnable onStopComplete) {
-            stop = onStopComplete;
-            if (autoStop) {
-                stop.run();
-            }
+        protected void stoppingService() {
         }
     }
 }

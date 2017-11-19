@@ -11,6 +11,6 @@ import java.time.Duration;
 public class ConsumerConfiguration {
     @NonNull private final String consumerName;
     @NonNull private final String partitionType;
-    @NonNull @Builder.Default private final int workerCount = 1;
+    @Builder.Default private final int workerCount = 1;
     @NonNull private final Duration minWorkTime = Duration.ofSeconds(30);
 }

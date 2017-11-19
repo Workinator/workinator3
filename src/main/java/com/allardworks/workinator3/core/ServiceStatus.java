@@ -40,19 +40,23 @@ public class ServiceStatus {
         }
     }
 
-    public void startComplete() {
+    public boolean startComplete() {
         synchronized (lock) {
             if (status.equals(Status.Starting)) {
                 status = Status.Started;
+                return true;
             }
+            return false;
         }
     }
 
-    public void stopComplete() {
+    public boolean stopComplete() {
         synchronized (lock) {
             if (status.equals(Status.Stopping)) {
                 status = Status.Stopped;
+                return true;
             }
+            return false;
         }
     }
 }
