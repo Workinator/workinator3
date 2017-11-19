@@ -1,10 +1,11 @@
 package com.allardworks.workinator3.consumer;
 
+/*
 import com.allardworks.workinator3.core.ServiceBase;
 
 public class SyncExecutor extends ServiceBase {
     @Override
-    protected void startingService() {
+    protected void onPreStarting() {
 
     }
 
@@ -12,4 +13,4 @@ public class SyncExecutor extends ServiceBase {
     protected void stoppingService() {
 
     }
-}
+}*/

@@ -19,28 +19,13 @@ public abstract class ServiceBase implements Service {
         return status.getStatus();
     }
 
-    @Override
-    public Service start() {
-        status.start(this::startingService);
-        return this;
+    protected ServiceStatus getServiceStatus() {
+        return status;
     }
 
-    @Override
-    public Service stop() {
-        status.stop(this::stoppingService);
-        return this;
-    }
 
-    protected void signalStartingComplete() {
-        if (status.startComplete()) {
-            executeHandlers(startedEvents);
-        }
-    }
-
-    protected void signalStoppingComplete() {
-        if (status.stopComplete()) {
-            executeHandlers(stoppedEvents);
-        }
+    public ServiceBase onTransition(Consumer<Transition> transitionHandler) {
+        status
     }
 
     @Override
@@ -65,10 +50,6 @@ public abstract class ServiceBase implements Service {
     @Override
     public void close() {
     }
-
-    protected abstract void startingService();
-
-    protected abstract void stoppingService();
 
     private void executeHandlers(List<Consumer<Service>> events) {
         // TODO: clone events list

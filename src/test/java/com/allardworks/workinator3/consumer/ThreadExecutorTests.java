@@ -18,7 +18,7 @@ public class ThreadExecutorTests {
      * @throws InterruptedException
      */
     @Test
-    public void startAndStop() throws InterruptedException {
+    public void startAndStop() throws Exception {
         val configuration = ConsumerConfiguration.builder().consumerName("boo").partitionType("yea").build();
         val consumerId = new ConsumerId("boo", "yea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
@@ -27,6 +27,7 @@ public class ThreadExecutorTests {
         val worker = new DummyWorker();
 
         coordinator.setNextAssignment(new Assignment(workerId, "blah", "asdfasfasfd"));
+
         try (val executor = new ThreadExecutor(configuration, workerId, worker, coordinator)) {
             TestUtility.startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
@@ -36,7 +37,7 @@ public class ThreadExecutorTests {
     }
 
     @Test
-    public void wontStopWhileWorkerIsBusy() {
+    public void wontStopWhileWorkerIsBusy() throws Exception {
         val freezeTime = 750;
         val configuration = ConsumerConfiguration.builder().consumerName("boo").partitionType("yea").build();
         val consumerId = new ConsumerId("boo", "yea");

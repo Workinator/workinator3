@@ -1,7 +1,8 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.core.ServiceBase;
+import com.allardworks.workinator3.core.ServiceStatus;
+import com.allardworks.workinator3.core.Transition;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
-public class CoordinatorConsumer extends ServiceBase  {
+public class CoordinatorConsumer implements Service2  {
+    private final ServiceStatus status = new ServiceStatus();
+
     /**
      * Configuration for this consumer.
      */
@@ -61,28 +65,6 @@ public class CoordinatorConsumer extends ServiceBase  {
     private CountDownLatch stopCount;
 
     /**
-     * Start the service.
-     * Registers this consumer and sets up the executors.
-     */
-    @Override
-    protected void startingService() {
-        startCount = new CountDownLatch(configuration.getWorkerCount());
-        stopCount = new CountDownLatch(configuration.getWorkerCount());
-        setupConsumer();
-        setupAndStartExecutors();
-    }
-
-    /**
-     * Stops the service.
-     */
-    @Override
-    protected void stoppingService() {
-        for (val executor : executors) {
-            executor.stop();
-        }
-    }
-
-    /**
      * Create an executor for each worker.
      */
     private void setupAndStartExecutors() {
@@ -125,7 +107,7 @@ public class CoordinatorConsumer extends ServiceBase  {
     private void onExecutorStarted(final Service executor) {
         startCount.countDown();
         if (startCount.getCount() == 0) {
-            signalStartingComplete();
+            status.started();
         }
     }
 
@@ -137,7 +119,7 @@ public class CoordinatorConsumer extends ServiceBase  {
         stopCount.countDown();
         if (stopCount.getCount() == 0) {
             cleanupExecutors();
-            signalStoppingComplete();
+            status.stopped();
         }
     }
 
@@ -154,5 +136,41 @@ public class CoordinatorConsumer extends ServiceBase  {
             }
         }
         executors.clear();
+    }
+
+    @Override
+    public void start() {
+        status.initialize(s -> {
+            s.onTransition(c -> {
+                if (c.isPostStarting()) {
+                    startCount = new CountDownLatch(configuration.getWorkerCount());
+                    stopCount = new CountDownLatch(configuration.getWorkerCount());
+                    setupConsumer();
+                    setupAndStartExecutors();
+                    return;
+                }
+
+                if (c.isPostStopping()) {
+                    for (val executor : executors) {
+                        executor.stop();
+                    }
+                }
+            });
+        });
+    }
+
+    @Override
+    public void stop() {
+        status.stopping();
+    }
+
+    @Override
+    public void onTransition(Consumer<Transition> transitionHandler) {
+        status.onTransition(transitionHandler);
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }

@@ -2,61 +2,87 @@ package com.allardworks.workinator3.core;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
+
+import static com.allardworks.workinator3.core.Status.*;
 
 @Slf4j
 public class ServiceStatus {
     private final Object lock = new Object();
 
+    private final Set<Consumer<Transition>> transitionEventHandlers = new HashSet<>();
+
+    private boolean initialized;
+
+    public ServiceStatus onTransition(final Consumer<Transition> transitionHandler) {
+        transitionEventHandlers.add(transitionHandler);
+        return this;
+    }
+
+    public ServiceStatus clearEventHandlers(){
+        transitionEventHandlers.clear();
+        return this;
+    }
+
     @Getter
     private Status status = Status.Stopped;
 
-    public void start(final Runnable startMethod) {
+
+    public ServiceStatus initialize(Consumer<ServiceStatus> initializationMethod) {
         synchronized (lock) {
-            if (!status.isStopped()) {
-                return;
+            if (initialized) {
+                return this;
             }
 
-            status = Status.Starting;
+            initializationMethod.accept(this);
+            initialized = true;
+            return this;
+        }
+    }
+
+    public boolean starting() {
+        return transition(Stopped, Starting);
+    }
+
+    public boolean stopping() {
+        return transition(Started, Stopping);
+    }
+
+    public boolean started() {
+        return transition(Starting, Started);
+    }
+
+    public boolean stopped() {
+        return transition(Stopping, Stopped);
+    }
+
+    private void executeHandlers(final Transition transition) {
+        val handlers = transitionEventHandlers;
+        for (val h : handlers) {
             try {
-                startMethod.run();
-            } catch (final Exception ex) {
-                log.error("ServiceStatus.start() failed", ex);
+                h.accept(transition);
+            } catch (final Exception e) {
+                //todo;
             }
         }
     }
 
-    public void stop(final Runnable stopMethod) {
+    private boolean transition(final Status allowedOldStatus, final Status newStatus) {
         synchronized (lock) {
-            if (!status.isStarted()) {
-                return;
+            if (!status.equals(allowedOldStatus)) {
+                return false;
             }
 
-            status = Status.Stopping;
-            try {
-                stopMethod.run();
-            } catch (final Exception ex) {
-                log.error("ServiceStatus.stop() failed", ex);
-            }
-        }
-    }
-
-    public boolean startComplete() {
-        synchronized (lock) {
-            if (status.equals(Status.Starting)) {
-                status = Status.Started;
-                return true;
-            }
-            return false;
-        }
-    }
-
-    public boolean stopComplete() {
-        synchronized (lock) {
-            if (status.equals(Status.Stopping)) {
-                status = Status.Stopped;
-                return true;
-            }
-            return false;
+            val before = new Transition(TransitionStage.BeforeTransition, allowedOldStatus, newStatus);
+            executeHandlers(before);
+            status = newStatus;
+            val after = new Transition(TransitionStage.AfterTransition, allowedOldStatus, newStatus);
+            executeHandlers(after);
+            return true;
         }
     }
 }

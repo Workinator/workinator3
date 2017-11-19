@@ -14,6 +14,6 @@ public class ThreadExecutorSupplier implements ExecutorSupplier {
     @Override
     public Service create(WorkerId workerId) {
         val worker = workerSupplier.getWorker(workerId);
-        return new ThreadExecutor(configuration, workerId, worker, coordinator);
+        return null; //new ThreadExecutor(configuration, workerId, worker, coordinator);
     }
 }

@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.testsupport;
 
 import com.allardworks.workinator3.contracts.Service;
+import com.allardworks.workinator3.contracts.Service2;
 import lombok.val;
 import org.junit.Assert;
 
@@ -11,9 +12,13 @@ public class TestUtility {
     private TestUtility() {
     }
 
-    public static void startAndWait(final Service service) {
+    public static void startAndWait(final Service2 service) {
         val countdown = new CountDownLatch(1);
-        service.onStarted(s -> countdown.countDown());
+        service.onTransition(t -> {
+            if (t.isPostStarted()) {
+                countdown.countDown();
+            }
+        });
         service.start();
         try {
             countdown.await();
@@ -22,9 +27,13 @@ public class TestUtility {
         }
     }
 
-    public static void stopAndWait(final Service service) {
+    public static void stopAndWait(final Service2 service) {
         val countdown = new CountDownLatch(1);
-        service.onStopped(s -> countdown.countDown());
+        service.onTransition(t -> {
+            if (t.isPostStopped()) {
+                countdown.countDown();
+            }
+        });
         service.stop();
         try {
             countdown.await();

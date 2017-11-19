@@ -88,7 +88,7 @@ public class ServiceBaseTests {
         public boolean autoStop;
 
         @Override
-        protected void startingService() {
+        protected void onPreStarting() {
         }
 
         @Override
