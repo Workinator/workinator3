@@ -81,6 +81,7 @@ public class ThreadExecutorTests {
      * This only happens when EXECUTE is in progress.
      * Use FREEZE to make sure it's in progress. The stop event will thaw it.
      * Everything will stop, and we'll see that the stop event was hit.
+     *
      * @throws Exception
      */
     @Test
@@ -109,13 +110,29 @@ public class ThreadExecutorTests {
     }
 
     /**
-     * The context.onStopping event was intended for the
-     * SynchronousExecutor, not ThreadExecutor. However,
-     * it may be useful
+     * This test fails because of a race condition.
+     * See the TODO in ThreadExecutor.start()
+     * for more information. This test serves
+     * as a reminder of this issue.
      */
     @Test
-    public void contextEventFiresRaceCondition() {
+    public void contextEventFiresRaceCondition() throws Exception {
+        val configuration = ConsumerConfiguration.builder().consumerName("boo").partitionType("yea").build();
+        val consumerId = new ConsumerId("boo", "yea");
+        val registration = new ConsumerRegistration(consumerId, "whatever");
+        val workerId = new WorkerId(registration, 1);
+        val coordinator = new DummyCoordinator();
+        val worker = new DummyWorker();
 
+        coordinator.setNextAssignment(new Assignment(workerId, "blah", "asdfasfasfd"));
+        try (val executor = new ThreadExecutor(configuration, workerId, worker, coordinator)) {
+            TestUtility.startAndWait(executor);
+            TestUtility.waitFor(() -> worker.getLastContext() != null);
+            assertEquals(0, worker.getContextStopEventHitCount().get());
+            TestUtility.stopAndWait(executor);
+
+            assertEquals(1, worker.getContextStopEventHitCount().get());
+        }
     }
 
 }

@@ -12,6 +12,8 @@ import lombok.val;
 
 import java.util.function.Consumer;
 
+import static java.lang.System.out;
+
 /**
  * Creates one thread per worker.
  */
@@ -98,6 +100,13 @@ public class ThreadExecutor implements Service2 {
                     //   if (!context.canContinue) {
                     //       // nevermind
                     //   }
+                    //
+                    // LIKELY FIX:
+                    // eliminate all of this. support it only for SynchronousExecutor.
+                    // here, though, it would be nice to interrupt something in process rather than
+                    // wait for it to finish. perhaps a plain old ThreadInterrupException is the way to go there.
+
+                    out.println("Stopping " + contextStoppingEventHandlers.size());
                     contextStoppingEventHandlers.execute();
                 }
             });

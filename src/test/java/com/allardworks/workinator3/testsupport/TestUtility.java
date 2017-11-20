@@ -1,6 +1,5 @@
 package com.allardworks.workinator3.testsupport;
 
-import com.allardworks.workinator3.contracts.Service;
 import com.allardworks.workinator3.contracts.Service2;
 import lombok.val;
 import org.junit.Assert;

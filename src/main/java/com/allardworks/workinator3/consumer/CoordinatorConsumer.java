@@ -47,7 +47,7 @@ public class CoordinatorConsumer implements Service2  {
     /**
      * One executor per worker.
      */
-    private List<Service> executors;
+    private List<Service2> executors;
 
     /**
      * The consumer's registration. Returned by the coordinator's register method.
@@ -83,8 +83,9 @@ public class CoordinatorConsumer implements Service2  {
         // initialize and start the executors
         for(val executor : executors) {
             // setup start and stop events
-            executor.onStarted(this::onExecutorStarted);
-            executor.onStopped(this::onExecutorStopped);
+            // TODO
+            //executor.onStarted(this::onExecutorStarted);
+            //executor.onStopped(this::onExecutorStopped);
 
             // start the executors
             executor.start();
@@ -104,7 +105,7 @@ public class CoordinatorConsumer implements Service2  {
      * Event handler for executer.started.
      * @param executor
      */
-    private void onExecutorStarted(final Service executor) {
+    private void onExecutorStarted(final Service2 executor) {
         startCount.countDown();
         if (startCount.getCount() == 0) {
             status.started();
@@ -115,7 +116,7 @@ public class CoordinatorConsumer implements Service2  {
      * Event handler for executor.stopped.
      * @param executor
      */
-    private void onExecutorStopped(final Service executor) {
+    private void onExecutorStopped(final Service2 executor) {
         stopCount.countDown();
         if (stopCount.getCount() == 0) {
             cleanupExecutors();

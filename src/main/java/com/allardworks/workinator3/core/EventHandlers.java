@@ -20,6 +20,10 @@ public class EventHandlers {
         return hitCount.get();
     }
 
+    public int size() {
+        return handlers.size();
+    }
+
     public EventHandlers add(@NonNull Runnable eventHandler) {
         handlers.add(eventHandler);
         return this;
