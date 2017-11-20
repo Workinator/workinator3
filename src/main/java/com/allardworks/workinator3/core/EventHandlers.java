@@ -14,16 +14,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class EventHandlers {
     private final Set<Runnable> handlers = new HashSet<>();
 
-    private final AtomicLong hitCount = new AtomicLong();
-
-    public long getExecuteCount() {
-        return hitCount.get();
-    }
-
-    public int size() {
-        return handlers.size();
-    }
-
     public EventHandlers add(@NonNull Runnable eventHandler) {
         handlers.add(eventHandler);
         return this;
@@ -36,7 +26,6 @@ public class EventHandlers {
 
     public EventHandlers clear() {
         handlers.clear();
-        hitCount.set(0);
         return this;
     }
 

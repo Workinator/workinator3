@@ -14,7 +14,6 @@ public class ThreadService implements Service2 {
     private final Runnable method;
     private Thread thread;
 
-
     private void run() {
         status.started();
 
@@ -27,7 +26,6 @@ public class ThreadService implements Service2 {
 
         status.stopped();
     }
-
 
     @Override
     public void start() {
@@ -54,6 +52,6 @@ public class ThreadService implements Service2 {
 
     @Override
     public void close() throws Exception {
-
+        thread = null;
     }
 }

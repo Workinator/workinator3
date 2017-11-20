@@ -2,6 +2,11 @@ package com.allardworks.workinator3.core;
 
 import lombok.Data;
 
+/**
+ * Describes a state change in a service.
+ * The state change may be about to occur (pre),
+ * of just occured (post).
+ */
 @Data
 public class Transition {
     private final TransitionStage stage;
