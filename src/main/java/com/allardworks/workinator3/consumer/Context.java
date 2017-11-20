@@ -17,7 +17,7 @@ public class Context implements WorkerContext {
     private final Assignment assignment;
     private final EventHandlers stopHandlers;
 
-    private boolean hasMoreWork;
+    private boolean hasMoreWork = true;
 
     public boolean getHasMoreWork() {
         return hasMoreWork;
