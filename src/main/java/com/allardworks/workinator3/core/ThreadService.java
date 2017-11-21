@@ -11,6 +11,7 @@ import java.util.function.Consumer;
  */
 @RequiredArgsConstructor
 public class ThreadService implements Service {
+    // TODO: switch to servicebase
     private final ServiceStatus status = new ServiceStatus();
 
     @NonNull
@@ -46,6 +47,11 @@ public class ThreadService implements Service {
     @Override
     public void stop() {
         status.stopping();
+    }
+
+    @Override
+    public Status getStatus() {
+        return status.getStatus();
     }
 
     @Override
