@@ -1,25 +1,21 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.core.ServiceStatus;
-import com.allardworks.workinator3.core.Transition;
+import com.allardworks.workinator3.core.ServiceBase;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@RequiredArgsConstructor(onConstructor = @__({@Autowired}))
-@Slf4j
-public class CoordinatorConsumer implements Service2  {
-    private final ServiceStatus status = new ServiceStatus();
+import static java.util.stream.Collectors.*;
 
+@RequiredArgsConstructor
+@Slf4j
+public class CoordinatorConsumer extends ServiceBase {
     /**
      * Configuration for this consumer.
      */
@@ -39,6 +35,12 @@ public class CoordinatorConsumer implements Service2  {
     private final ExecutorSupplier executorSupplier;
 
     /**
+     * Creates a workers.
+     */
+    @NonNull
+    private final WorkerSupplier workerSupplier;
+
+    /**
      * The ID of this consumer.
      */
     @NonNull
@@ -47,7 +49,7 @@ public class CoordinatorConsumer implements Service2  {
     /**
      * One executor per worker.
      */
-    private List<Service2> executors;
+    private List<Service> executors;
 
     /**
      * The consumer's registration. Returned by the coordinator's register method.
@@ -64,6 +66,25 @@ public class CoordinatorConsumer implements Service2  {
      */
     private CountDownLatch stopCount;
 
+    @Override
+    public void start() {
+        getServiceStatus().initialize(s -> {
+            s.getEventHandlers().onPostStarting(t -> {
+                startCount = new CountDownLatch(configuration.getWorkerCount());
+                stopCount = new CountDownLatch(configuration.getWorkerCount());
+                setupConsumer();
+                setupAndStartExecutors();
+            });
+
+            s.getEventHandlers().onPostStopping(t -> {
+                for (val executor : executors) {
+                    executor.stop();
+                }
+            });
+        });
+        super.start();
+    }
+
     /**
      * Create an executor for each worker.
      */
@@ -72,20 +93,25 @@ public class CoordinatorConsumer implements Service2  {
         val workerIds = IntStream
                 .range(0, configuration.getWorkerCount())
                 .mapToObj(i -> new WorkerId(registration, i))
-                .collect(Collectors.toList());
+                .collect(toList());
+
+        // create the workers
+        val workers = workerIds
+                .stream()
+                .map(workerSupplier::getWorker)
+                .collect(toList());
 
         // create an executor for each worker
-        val executors = workerIds
+        val executors = workers
                 .stream()
                 .map(executorSupplier::create)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         // initialize and start the executors
         for(val executor : executors) {
             // setup start and stop events
-            // TODO
-            //executor.onStarted(this::onExecutorStarted);
-            //executor.onStopped(this::onExecutorStopped);
+            executor.getTransitionEventHandlers().onPostStarting(t -> onExecutorStarted());
+            executor.getTransitionEventHandlers().onPostStopping(t -> onExecutorStopped());
 
             // start the executors
             executor.start();
@@ -98,29 +124,27 @@ public class CoordinatorConsumer implements Service2  {
      * Register this consumer with the coordinator.
      */
     private void setupConsumer() {
-        registration = coordinator.registerConsumer(null);
+        registration = coordinator.registerConsumer(consumerId);
     }
 
     /**
      * Event handler for executer.started.
-     * @param executor
      */
-    private void onExecutorStarted(final Service2 executor) {
+    private void onExecutorStarted() {
         startCount.countDown();
         if (startCount.getCount() == 0) {
-            status.started();
+            getServiceStatus().started();
         }
     }
 
     /**
      * Event handler for executor.stopped.
-     * @param executor
      */
-    private void onExecutorStopped(final Service2 executor) {
+    private void onExecutorStopped() {
         stopCount.countDown();
         if (stopCount.getCount() == 0) {
             cleanupExecutors();
-            status.stopped();
+            getServiceStatus().stopped();
         }
     }
 
@@ -137,41 +161,5 @@ public class CoordinatorConsumer implements Service2  {
             }
         }
         executors.clear();
-    }
-
-    @Override
-    public void start() {
-        status.initialize(s -> {
-            s.onTransition(c -> {
-                if (c.isPostStarting()) {
-                    startCount = new CountDownLatch(configuration.getWorkerCount());
-                    stopCount = new CountDownLatch(configuration.getWorkerCount());
-                    setupConsumer();
-                    setupAndStartExecutors();
-                    return;
-                }
-
-                if (c.isPostStopping()) {
-                    for (val executor : executors) {
-                        executor.stop();
-                    }
-                }
-            });
-        });
-    }
-
-    @Override
-    public void stop() {
-        status.stopping();
-    }
-
-    @Override
-    public void onTransition(Consumer<Transition> transitionHandler) {
-        status.onTransition(transitionHandler);
-    }
-
-    @Override
-    public void close() throws Exception {
-
     }
 }

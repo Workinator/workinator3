@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.core;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -12,13 +13,28 @@ import static com.allardworks.workinator3.core.Status.*;
 
 @Slf4j
 public class ServiceStatus {
-    private final Object lock = new Object();
+    private final Object syncroot;
+
+    public ServiceStatus() {
+        this(new Object());
+    }
+
+    public ServiceStatus(@NonNull final Object syncRoot) {
+        syncroot = syncRoot;
+    }
+
+    public Object getSyncroot() {
+        return syncroot;
+    }
 
     private final Set<Consumer<Transition>> transitionEventHandlers = new HashSet<>();
 
     private boolean initialized;
 
-    public ServiceStatus onTransition(final Consumer<Transition> transitionHandler) {
+    @Getter
+    private final TransitionEvents eventHandlers = new TransitionEvents(this);
+
+    public ServiceStatus onTransition(@NonNull final Consumer<Transition> transitionHandler) {
         transitionEventHandlers.add(transitionHandler);
         return this;
     }
@@ -33,7 +49,7 @@ public class ServiceStatus {
 
 
     public ServiceStatus initialize(Consumer<ServiceStatus> initializationMethod) {
-        synchronized (lock) {
+        synchronized (syncroot) {
             if (initialized) {
                 return this;
             }
@@ -72,7 +88,7 @@ public class ServiceStatus {
     }
 
     private boolean transition(final Status allowedOldStatus, final Status newStatus) {
-        synchronized (lock) {
+        synchronized (syncroot) {
             if (!status.equals(allowedOldStatus)) {
                 return false;
             }

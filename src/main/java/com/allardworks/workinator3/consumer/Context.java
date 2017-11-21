@@ -2,20 +2,22 @@ package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.Assignment;
 import com.allardworks.workinator3.contracts.WorkerContext;
-import com.allardworks.workinator3.core.EventHandlers;
+import com.allardworks.workinator3.core.ServiceStatus;
+import com.allardworks.workinator3.core.Status;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 public class Context implements WorkerContext {
-    private final LocalTime startDate = LocalTime.now();
-    private final Function<Context, Boolean> canContinue;
-    private final Assignment assignment;
-    private final EventHandlers stopHandlers;
+    @NonNull private final LocalTime startDate = LocalTime.now();
+    @NonNull private final Function<Context, Boolean> canContinue;
+    @NonNull private final Assignment assignment;
+    @NonNull private final ServiceStatus executorStatus;
 
     private boolean hasMoreWork = true;
 
@@ -31,9 +33,8 @@ public class Context implements WorkerContext {
         return Duration.between(LocalTime.now(), startDate);
     }
 
-    @Override
-    public void onStopping(Runnable eventHandler) {
-        stopHandlers.add(eventHandler);
+    public Status getExecutorStatus() {
+        return executorStatus.getStatus();
     }
 
     @Override

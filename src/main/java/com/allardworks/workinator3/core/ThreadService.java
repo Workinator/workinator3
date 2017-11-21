@@ -1,13 +1,16 @@
 package com.allardworks.workinator3.core;
 
-import com.allardworks.workinator3.contracts.Service2;
+import com.allardworks.workinator3.contracts.Service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;
 
+/**
+ * Service wrapper to manage a thread.
+ */
 @RequiredArgsConstructor
-public class ThreadService implements Service2 {
+public class ThreadService implements Service {
     private final ServiceStatus status = new ServiceStatus();
 
     @NonNull
@@ -46,8 +49,8 @@ public class ThreadService implements Service2 {
     }
 
     @Override
-    public void onTransition(Consumer<Transition> transitionHandler) {
-        status.onTransition(transitionHandler);
+    public TransitionEvents getTransitionEventHandlers() {
+        return status.getEventHandlers();
     }
 
     @Override
