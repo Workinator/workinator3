@@ -32,13 +32,13 @@ public class CoordinatorConsumer extends ServiceBase {
      * Creates the executors.
      */
     @NonNull
-    private final ExecutorSupplier executorSupplier;
+    private final ExecutorFactory executorFactory;
 
     /**
      * Creates a workers.
      */
     @NonNull
-    private final WorkerSupplier workerSupplier;
+    private final WorkerFactory workerFactory;
 
     /**
      * The ID of this consumer.
@@ -98,13 +98,13 @@ public class CoordinatorConsumer extends ServiceBase {
         // create the workers
         val workers = workerIds
                 .stream()
-                .map(workerSupplier::getWorker)
+                .map(workerFactory::createWorker)
                 .collect(toList());
 
         // create an executor for each worker
         val executors = workers
                 .stream()
-                .map(executorSupplier::create)
+                .map(executorFactory::createExecutor)
                 .collect(toList());
 
         // initialize and start the executors

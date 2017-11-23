@@ -4,7 +4,7 @@ import com.allardworks.workinator3.contracts.ConsumerConfiguration;
 import com.allardworks.workinator3.contracts.ConsumerId;
 import com.allardworks.workinator3.testsupport.DummyCoordinator;
 import com.allardworks.workinator3.testsupport.DummyWorkerDelegate;
-import com.allardworks.workinator3.testsupport.DummyWorkerSupplier;
+import com.allardworks.workinator3.testsupport.DummyWorkerFactory;
 import com.allardworks.workinator3.testsupport.TestUtility;
 import lombok.val;
 import org.junit.Test;
@@ -25,9 +25,9 @@ public class CoordinatorConsumerTests {
         val consumerId = new ConsumerId("adfafasf", "asdfasf");
 
         val coordinator =new DummyCoordinator();
-        val executorSupplier = new ExecutorAsyncSupplier(configuration, coordinator);
+        val executorSupplier = new ExecutorFactory(configuration, coordinator);
         val worker = new DummyWorkerDelegate(c -> {});
-        val workerSupplier = new DummyWorkerSupplier(() -> worker);
+        val workerSupplier = new DummyWorkerFactory(() -> worker);
         try (val consumer = new CoordinatorConsumer(configuration, coordinator, executorSupplier, workerSupplier, consumerId)) {
             consumer.start();
             TestUtility.startAndWait(consumer);

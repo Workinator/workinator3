@@ -23,5 +23,6 @@ public class ConsumerConfiguration {
 
     public static class ConsumerConfigurationBuilder {
         private int workerCount = 1;
+
     }
 }

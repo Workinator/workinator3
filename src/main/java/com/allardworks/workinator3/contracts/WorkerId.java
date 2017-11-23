@@ -1,6 +1,5 @@
 package com.allardworks.workinator3.contracts;
 
-import com.allardworks.workinator3.contracts.ConsumerId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
