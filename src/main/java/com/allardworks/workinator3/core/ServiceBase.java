@@ -1,7 +1,6 @@
 package com.allardworks.workinator3.core;
 
 import com.allardworks.workinator3.contracts.Service;
-import lombok.NonNull;
 
 public abstract class ServiceBase implements Service {
     private final ServiceStatus serviceStatus = new ServiceStatus();
@@ -21,6 +20,7 @@ public abstract class ServiceBase implements Service {
 
     @Override
     public void close() throws Exception {
+        stop();
     }
 
     @Override

@@ -13,19 +13,7 @@ import static com.allardworks.workinator3.core.Status.*;
 
 @Slf4j
 public class ServiceStatus {
-    private final Object syncroot;
-
-    public ServiceStatus() {
-        this(new Object());
-    }
-
-    public ServiceStatus(@NonNull final Object syncRoot) {
-        syncroot = syncRoot;
-    }
-
-    public Object getSyncroot() {
-        return syncroot;
-    }
+    private final Object syncroot = new Object();
 
     private final Set<Consumer<Transition>> transitionEventHandlers = new HashSet<>();
 

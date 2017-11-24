@@ -2,7 +2,7 @@ package com.allardworks.workinator3.testsupport;
 
 import com.allardworks.workinator3.contracts.*;
 
-public class DummyCoordinator implements Coordinator {
+public class DummyWorkinator implements Workinator {
     private Assignment nextAssignment;
 
     public void setNextAssignment(Assignment assignment) {

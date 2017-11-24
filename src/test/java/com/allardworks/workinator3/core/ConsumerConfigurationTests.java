@@ -14,7 +14,6 @@ public class ConsumerConfigurationTests {
         val config = ConsumerConfiguration
                 .builder()
                 .consumerName("a")
-                .partitionType("a")
                 .build();
         assertEquals(1, config.getWorkerCount());
     }
@@ -24,7 +23,6 @@ public class ConsumerConfigurationTests {
         val config = ConsumerConfiguration
                 .builder()
                 .consumerName("a")
-                .partitionType("a")
                 .workerCount(10)
                 .build();
         assertEquals(10, config.getWorkerCount());

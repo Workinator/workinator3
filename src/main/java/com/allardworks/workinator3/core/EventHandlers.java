@@ -1,6 +1,5 @@
 package com.allardworks.workinator3.core;
 
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -8,7 +7,6 @@ import lombok.val;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 public class EventHandlers {

@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * Describes a state change in a service.
  * The state change may be about to occur (pre),
- * of just occured (post).
+ * of just occurred (post).
  */
 @Data
 public class Transition {

@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.*;
 
 @RequiredArgsConstructor
 @Slf4j
-public class CoordinatorConsumer extends ServiceBase {
+public class WorkinatorConsumer extends ServiceBase {
     /**
      * Configuration for this consumer.
      */
@@ -23,10 +23,10 @@ public class CoordinatorConsumer extends ServiceBase {
     private final ConsumerConfiguration configuration;
 
     /**
-     * The coordinator. Provides the partition assignments per worker.
+     * The workinator. Provides the partition assignments per worker.
      */
     @NonNull
-    private final Coordinator coordinator;
+    private final Workinator workinator;
 
     /**
      * Creates the executors.
@@ -52,7 +52,7 @@ public class CoordinatorConsumer extends ServiceBase {
     private List<Service> executors;
 
     /**
-     * The consumer's registration. Returned by the coordinator's register method.
+     * The consumer's registration. Returned by the workinator's register method.
      */
     private ConsumerRegistration registration;
 
@@ -110,8 +110,8 @@ public class CoordinatorConsumer extends ServiceBase {
         // initialize and start the executors
         for(val executor : executors) {
             // setup start and stop events
-            executor.getTransitionEventHandlers().onPostStarting(t -> onExecutorStarted());
-            executor.getTransitionEventHandlers().onPostStopping(t -> onExecutorStopped());
+            executor.getTransitionEventHandlers().onPostStarted(t -> onExecutorStarted());
+            executor.getTransitionEventHandlers().onPostStopped(t -> onExecutorStopped());
 
             // start the executors
             executor.start();
@@ -121,10 +121,10 @@ public class CoordinatorConsumer extends ServiceBase {
     }
 
     /**
-     * Register this consumer with the coordinator.
+     * Register this consumer with the workinator.
      */
     private void setupConsumer() {
-        registration = coordinator.registerConsumer(consumerId);
+        registration = workinator.registerConsumer(consumerId);
     }
 
     /**

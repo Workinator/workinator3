@@ -1,7 +1,7 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.testsupport.DummyCoordinator;
+import com.allardworks.workinator3.testsupport.DummyWorkinator;
 import com.allardworks.workinator3.testsupport.DummyWorkerAsync;
 import com.allardworks.workinator3.testsupport.TestUtility;
 import lombok.val;
@@ -21,16 +21,19 @@ public class ExecutorAsyncTests {
      */
     @Test
     public void startAndStop() throws Exception {
-        val configuration = ConsumerConfiguration.builder().consumerName("boo").partitionType("yea").build();
+        val configuration = ConsumerConfiguration
+                .builder()
+                .consumerName("boo")
+                .build();
         val consumerId = new ConsumerId("boo", "yea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
         val workerId = new WorkerId(registration, 1);
-        val coordinator = new DummyCoordinator();
+        val workinator = new DummyWorkinator();
         val worker = new DummyWorkerAsync();
 
-        coordinator.setNextAssignment(new Assignment(workerId, "blah", "asdfasfasfd"));
+        workinator.setNextAssignment(new Assignment(workerId, "blah", "asdfasfasfd"));
 
-        try (val executor = new ExecutorAsync(configuration, worker, coordinator)) {
+        try (val executor = new ExecutorAsync(configuration, worker, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
             TestUtility.stopAndWait(executor);
@@ -48,15 +51,15 @@ public class ExecutorAsyncTests {
     @Test
     public void wontStopWhileWorkerIsBusy() throws Exception {
         val freezeTime = 100;
-        val configuration = ConsumerConfiguration.builder().consumerName("boo").partitionType("yea").build();
+        val configuration = ConsumerConfiguration.builder().consumerName("boo").build();
         val consumerId = new ConsumerId("boo", "yea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
         val workerId = new WorkerId(registration, 1);
-        val coordinator = new DummyCoordinator();
+        val workinator = new DummyWorkinator();
         val worker = new DummyWorkerAsync();
 
-        coordinator.setNextAssignment(new Assignment(workerId, "blah", "asdfasfasfd"));
-        try (val executor = new ExecutorAsync(configuration, worker, coordinator)) {
+        workinator.setNextAssignment(new Assignment(workerId, "blah", "asdfasfasfd"));
+        try (val executor = new ExecutorAsync(configuration, worker, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
 

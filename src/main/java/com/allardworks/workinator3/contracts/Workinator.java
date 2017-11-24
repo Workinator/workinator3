@@ -1,6 +1,6 @@
 package com.allardworks.workinator3.contracts;
 
-public interface Coordinator{
+public interface Workinator {
     Assignment getAssignment(WorkerId workerId);
     void releaseAssignment(Assignment assignment);
 

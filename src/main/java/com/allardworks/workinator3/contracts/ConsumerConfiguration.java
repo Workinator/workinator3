@@ -14,15 +14,11 @@ public class ConsumerConfiguration {
     private final String consumerName;
 
     @NonNull
-    private final String partitionType;
-
-    @NonNull
     private final Duration minWorkTime = Duration.ofSeconds(30);
 
     private final int workerCount;
 
     public static class ConsumerConfigurationBuilder {
         private int workerCount = 1;
-
     }
 }

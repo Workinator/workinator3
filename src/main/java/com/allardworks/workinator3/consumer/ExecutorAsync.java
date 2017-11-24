@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import static java.lang.System.out;
-
 /**
  * Creates one thread per worker.
  */
@@ -17,19 +15,19 @@ import static java.lang.System.out;
 public class ExecutorAsync extends ServiceBase {
     private final ConsumerConfiguration configuration;
     private final WorkerAsync worker;
-    private final Coordinator coordinator;
+    private final Workinator workinator;
 
     public ExecutorAsync(
             @NonNull final ConsumerConfiguration configuration,
             @NonNull final Worker worker,
-            @NonNull final Coordinator coordinator
+            @NonNull final Workinator workinator
     ) {
         this.configuration = configuration;
         this.worker = (WorkerAsync)worker;
-        this.coordinator = coordinator;
+        this.workinator = workinator;
     }
 
-    private ThreadService thread;
+    private Thread thread;
 
     private boolean canContinue(final Context context) {
         return context.getElapsed().compareTo(configuration.getMinWorkTime()) < 0;
@@ -38,7 +36,7 @@ public class ExecutorAsync extends ServiceBase {
     private void run() {
         getServiceStatus().started();
         while (getServiceStatus().getStatus().isStarted()) {
-            val assignment = coordinator.getAssignment(worker.getId());
+            val assignment = workinator.getAssignment(worker.getId());
             if (assignment == null) {
                 // todo
                 continue;
@@ -66,7 +64,7 @@ public class ExecutorAsync extends ServiceBase {
         getServiceStatus().initialize(s -> {
             // when starting, start the thread
             s.getEventHandlers().onPostStarting(t -> {
-                thread = new ThreadService(this::run);
+                thread = new Thread(this::run);
                 thread.start();
             });
         });
@@ -78,7 +76,6 @@ public class ExecutorAsync extends ServiceBase {
         super.close();
         worker.close();
         if (thread != null) {
-            thread.close();
             thread = null;
         }
     }
