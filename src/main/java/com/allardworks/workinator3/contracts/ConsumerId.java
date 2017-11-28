@@ -7,5 +7,4 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ConsumerId {
     private final String name;
-    private final String partitionType;
 }

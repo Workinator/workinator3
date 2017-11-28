@@ -26,7 +26,7 @@ public class WorkinatorConsumer extends ServiceBase {
      * The workinator. Provides the partition assignments per worker.
      */
     @NonNull
-    private final Workinator workinator;
+    private final WorkinatorStore workinatorStore;
 
     /**
      * Creates the executors.
@@ -124,7 +124,7 @@ public class WorkinatorConsumer extends ServiceBase {
      * Register this consumer with the workinator.
      */
     private void setupConsumer() {
-        registration = workinator.registerConsumer(consumerId);
+        registration = workinatorStore.registerConsumer(consumerId);
     }
 
     /**

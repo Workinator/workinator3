@@ -15,16 +15,16 @@ import lombok.val;
 public class ExecutorAsync extends ServiceBase {
     private final ConsumerConfiguration configuration;
     private final WorkerAsync worker;
-    private final Workinator workinator;
+    private final WorkinatorStore workinatorStore;
 
     public ExecutorAsync(
             @NonNull final ConsumerConfiguration configuration,
             @NonNull final Worker worker,
-            @NonNull final Workinator workinator
+            @NonNull final WorkinatorStore workinatorStore
     ) {
         this.configuration = configuration;
         this.worker = (WorkerAsync)worker;
-        this.workinator = workinator;
+        this.workinatorStore = workinatorStore;
     }
 
     private Thread thread;
@@ -36,7 +36,7 @@ public class ExecutorAsync extends ServiceBase {
     private void run() {
         getServiceStatus().started();
         while (getServiceStatus().getStatus().isStarted()) {
-            val assignment = workinator.getAssignment(worker.getId());
+            val assignment = workinatorStore.getAssignment(worker.getId());
             if (assignment == null) {
                 // todo
                 continue;

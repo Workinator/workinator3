@@ -1,12 +1,16 @@
 package com.allardworks.workinator3.contracts;
 
+import com.allardworks.workinator3.consumer.Partition;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
 public class Assignment {
+    @Getter
     private final WorkerId workerId;
-    private final String partitionKey;
-    private final String assignmentToken;
+
+    @Getter
+    private final Partition partition;
 }

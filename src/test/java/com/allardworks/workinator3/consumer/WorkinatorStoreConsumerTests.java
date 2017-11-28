@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-public class WorkinatorConsumerTests {
+public class WorkinatorStoreConsumerTests {
     @Test
     public void startAndStop() throws Exception {
         val configuration =
@@ -19,11 +19,11 @@ public class WorkinatorConsumerTests {
                         .workerCount(5)
                         .build();
 
-        val consumerId = new ConsumerId("boo", "yea");
+        val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
         val workerId = new WorkerId(registration, 1);
-        val workinator = new DummyWorkinator();
-        workinator.setNextAssignment(new Assignment(workerId, "blah", "asdfasfasfd"));
+        val workinator = new DummyWorkinatorStore();
+        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab")));
 
         val executorSupplier = new ExecutorFactory(configuration, workinator);
 
