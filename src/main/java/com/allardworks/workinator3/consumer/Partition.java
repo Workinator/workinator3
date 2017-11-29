@@ -1,6 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.WorkerId;
+import com.allardworks.workinator3.contracts.ExecutorId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,7 +15,7 @@ public class Partition {
     private LocalTime lastWorkCheck;
     private long workCount;
     private int maxWorkerCount = 1;
-    private WorkerId assignee;
+    private ExecutorId assignee;
 
     /**
      * Indicates if there is more work to do.
@@ -71,11 +71,11 @@ public class Partition {
         return maxWorkerCount;
     }
 
-    public WorkerId getAssignee() {
+    public ExecutorId getAssignee() {
         return assignee;
     }
 
-    public Partition setAssignee(final WorkerId assignee) {
+    public Partition setAssignee(final ExecutorId assignee) {
         this.assignee = assignee;
         return this;
     }

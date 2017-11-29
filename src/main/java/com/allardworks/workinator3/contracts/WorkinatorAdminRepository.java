@@ -1,9 +1,10 @@
 package com.allardworks.workinator3.contracts;
 
-import com.allardworks.workinator3.consumer.Partition;
+import java.util.List;
 
 public interface WorkinatorAdminRepository {
-    PartitionDto create(PartitionDto partition);
-    PartitionDto update(String partitionKey, PartitionDto partition);
+    void create(List<PartitionDto> partition) throws PartitionExistsException;
+    PartitionDto create(PartitionDto partition) throws PartitionExistsException;
+    PartitionDto update(PartitionDto partition);
     PartitionDto delete(PartitionDto partition);
 }

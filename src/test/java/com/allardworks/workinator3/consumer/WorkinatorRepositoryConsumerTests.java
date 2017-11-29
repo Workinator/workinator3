@@ -9,21 +9,21 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-public class WorkinatorStoreConsumerTests {
+public class WorkinatorRepositoryConsumerTests {
     @Test
     public void startAndStop() throws Exception {
         val configuration =
                 ConsumerConfiguration
                         .builder()
                         .consumerName("yea")
-                        .workerCount(5)
+                        .maxExecutorCount(5)
                         .build();
 
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
-        val workerId = new WorkerId(registration, 1);
-        val workinator = new DummyWorkinatorStore();
-        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab")));
+        val workerId = new ExecutorId(registration, 1);
+        val workinator = new DummyWorkinatorRepository();
+        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
 
         val executorSupplier = new ExecutorFactory(configuration, workinator);
 
@@ -39,7 +39,7 @@ public class WorkinatorStoreConsumerTests {
         try (val consumer = new WorkinatorConsumer(configuration, workinator, executorSupplier, workerFactory, consumerId)) {
             consumer.start();
             TestUtility.startAndWait(consumer);
-            assertEquals(configuration.getWorkerCount(), workers.size());
+            assertEquals(configuration.getMaxExecutorCount(), workers.size());
 
             // make sure all works do some work
             TestUtility.waitFor(() -> workers

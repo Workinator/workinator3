@@ -1,7 +1,7 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.testsupport.DummyWorkinatorStore;
+import com.allardworks.workinator3.testsupport.DummyWorkinatorRepository;
 import com.allardworks.workinator3.testsupport.DummyWorkerAsync;
 import com.allardworks.workinator3.testsupport.TestUtility;
 import lombok.val;
@@ -27,11 +27,11 @@ public class ExecutorAsyncTests {
                 .build();
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
-        val workerId = new WorkerId(registration, 1);
-        val workinator = new DummyWorkinatorStore();
+        val workerId = new ExecutorId(registration, 1);
+        val workinator = new DummyWorkinatorRepository();
         val worker = new DummyWorkerAsync();
 
-        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab")));
+        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
 
         try (val executor = new ExecutorAsync(configuration, worker, workinator)) {
             startAndWait(executor);
@@ -54,11 +54,11 @@ public class ExecutorAsyncTests {
         val configuration = ConsumerConfiguration.builder().consumerName("boo").build();
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
-        val workerId = new WorkerId(registration, 1);
-        val workinator = new DummyWorkinatorStore();
+        val workerId = new ExecutorId(registration, 1);
+        val workinator = new DummyWorkinatorRepository();
         val worker = new DummyWorkerAsync();
 
-        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab")));
+        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
         try (val executor = new ExecutorAsync(configuration, worker, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);

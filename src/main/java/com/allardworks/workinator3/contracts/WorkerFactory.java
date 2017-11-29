@@ -5,5 +5,5 @@ package com.allardworks.workinator3.contracts;
  * Creates a worker for the given worker id.
  */
 public interface WorkerFactory {
-    Worker createWorker(WorkerId workerId);
+    Worker createWorker(ExecutorId executorId);
 }

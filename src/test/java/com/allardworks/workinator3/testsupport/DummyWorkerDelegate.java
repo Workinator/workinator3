@@ -2,7 +2,7 @@ package com.allardworks.workinator3.testsupport;
 
 import com.allardworks.workinator3.contracts.WorkerAsync;
 import com.allardworks.workinator3.contracts.WorkerContext;
-import com.allardworks.workinator3.contracts.WorkerId;
+import com.allardworks.workinator3.contracts.ExecutorId;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;
@@ -22,7 +22,7 @@ public class DummyWorkerDelegate implements WorkerAsync {
     }
 
     @Override
-    public WorkerId getId() {
+    public ExecutorId getId() {
         return null;
     }
 }

@@ -16,8 +16,12 @@ public class MongoConfiguration {
     private final int port;
     private final String databaseName;
 
-    public String getCollectionName() {
+    public String getPartitionsCollectionName() {
         return "Partitions_" + partitionType;
+    }
+
+    public String getWorkersCollectionName() {
+        return "Workers_" + partitionType;
     }
 
     public static class WorkinatorMongoConfigurationBuilder {

@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ExecutorFactory {
     @NonNull private final ConsumerConfiguration configuration;
-    @NonNull private final WorkinatorStore workinatorStore;
+    @NonNull private final WorkinatorRepository workinatorRepository;
 
     public Service createExecutor(@NonNull final Worker worker) {
         if (worker instanceof WorkerAsync) {
-            return new ExecutorAsync(configuration, worker, workinatorStore);
+            return new ExecutorAsync(configuration, worker, workinatorRepository);
         }
 
         // TODO: throw exception

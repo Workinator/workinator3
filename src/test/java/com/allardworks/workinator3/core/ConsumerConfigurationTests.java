@@ -15,7 +15,7 @@ public class ConsumerConfigurationTests {
                 .builder()
                 .consumerName("a")
                 .build();
-        assertEquals(1, config.getWorkerCount());
+        assertEquals(1, config.getMaxExecutorCount());
     }
 
     @Test
@@ -23,9 +23,9 @@ public class ConsumerConfigurationTests {
         val config = ConsumerConfiguration
                 .builder()
                 .consumerName("a")
-                .workerCount(10)
+                .maxExecutorCount(10)
                 .build();
-        assertEquals(10, config.getWorkerCount());
+        assertEquals(10, config.getMaxExecutorCount());
     }
 
     @Test

@@ -26,7 +26,7 @@ public class WorkinatorConsumer extends ServiceBase {
      * The workinator. Provides the partition assignments per worker.
      */
     @NonNull
-    private final WorkinatorStore workinatorStore;
+    private final WorkinatorRepository workinatorRepository;
 
     /**
      * Creates the executors.
@@ -70,8 +70,8 @@ public class WorkinatorConsumer extends ServiceBase {
     public void start() {
         getServiceStatus().initialize(s -> {
             s.getEventHandlers().onPostStarting(t -> {
-                startCount = new CountDownLatch(configuration.getWorkerCount());
-                stopCount = new CountDownLatch(configuration.getWorkerCount());
+                startCount = new CountDownLatch(configuration.getMaxExecutorCount());
+                stopCount = new CountDownLatch(configuration.getMaxExecutorCount());
                 setupConsumer();
                 setupAndStartExecutors();
             });
@@ -91,8 +91,8 @@ public class WorkinatorConsumer extends ServiceBase {
     private void setupAndStartExecutors() {
         // create the worker ids
         val workerIds = IntStream
-                .range(0, configuration.getWorkerCount())
-                .mapToObj(i -> new WorkerId(registration, i))
+                .range(0, configuration.getMaxExecutorCount())
+                .mapToObj(i -> new ExecutorId(registration, i))
                 .collect(toList());
 
         // create the workers
@@ -124,7 +124,7 @@ public class WorkinatorConsumer extends ServiceBase {
      * Register this consumer with the workinator.
      */
     private void setupConsumer() {
-        registration = workinatorStore.registerConsumer(consumerId);
+        registration = workinatorRepository.registerConsumer(consumerId);
     }
 
     /**

@@ -16,9 +16,9 @@ public class ConsumerConfiguration {
     @NonNull
     private final Duration minWorkTime = Duration.ofSeconds(30);
 
-    private final int workerCount;
+    private final int maxExecutorCount;
 
     public static class ConsumerConfigurationBuilder {
-        private int workerCount = 1;
+        private int maxExecutorCount = 1;
     }
 }
