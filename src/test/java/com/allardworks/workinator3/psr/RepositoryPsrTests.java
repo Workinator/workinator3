@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 public abstract class RepositoryPsrTests {
     public abstract RepositoryTester getRepoTester();
 
-    private final int PartitionCount = 20000;
+    private final int PartitionCount = 100;
 
     @Test
     public void createManyPartitions() throws Exception {
@@ -94,12 +94,13 @@ public abstract class RepositoryPsrTests {
                 }
             }
 
-            // releaes
+            // releases
             try (val timer = new TimedActivity("lockAndReleaseAllSeparate_Rule1.release " + PartitionCount)) {
                 for(val a : assignments) {
                     repo.releaseAssignment(a);
                 }
             }
+
         }
     }
 }

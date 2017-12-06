@@ -24,7 +24,9 @@ public class MongoConfiguration {
         return "Workers_" + partitionType;
     }
 
-    public static class WorkinatorMongoConfigurationBuilder {
+    public static class MongoConfigurationBuilder {
         private String databaseName = "Workinator";
+        private String host = "localhost";
+        private int port = 27017;
     }
 }

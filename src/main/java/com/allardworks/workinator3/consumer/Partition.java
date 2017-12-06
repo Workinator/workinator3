@@ -35,7 +35,7 @@ public class Partition {
     }
 
     public Partition hasMoreWork() {
-        setMoreWork(false);
+        setMoreWork(true);
         return this;
     }
 
