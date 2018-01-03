@@ -9,7 +9,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import org.bson.Document;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MongoDal implements AutoCloseable {
     @Getter
     private final MongoConfiguration config;

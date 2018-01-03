@@ -15,7 +15,7 @@ public class WorkinatorRepositoryConsumerTests {
         val configuration =
                 ConsumerConfiguration
                         .builder()
-                        .consumerName("yea")
+                        //.consumerName("yea")
                         .maxExecutorCount(5)
                         .build();
 

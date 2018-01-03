@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bson.Document;
+import org.springframework.stereotype.Service;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
@@ -26,12 +27,13 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+@Service
 @RequiredArgsConstructor
 public class MongoAdminRepository implements WorkinatorAdminRepository {
     private final MongoDal dal;
 
     @Override
-    public void create(@NonNull final List<PartitionDto> partitions) throws PartitionExistsException {
+    public void createPartitions(@NonNull final List<PartitionDto> partitions) throws PartitionExistsException {
         val documents =
                 partitions
                         .stream()
@@ -51,8 +53,7 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         createWorkers(partitions);
     }
 
-    @Override
-    public PartitionDto create(@NonNull final PartitionDto partition) throws PartitionExistsException {
+    public PartitionDto createPartition(@NonNull final PartitionDto partition) throws PartitionExistsException {
         val doc = toBson(partition);
         try {
             dal.getPartitionsCollection().insertOne(doc);
@@ -102,11 +103,6 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
                     .collect(toList()));
         }
         dal.getWorkersCollection().insertMany(docsToCreate);
-    }
-
-    @Override
-    public PartitionDto update(final PartitionDto partition) {
-        throw new NotImplementedException();
     }
 
     @Override

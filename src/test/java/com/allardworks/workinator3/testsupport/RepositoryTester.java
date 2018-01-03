@@ -25,6 +25,6 @@ public interface RepositoryTester extends AutoCloseable {
                     return p;
                 })
                 .collect(toList());
-        getAdminRepository().create(partitions);
+        getAdminRepository().createPartitions(partitions);
     }
 }

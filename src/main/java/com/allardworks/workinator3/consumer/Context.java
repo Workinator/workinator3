@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @RequiredArgsConstructor

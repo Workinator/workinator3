@@ -7,7 +7,6 @@ import lombok.val;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -26,7 +25,7 @@ public abstract class AdminRepositoryTests {
             partition.setMaxIdleTimeSeconds(400);
             partition.setMaxWorkerCount(3);
 
-            val output = tester.getAdminRepository().create(partition);
+            val output = tester.getAdminRepository().createPartition(partition);
             assertEquals(partition.getPartitionKey(), output.getPartitionKey());
             assertEquals(partition.getMaxIdleTimeSeconds(), output.getMaxIdleTimeSeconds());
             assertEquals(partition.getMaxWorkerCount(), output.getMaxWorkerCount());
@@ -48,7 +47,7 @@ public abstract class AdminRepositoryTests {
             val partition = new PartitionDto();
             partition.setPartitionKey("abc");
 
-            val output = tester.getAdminRepository().create(partition);
+            val output = tester.getAdminRepository().createPartition(partition);
             assertEquals(partition.getPartitionKey(), output.getPartitionKey());
             assertEquals(partition.getMaxIdleTimeSeconds(), output.getMaxIdleTimeSeconds());
             assertEquals(partition.getMaxWorkerCount(), output.getMaxWorkerCount());
@@ -64,10 +63,10 @@ public abstract class AdminRepositoryTests {
             val partition = new PartitionDto();
             partition.setPartitionKey("abc");
 
-            tester.getAdminRepository().create(partition);
+            tester.getAdminRepository().createPartition(partition);
             try {
-                tester.getAdminRepository().create(partition);
-                fail("Seconed create should've failed because the partition already exists");
+                tester.getAdminRepository().createPartition(partition);
+                fail("Seconed createPartitions should've failed because the partition already exists");
             } catch (final PartitionExistsException e) {
                 assertEquals(partition.getPartitionKey(), e.getPartitionKey());
             }

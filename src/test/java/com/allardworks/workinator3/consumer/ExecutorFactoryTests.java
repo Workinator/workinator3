@@ -13,7 +13,7 @@ public class ExecutorFactoryTests {
     public void createAsyncExecutor() {
         val config = ConsumerConfiguration
                 .builder()
-                .consumerName("b")
+                //.consumerName("b")
                 .build();
         val worker = new DummyWorkerAsync();
         val factory = new ExecutorFactory(config, new DummyWorkinatorRepository());

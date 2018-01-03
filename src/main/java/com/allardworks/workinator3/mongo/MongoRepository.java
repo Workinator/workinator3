@@ -3,7 +3,9 @@ package com.allardworks.workinator3.mongo;
 import com.allardworks.workinator3.contracts.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
 @RequiredArgsConstructor
 public class MongoRepository implements WorkinatorRepository {
     @NonNull

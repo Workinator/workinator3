@@ -4,14 +4,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
 @Builder
 @Getter
 public class ConsumerConfiguration {
-    @NonNull
-    private final String consumerName;
+    //@NonNull
+    //private final String consumerName;
 
     @NonNull
     private final Duration minWorkTime = Duration.ofSeconds(30);

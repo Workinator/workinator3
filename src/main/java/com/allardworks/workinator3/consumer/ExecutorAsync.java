@@ -2,7 +2,6 @@ package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.*;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -16,16 +15,6 @@ public class ExecutorAsync extends ServiceBase {
     private final ConsumerConfiguration configuration;
     private final WorkerAsync worker;
     private final WorkinatorRepository workinatorRepository;
-
-    public ExecutorAsync(
-            @NonNull final ConsumerConfiguration configuration,
-            @NonNull final Worker worker,
-            @NonNull final WorkinatorRepository workinatorRepository
-    ) {
-        this.configuration = configuration;
-        this.worker = (WorkerAsync)worker;
-        this.workinatorRepository = workinatorRepository;
-    }
 
     private Thread thread;
 

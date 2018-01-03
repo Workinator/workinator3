@@ -100,7 +100,6 @@ public abstract class RepositoryPsrTests {
                     repo.releaseAssignment(a);
                 }
             }
-
         }
     }
 }

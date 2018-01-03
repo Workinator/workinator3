@@ -10,10 +10,11 @@ import java.util.function.Supplier;
 
 import static java.lang.System.out;
 
+/*
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class Workinator3ApplicationTests {
 	@Test
 	public void contextLoads() {
 	}
-}
+}*/

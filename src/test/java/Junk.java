@@ -6,6 +6,11 @@ import com.allardworks.workinator3.mongo.MongoDal;
 import com.mongodb.MongoClient;
 import lombok.val;
 import org.junit.Test;
+import org.springframework.util.Assert;
+
+import java.util.Optional;
+
+import static java.util.Optional.of;
 
 public class Junk {
     @Test
@@ -18,6 +23,7 @@ public class Junk {
 
         val partition = new PartitionDto();
         partition.setPartitionKey("test");
-        repo.create(partition);
+        repo.createPartition(partition);
     }
+
 }

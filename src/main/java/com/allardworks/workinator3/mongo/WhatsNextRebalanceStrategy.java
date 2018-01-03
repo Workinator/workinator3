@@ -17,7 +17,6 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.ReturnDocument.AFTER;
 
-@RequiredArgsConstructor
 public class WhatsNextRebalanceStrategy implements RebalanceStrategy {
     private final MongoDal dal;
 

@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -35,7 +36,7 @@ public class WorkinatorConsumer extends ServiceBase {
     private final ExecutorFactory executorFactory;
 
     /**
-     * Creates a workers.
+     * Creates the workers.
      */
     @NonNull
     private final WorkerFactory workerFactory;
@@ -89,35 +90,33 @@ public class WorkinatorConsumer extends ServiceBase {
      * Create an executor for each worker.
      */
     private void setupAndStartExecutors() {
-        // create the worker ids
+        // createPartitions the worker ids
         val workerIds = IntStream
                 .range(0, configuration.getMaxExecutorCount())
                 .mapToObj(i -> new ExecutorId(registration, i))
                 .collect(toList());
 
-        // create the workers
+        // createPartitions the workers
         val workers = workerIds
                 .stream()
                 .map(workerFactory::createWorker)
                 .collect(toList());
 
-        // create an executor for each worker
-        val executors = workers
+        // createPartitions an executor for each worker
+        executors = workers
                 .stream()
                 .map(executorFactory::createExecutor)
                 .collect(toList());
 
         // initialize and start the executors
         for(val executor : executors) {
-            // setup start and stop events
+            // createPartitions start and stop events
             executor.getTransitionEventHandlers().onPostStarted(t -> onExecutorStarted());
             executor.getTransitionEventHandlers().onPostStopped(t -> onExecutorStopped());
 
-            // start the executors
+            // start the executor
             executor.start();
         }
-
-        this.executors = executors;
     }
 
     /**

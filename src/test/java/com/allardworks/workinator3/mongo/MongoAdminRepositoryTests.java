@@ -25,7 +25,7 @@ public class MongoAdminRepositoryTests extends AdminRepositoryTests {
             val partition = new PartitionDto();
             partition.setMaxWorkerCount(18);
             partition.setPartitionKey("abc");
-            tester.getAdminRepository().create(partition);
+            tester.getAdminRepository().createPartition(partition);
             assertEquals(partition.getMaxWorkerCount(), tester.getWorkersCollection().count());
         }
     }
