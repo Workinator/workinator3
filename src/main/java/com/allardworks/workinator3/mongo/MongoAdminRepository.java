@@ -2,6 +2,7 @@ package com.allardworks.workinator3.mongo;
 
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ConvertUtility;
+import com.allardworks.workinator3.core.NullableOptional;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
@@ -14,9 +15,11 @@ import org.bson.Document;
 import org.springframework.stereotype.Service;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static com.allardworks.workinator3.core.ConvertUtility.toDate;
 import static com.allardworks.workinator3.core.ConvertUtility.toLocalDateTime;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
@@ -32,9 +35,10 @@ import static java.util.stream.Collectors.toSet;
 public class MongoAdminRepository implements WorkinatorAdminRepository {
     private final MongoDal dal;
 
+    /*
     @Override
-    public void createPartitions(@NonNull final List<PartitionDto> partitions) throws PartitionExistsException {
-        val documents =
+    public void createPartitions(@NonNull final List<Map<String, Object>> partitions) throws PartitionExistsException {
+        /*val documents =
                 partitions
                         .stream()
                         .map(MongoAdminRepository::toBson)
@@ -53,21 +57,8 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         createWorkers(partitions);
     }
 
-    public PartitionDto createPartition(@NonNull final PartitionDto partition) throws PartitionExistsException {
-        val doc = toBson(partition);
-        try {
-            dal.getPartitionsCollection().insertOne(doc);
-        } catch (final MongoWriteException e) {
-            if (e.getMessage().contains("E11000 duplicate key error collection")) {
-                throw new PartitionExistsException(partition.getPartitionKey());
-            }
+    public PartitionDto createPartition(@NonNull final Map<String, Object> partition) throws PartitionExistsException {
 
-            // otherwise...
-            throw e;
-        }
-
-        createWorkers(singletonList(partition));
-        return getPartition(partition.getPartitionKey());
     }
 
     private void createWorkers(final List<PartitionDto> partitions) {
@@ -115,6 +106,18 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         return toPartitionDto(doc);
     }
 
+    public static Document toBson(final Map<String, Object> partition) {
+        val doc = new Document();
+        for (val p : partition.entrySet()) {
+            if (p.getValue() instanceof LocalDateTime) {
+                doc.put(p.getKey(), toDate((LocalDateTime)p.getValue()));
+                continue;
+            }
+            doc.put(p.getKey(), p.getValue());
+        }
+        return doc;
+    }
+
     public static Document toBson(final PartitionDto partition) {
         val doc = new Document();
         doc.put("partitionKey", partition.getPartitionKey());
@@ -123,9 +126,9 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         doc.put("maxWorkerCount", partition.getMaxWorkerCount());
         doc.put("hasMoreWork", partition.isHasMoreWork());
         doc.put("workCount", partition.getWorkCount());
-        doc.put("lastCheckStart", ConvertUtility.toDate(partition.getLastCheckStart()));
-        doc.put("lastCheckEnd", ConvertUtility.toDate(partition.getLastCheckEnd()));
-        doc.put("lastWork", ConvertUtility.toDate(partition.getLastWork()));
+        doc.put("lastCheckStart", toDate(partition.getLastCheckStart()));
+        doc.put("lastCheckEnd", toDate(partition.getLastCheckEnd()));
+        doc.put("lastWork", toDate(partition.getLastWork()));
         return doc;
     }
 
@@ -140,5 +143,80 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         partition.setLastCheckStart(toLocalDateTime(document.getDate("lastCheckStart")));
         partition.setLastCheckEnd(toLocalDateTime(document.getDate("lastCheckEnd")));
         return partition;
+    }*/
+
+    public static Document toBson(final PartitionDto partition) {
+        val doc = new Document();
+        doc.put("partitionKey", partition.getPartitionKey());
+        partition.getMaxWorkerCount().ifPresent(v -> doc.put("maxWorkerCount", v.getValue()));
+        partition.getHasMoreWork().ifPresent(v -> doc.put("hasMoreWork", v.getValue()));
+        partition.getLastCheckEnd().ifPresent(v -> doc.put("lastCheckEnd", toDate((LocalDateTime) v.getValue())));
+        partition.getLastCheckStart().ifPresent(v -> doc.put("lastCheckStart", toDate((LocalDateTime) v.getValue())));
+        partition.getLastWork().ifPresent(v -> doc.put("lastWork", toDate((LocalDateTime) v.getValue())));
+        partition.getMaxIdleTimeSeconds().ifPresent(v -> doc.put("maxIdleTimeSeconds", v.getValue()));
+        partition.getWorkCount().ifPresent(v -> doc.put("workCount", v.getValue()));
+        return doc;
+    }
+
+    private void createWorkers(final List<PartitionDto> partitions) {
+        val keys =
+                partitions
+                        .stream()
+                        .map(PartitionDto::getPartitionKey)
+                        .collect(toList());
+
+        val existing2 =
+                dal
+                        .getWorkersCollection()
+                        .find(in("partitionKey", keys))
+                        .projection(fields(include("partitionKey", "partitionWorkerNumber"), excludeId()))
+                        .into(new ArrayList<>())
+                        .stream()
+                        .map(p -> p.getString("partitionKey") + "." + p.get("partitionWorkerNumber"))
+                        .collect(toSet());
+
+
+        val docsToCreate = new ArrayList<Document>();
+        for (val partition : partitions) {
+            docsToCreate.addAll(IntStream
+                    .range(0, partition.getMaxWorkerCount().getValue())
+                    .filter(i -> !existing2.contains(partition.getPartitionKey() + "." + i))
+                    .mapToObj(partitionWorkerNumber -> {
+                        val doc = new Document();
+                        doc.put("partitionKey", partition.getPartitionKey());
+                        doc.put("partitionWorkerNumber", partitionWorkerNumber);
+                        doc.put("currentAssignee", null);
+                        return doc;
+                    })
+                    .collect(toList()));
+        }
+        dal.getWorkersCollection().insertMany(docsToCreate);
+    }
+
+    @Override
+    public void createPartitions(List<PartitionDto> partitions) throws PartitionExistsException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void createPartition(final PartitionDto partition) throws PartitionExistsException {
+        val doc = toBson(partition);
+        try {
+            dal.getPartitionsCollection().insertOne(doc);
+        } catch (final MongoWriteException e) {
+            if (e.getMessage().contains("E11000 duplicate key error collection")) {
+                throw new PartitionExistsException(partition.getPartitionKey());
+            }
+
+            // otherwise...
+            throw e;
+        }
+
+        createWorkers(singletonList(partition));
+    }
+
+    @Override
+    public void updatePartition(PartitionDto partition) {
+
     }
 }

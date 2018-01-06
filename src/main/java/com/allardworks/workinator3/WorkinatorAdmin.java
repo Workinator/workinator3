@@ -1,13 +1,20 @@
 package com.allardworks.workinator3;
 
 import com.allardworks.workinator3.consumer.Partition;
+import com.allardworks.workinator3.contracts.CreatePartitionCommand;
 import com.allardworks.workinator3.contracts.PartitionDto;
-import com.allardworks.workinator3.contracts.PartitionOptions;
+import com.allardworks.workinator3.contracts.PartitionExistsException;
 import com.allardworks.workinator3.contracts.WorkinatorAdminRepository;
+import com.allardworks.workinator3.core.ConvertUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+import static com.allardworks.workinator3.core.ConvertUtility.MinDate;
+import static java.time.LocalDateTime.MIN;
 
 @Service
 @RequiredArgsConstructor
@@ -15,13 +22,21 @@ public class WorkinatorAdmin {
     @Autowired
     private final WorkinatorAdminRepository store;
 
-    public Partition createPartition(final PartitionOptions partition) {
-        /*val dto = new PartitionDto();
-        dto.setPartitionKey(partition.getPartitionKey());
-        dto.setMaxWorkerCount(partition.getMaxWorkerCount());
-        dto.setMaxIdleTimeSeconds(partition.getMaxIdleTimeSeconds());*/
-        // TODO: validations
+    public Partition createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
+        val dao = new PartitionDto();
+
+        // from command
+        dao.setPartitionKey(command.getPartitionKey());
+        dao.getMaxWorkerCount().setValue(command.getMaxWorkerCount());
+        dao.getMaxIdleTimeSeconds().setValue(command.getMaxIdleTimeSeconds());
+
+        // defaults
+        dao.getLastCheckStart().setValue(MinDate);
+        dao.getLastCheckEnd().setValue(MinDate);
+        dao.getLastWork().setValue(MinDate);
+        dao.getWorkCount().setValue(0L);
+        dao.getHasMoreWork().setValue(false);
+        store.createPartition(dao);
         return null;
-        //return store.createPartitions(partition);
     }
 }

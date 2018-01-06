@@ -4,7 +4,8 @@ import com.allardworks.workinator3.WorkinatorAdmin;
 import com.allardworks.workinator3.consumer.WorkinatorConsumer;
 import com.allardworks.workinator3.consumer.WorkinatorConsumerFactory;
 import com.allardworks.workinator3.contracts.ConsumerId;
-import com.allardworks.workinator3.contracts.PartitionOptions;
+import com.allardworks.workinator3.contracts.CreatePartitionCommand;
+import com.allardworks.workinator3.contracts.PartitionExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.apache.commons.cli.CommandLine;
@@ -16,6 +17,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -34,13 +36,13 @@ public class Runner implements CommandLineRunner {
     @Autowired
     private final WorkinatorConsumerFactory consumerFactory;
 
-    private void createPartition(final CommandLine command) {
+    private void createPartition(final CommandLine command) throws PartitionExistsException {
         val partitionName = command.getOptionValue("cp");
         if (partitionName == null){
             return;
         }
 
-        val partition = PartitionOptions
+        val partition = CreatePartitionCommand
                 .builder()
                 .partitionKey(partitionName)
                 .build();
@@ -68,9 +70,13 @@ public class Runner implements CommandLineRunner {
 
 
         while (true) {
-            val command = parser.parse(options, getInput());
-            createPartition(command);
-            createConsumer(command);
+            try {
+                val command = parser.parse(options, getInput());
+                createPartition(command);
+                createConsumer(command);
+            } catch (final Exception ex) {
+                out.println("  Error: " + ex.getMessage());
+            }
         }
     }
 
@@ -82,6 +88,4 @@ public class Runner implements CommandLineRunner {
             return new String[]{};
         }
     }
-
-
 }

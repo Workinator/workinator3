@@ -23,7 +23,7 @@ public class MongoAdminRepositoryTests extends AdminRepositoryTests {
     public void createWorkers() throws Exception {
         try (val tester = (MongoRepositoryTester) getRepoTester()) {
             val partition = new PartitionDto();
-            partition.setMaxWorkerCount(18);
+            partition.getMaxWorkerCount().setValue(18);
             partition.setPartitionKey("abc");
             tester.getAdminRepository().createPartition(partition);
             assertEquals(partition.getMaxWorkerCount(), tester.getWorkersCollection().count());
