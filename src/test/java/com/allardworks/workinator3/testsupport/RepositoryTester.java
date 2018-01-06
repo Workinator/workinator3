@@ -1,6 +1,6 @@
 package com.allardworks.workinator3.testsupport;
 
-import com.allardworks.workinator3.contracts.PartitionDto;
+import com.allardworks.workinator3.contracts.PartitionDao;
 import com.allardworks.workinator3.contracts.PartitionExistsException;
 import com.allardworks.workinator3.contracts.WorkinatorAdminRepository;
 import com.allardworks.workinator3.contracts.WorkinatorRepository;
@@ -16,11 +16,11 @@ public interface RepositoryTester extends AutoCloseable {
     WorkinatorRepository getRepository();
 
     default void createPartitions(final int howMany) throws PartitionExistsException {
-        final List<PartitionDto> partitions =
+        final List<PartitionDao> partitions =
                 IntStream
                 .range(0, howMany)
                 .mapToObj(i -> {
-                    val p = new PartitionDto();
+                    val p = new PartitionDao();
                     p.setPartitionKey("Key-" + i);
                     return p;
                 })

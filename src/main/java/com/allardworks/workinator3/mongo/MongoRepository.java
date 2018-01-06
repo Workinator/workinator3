@@ -26,7 +26,7 @@ public class MongoRepository implements WorkinatorRepository {
 
     @Override
     public ConsumerRegistration registerConsumer(ConsumerId id) {
-        return null;
+        return new ConsumerRegistration(id, "asdfasf");
     }
 
     @Override

@@ -48,14 +48,15 @@ public class WorkinatorConsumer extends ServiceBase {
     private final ConsumerId consumerId;
 
     /**
+     * The consumer's registration. Returned by the workinator's register method.
+     */
+    private ConsumerRegistration registration;
+
+    /**
      * One executor per worker.
      */
     private List<Service> executors;
 
-    /**
-     * The consumer's registration. Returned by the workinator's register method.
-     */
-    private ConsumerRegistration registration;
 
     /**
      * Tracks how many executors have stopped. When 0, all done. Fire the stopped event.
@@ -91,13 +92,13 @@ public class WorkinatorConsumer extends ServiceBase {
      */
     private void setupAndStartExecutors() {
         // createPartitions the worker ids
-        val workerIds = IntStream
+        val executorIds = IntStream
                 .range(0, configuration.getMaxExecutorCount())
                 .mapToObj(i -> new ExecutorId(registration, i))
                 .collect(toList());
 
         // createPartitions the workers
-        val workers = workerIds
+        val workers = executorIds
                 .stream()
                 .map(workerFactory::createWorker)
                 .collect(toList());
@@ -124,6 +125,9 @@ public class WorkinatorConsumer extends ServiceBase {
      */
     private void setupConsumer() {
         registration = workinatorRepository.registerConsumer(consumerId);
+        if (registration == null) {
+            throw new RuntimeException("Critcal problem... ");
+        }
     }
 
     /**

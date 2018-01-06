@@ -10,9 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Builder
 public class MongoConfiguration {
-    @NonNull
     private final String partitionType;
-    @NonNull
     private final String host;
     private final int port;
     private final String databaseName;

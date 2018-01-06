@@ -36,6 +36,11 @@ public class Runner implements CommandLineRunner {
     @Autowired
     private final WorkinatorConsumerFactory consumerFactory;
 
+    /**
+     * Create a partition.
+     * @param command
+     * @throws PartitionExistsException
+     */
     private void createPartition(final CommandLine command) throws PartitionExistsException {
         val partitionName = command.getOptionValue("cp");
         if (partitionName == null){

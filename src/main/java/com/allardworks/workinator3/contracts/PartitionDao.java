@@ -2,12 +2,11 @@ package com.allardworks.workinator3.contracts;
 
 import com.allardworks.workinator3.core.NullableOptional;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.time.LocalDateTime;
 
 @Data
-public class PartitionDto {
+public class PartitionDao {
     private String partitionKey;
     private final NullableOptional<LocalDateTime> lastWork = new NullableOptional<>();
     private final NullableOptional<LocalDateTime> lastCheckStart = new NullableOptional<>();;

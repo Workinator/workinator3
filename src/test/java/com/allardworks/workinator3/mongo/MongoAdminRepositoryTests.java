@@ -1,6 +1,6 @@
 package com.allardworks.workinator3.mongo;
 
-import com.allardworks.workinator3.contracts.PartitionDto;
+import com.allardworks.workinator3.contracts.PartitionDao;
 import com.allardworks.workinator3.mongo.testsupport.MongoRepositoryTester;
 import com.allardworks.workinator3.repository.AdminRepositoryTests;
 import com.allardworks.workinator3.testsupport.RepositoryTester;
@@ -22,7 +22,7 @@ public class MongoAdminRepositoryTests extends AdminRepositoryTests {
     @Test
     public void createWorkers() throws Exception {
         try (val tester = (MongoRepositoryTester) getRepoTester()) {
-            val partition = new PartitionDto();
+            val partition = new PartitionDao();
             partition.getMaxWorkerCount().setValue(18);
             partition.setPartitionKey("abc");
             tester.getAdminRepository().createPartition(partition);

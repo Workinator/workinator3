@@ -11,9 +11,6 @@ import java.time.Duration;
 @Builder
 @Getter
 public class ConsumerConfiguration {
-    //@NonNull
-    //private final String consumerName;
-
     @NonNull
     private final Duration minWorkTime = Duration.ofSeconds(30);
 

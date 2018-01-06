@@ -1,8 +1,6 @@
 package com.allardworks.workinator3.repository;
 
-import com.allardworks.workinator3.contracts.PartitionDto;
-import com.allardworks.workinator3.contracts.PartitionExistsException;
-import com.allardworks.workinator3.core.NullableOptional;
+import com.allardworks.workinator3.contracts.PartitionDao;
 import com.allardworks.workinator3.testsupport.RepositoryTester;
 import lombok.val;
 import org.junit.Test;
@@ -18,7 +16,7 @@ public abstract class AdminRepositoryTests {
     @Test
     public void createAllValues() throws Exception {
         try (val tester = getRepoTester()) {
-            val partition = new PartitionDto();
+            val partition = new PartitionDao();
             partition.setPartitionKey("abc");
             partition.getWorkCount().setValue(3000L);
             partition.getLastWork().setValue(LocalDateTime.now().minusMinutes(20));
@@ -47,7 +45,7 @@ public abstract class AdminRepositoryTests {
     @Test
     public void createFewestValues() throws Exception {
         try (val tester = getRepoTester()) {
-            val partition = new PartitionDto();
+            val partition = new PartitionDao();
             partition.setPartitionKey("abc");
             /*
             val output = tester.getAdminRepository().createPartition(partition);
@@ -64,7 +62,7 @@ public abstract class AdminRepositoryTests {
     public void createCantCreateDuplicate() throws Exception {
         /*
         try (val tester = getRepoTester()) {
-            val partition = new PartitionDto();
+            val partition = new PartitionDao();
             partition.setPartitionKey("abc");
 
             tester.getAdminRepository().createPartition(partition);

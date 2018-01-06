@@ -1,4 +1,4 @@
-import com.allardworks.workinator3.contracts.PartitionDto;
+import com.allardworks.workinator3.contracts.PartitionDao;
 import com.allardworks.workinator3.contracts.PartitionExistsException;
 import com.allardworks.workinator3.mongo.MongoAdminRepository;
 import com.allardworks.workinator3.mongo.MongoConfiguration;
@@ -6,11 +6,6 @@ import com.allardworks.workinator3.mongo.MongoDal;
 import com.mongodb.MongoClient;
 import lombok.val;
 import org.junit.Test;
-import org.springframework.util.Assert;
-
-import java.util.Optional;
-
-import static java.util.Optional.of;
 
 public class Junk {
     @Test
@@ -21,7 +16,7 @@ public class Junk {
         val dal = new MongoDal(config);
         val repo = new MongoAdminRepository(dal);
 
-        val partition = new PartitionDto();
+        val partition = new PartitionDao();
         partition.setPartitionKey("test");
         repo.createPartition(partition);
     }

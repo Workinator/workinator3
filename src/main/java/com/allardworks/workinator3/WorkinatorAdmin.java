@@ -2,19 +2,15 @@ package com.allardworks.workinator3;
 
 import com.allardworks.workinator3.consumer.Partition;
 import com.allardworks.workinator3.contracts.CreatePartitionCommand;
-import com.allardworks.workinator3.contracts.PartitionDto;
+import com.allardworks.workinator3.contracts.PartitionDao;
 import com.allardworks.workinator3.contracts.PartitionExistsException;
 import com.allardworks.workinator3.contracts.WorkinatorAdminRepository;
-import com.allardworks.workinator3.core.ConvertUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 import static com.allardworks.workinator3.core.ConvertUtility.MinDate;
-import static java.time.LocalDateTime.MIN;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +19,7 @@ public class WorkinatorAdmin {
     private final WorkinatorAdminRepository store;
 
     public Partition createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
-        val dao = new PartitionDto();
+        val dao = new PartitionDao();
 
         // from command
         dao.setPartitionKey(command.getPartitionKey());
