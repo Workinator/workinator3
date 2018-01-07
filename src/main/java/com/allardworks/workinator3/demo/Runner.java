@@ -16,7 +16,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -40,12 +39,13 @@ public class Runner implements CommandLineRunner {
 
     /**
      * Create a partition.
+     *
      * @param command
      * @throws PartitionExistsException
      */
     private boolean createPartition(final CommandLine command) throws PartitionExistsException {
         val partitionName = command.getOptionValue("cp");
-        if (partitionName == null){
+        if (partitionName == null) {
             return false;
         }
 
@@ -83,12 +83,12 @@ public class Runner implements CommandLineRunner {
 
     private void showHelp(final Options options) {
         val formatter = new HelpFormatter();
-        formatter.printHelp( "workinator demo cli", options );
+        formatter.printHelp("workinator demo cli", options);
         out.println();
     }
 
     private boolean showHelp(final CommandLine command, final Options options) {
-        if (!command.hasOption("help")){
+        if (!command.hasOption("help")) {
             return false;
         }
 
@@ -96,29 +96,42 @@ public class Runner implements CommandLineRunner {
         return true;
     }
 
+    private boolean showPartitions(final CommandLine command) throws JsonProcessingException {
+        if (!command.hasOption("sp")) {
+            return false;
+        }
+
+        val partitions = admin.getPartitions();
+        out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(partitions));
+        return true;
+    }
+
     @Override
     public void run(String... strings) throws Exception {
+        // TODO: refactor this... should just be a list of stuff that works itself out
         val parser = new DefaultParser();
         val options = new Options();
         options.addOption(new Option("cc", "createconsumer", true, "Create a consumer"));
         options.addOption(new Option("cp", "createpartition", true, "Create a partition"));
         options.addOption(new Option("cs", "consumerstatus", false, "Display Consumer Status"));
         options.addOption(new Option("help", "help", false, "print this message"));
-
+        options.addOption(new Option("sp", "showpartitions", false, "show partitions"));
         while (true) {
             try {
                 val command = parser.parse(options, getInput());
                 val processed =
-                createPartition(command)
-                || createConsumer(command)
-                || showConsumerStatus(command)
-                || showHelp(command, options);
+                        createPartition(command)
+                                || createConsumer(command)
+                                || showConsumerStatus(command)
+                                || showHelp(command, options)
+                                || showPartitions(command);
 
                 if (!processed) {
                     showHelp(options);
                 }
             } catch (final Exception ex) {
                 out.println("  Error: " + ex.getMessage());
+                showHelp(options);
             }
         }
     }

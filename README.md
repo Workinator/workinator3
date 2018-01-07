@@ -68,7 +68,7 @@ The strategies are implement at the repository level. This could, perhaps, be ab
 
 The strategies are currently implemented using MongoDb.
 
-## What's Next
+## The "What's Next" Strategy
 
 Status: In Progress
 
@@ -87,7 +87,7 @@ The number of executors could be significantly less than the number of partition
 Each thread requests and assignment from the coordinator. If an assignment is given, then the executor starts working on that partition.
 
 
-## Assignment
+## The "Assignment" Strategy
 
 Status: Thought of it. This was implemented in previous versions of workinator. It is not on the short-term list for workinator3 because the "What's Next" approach covers the same use cases.
 

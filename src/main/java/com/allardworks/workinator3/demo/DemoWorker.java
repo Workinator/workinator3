@@ -9,12 +9,8 @@ import static java.lang.System.out;
 
 @RequiredArgsConstructor
 public class DemoWorker implements WorkerAsync {
-    private final ExecutorId id;
-
     @Override
     public void execute(WorkerContext context) {
-        //out.println(context.getAssignment().getPartitionWorkerNumber());
-
     }
 
     @Override

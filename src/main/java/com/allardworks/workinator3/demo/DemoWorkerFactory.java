@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 public class DemoWorkerFactory implements WorkerFactory {
     @Override
     public Worker createWorker(ExecutorId executorId) {
-        return new DemoWorker(executorId);
+        return new DemoWorker();
     }
 }

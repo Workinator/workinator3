@@ -4,6 +4,7 @@ import com.allardworks.workinator3.contracts.*;
 import com.mongodb.MongoWriteException;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.allardworks.workinator3.core.ConvertUtility.toDate;
+import static com.allardworks.workinator3.core.ConvertUtility.toLocalDateTime;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.excludeId;
@@ -44,6 +46,19 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         partition.getMaxIdleTimeSeconds().ifPresent(v -> doc.put("maxIdleTimeSeconds", v.getValue()));
         partition.getWorkCount().ifPresent(v -> doc.put("workCount", v.getValue()));
         return doc;
+    }
+
+    private static PartitionDao toPartition(final Document document) {
+        val dao = new PartitionDao();
+        dao.setPartitionKey(document.getString("partitionKey"));
+        dao.getMaxWorkerCount().setValue(document.getInteger("maxWorkerCount");
+        dao.getHasMoreWork().setValue(document.getBoolean("hasMoreWork"));
+        dao.getLastCheckEnd().setValue(toLocalDateTime(document.getDate("lastCheckEnd")));
+        dao.getLastCheckStart().setValue(toLocalDateTime(document.getDate("lastCheckStart")));
+        dao.getLastWork().setValue(toLocalDateTime(document.getDate("lastWork")));
+        dao.getMaxIdleTimeSeconds().setValue(document.getInteger("maxIdleTimeSeconds"));
+        dao.getWorkCount().setValue(document.getLong("workCount"));
+        return dao;
     }
 
     /**
@@ -120,6 +135,15 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         }
 
         createWorkers(singletonList(partition));
+    }
+
+    @Override
+    public List<PartitionDao> getPartitions() {
+        val result = new ArrayList<PartitionDao>();
+        for (val doc :  dal.getWorkersCollection().find()) {
+            result.add(toPartition(doc));
+        }
+        return result;
     }
 
     /**

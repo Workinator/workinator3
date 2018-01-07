@@ -10,6 +10,8 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.allardworks.workinator3.core.ConvertUtility.MinDate;
 
 @Service
@@ -18,7 +20,7 @@ public class WorkinatorAdmin {
     @Autowired
     private final WorkinatorAdminRepository store;
 
-    public Partition createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
+    public void createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
         val dao = new PartitionDao();
 
         // from command
@@ -33,6 +35,9 @@ public class WorkinatorAdmin {
         dao.getWorkCount().setValue(0L);
         dao.getHasMoreWork().setValue(false);
         store.createPartition(dao);
-        return null;
+    }
+
+    public List<PartitionDao> getPartitions() {
+        return store.getPartitions();
     }
 }
