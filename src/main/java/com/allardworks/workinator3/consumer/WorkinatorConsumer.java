@@ -4,12 +4,15 @@ import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ServiceBase;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.stream.IntStream;
@@ -86,6 +89,15 @@ public class WorkinatorConsumer extends ServiceBase {
             });
         });
         super.start();
+    }
+
+    public Map<String, Object> getInfo() {
+        val map = new HashMap<String, Object>();
+        map.put("serviceStatus", getStatus().toString());
+
+        val exeuctorInfo = executors.stream().map(Service::getInfo).collect(toList());
+        map.put("executors", exeuctorInfo);
+        return map;
     }
 
     /**

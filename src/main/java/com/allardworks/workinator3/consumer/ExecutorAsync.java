@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Creates one thread per worker.
  */
@@ -17,7 +20,18 @@ public class ExecutorAsync extends ServiceBase {
     private final WorkerAsync worker;
     private final WorkinatorRepository workinatorRepository;
 
+    private Assignment currentAssignment;
+    private WorkerContext currentContext;
     private Thread thread;
+
+    public Map<String, Object> getInfo() {
+        val info = new HashMap<String, Object>();
+        info.put("serviceStatus", getStatus().toString());
+        info.put("executorId", executorId);
+        info.put("currentAssignment", currentAssignment);
+        info.put("currentContext", currentContext);
+        return info;
+    }
 
     private boolean canContinue(final Context context) {
         return context.getElapsed().compareTo(configuration.getMinWorkTime()) < 0;
@@ -26,17 +40,17 @@ public class ExecutorAsync extends ServiceBase {
     private void run() {
         getServiceStatus().started();
         while (getServiceStatus().getStatus().isStarted()) {
-            val assignment = workinatorRepository.getAssignment(executorId);
-            if (assignment == null) {
+            currentAssignment = workinatorRepository.getAssignment(executorId);
+            if (currentAssignment == null) {
                 // todo
                 continue;
             }
 
-            val context = new Context(this::canContinue, assignment, getServiceStatus());
-            while (context.canContinue()) {
+            currentContext = new Context(this::canContinue, currentAssignment, getServiceStatus());
+            while (currentContext.canContinue()) {
                 try {
-                    worker.execute(context);
-                    if (!context.getHasMoreWork()) {
+                    worker.execute(currentContext);
+                    if (!currentContext.getHasMoreWork()) {
                         // no more work
                         break;
                     }
@@ -44,6 +58,12 @@ public class ExecutorAsync extends ServiceBase {
                     log.error("worker.execute", e);
                     // TODO: rule engine. disable partition or try again.
                 }
+            }
+            try {
+                workinatorRepository.releaseAssignment(currentAssignment);
+            } finally {
+                currentAssignment = null;
+                currentContext = null;
             }
         }
         getServiceStatus().stopped();

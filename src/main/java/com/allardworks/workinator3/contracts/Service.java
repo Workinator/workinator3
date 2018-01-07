@@ -4,6 +4,7 @@ import com.allardworks.workinator3.core.Status;
 import com.allardworks.workinator3.core.Transition;
 import com.allardworks.workinator3.core.TransitionEvents;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 public interface Service extends AutoCloseable {
@@ -11,4 +12,5 @@ public interface Service extends AutoCloseable {
     void stop();
     Status getStatus();
     TransitionEvents getTransitionEventHandlers();
+    Map<String, Object> getInfo();
 }

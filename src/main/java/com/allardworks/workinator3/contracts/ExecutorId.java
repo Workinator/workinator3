@@ -12,5 +12,4 @@ public class ExecutorId {
     public String getAssignee() {
         return consumer.getConsumerId().getName() + ", #" + executorNumber;
     }
-
 }
