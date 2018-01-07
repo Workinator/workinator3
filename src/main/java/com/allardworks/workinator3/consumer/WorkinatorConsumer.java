@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.*;
@@ -57,7 +59,6 @@ public class WorkinatorConsumer extends ServiceBase {
      */
     private List<Service> executors;
 
-
     /**
      * Tracks how many executors have stopped. When 0, all done. Fire the stopped event.
      */
@@ -97,20 +98,12 @@ public class WorkinatorConsumer extends ServiceBase {
                 .mapToObj(i -> new ExecutorId(registration, i))
                 .collect(toList());
 
-        // createPartitions the workers
-        val workers = executorIds
-                .stream()
-                .map(workerFactory::createWorker)
-                .collect(toList());
+        executors = new ArrayList<>();
+        for (val ex : executorIds) {
+            val worker = workerFactory.createWorker(ex);
+            val executor = executorFactory.createExecutor(ex, worker);
+            executors.add(executor);
 
-        // createPartitions an executor for each worker
-        executors = workers
-                .stream()
-                .map(executorFactory::createExecutor)
-                .collect(toList());
-
-        // initialize and start the executors
-        for(val executor : executors) {
             // createPartitions start and stop events
             executor.getTransitionEventHandlers().onPostStarted(t -> onExecutorStarted());
             executor.getTransitionEventHandlers().onPostStopped(t -> onExecutorStopped());

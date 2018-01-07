@@ -12,6 +12,7 @@ import lombok.val;
 @RequiredArgsConstructor
 @Slf4j
 public class ExecutorAsync extends ServiceBase {
+    private final ExecutorId executorId;
     private final ConsumerConfiguration configuration;
     private final WorkerAsync worker;
     private final WorkinatorRepository workinatorRepository;
@@ -25,7 +26,7 @@ public class ExecutorAsync extends ServiceBase {
     private void run() {
         getServiceStatus().started();
         while (getServiceStatus().getStatus().isStarted()) {
-            val assignment = workinatorRepository.getAssignment(worker.getId());
+            val assignment = workinatorRepository.getAssignment(executorId);
             if (assignment == null) {
                 // todo
                 continue;

@@ -32,8 +32,8 @@ public class ExecutorAsyncTests {
         val worker = new DummyWorkerAsync();
 
         workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
-
-        try (val executor = new ExecutorAsync(configuration, worker, workinator)) {
+        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), "asdfasdfasfd"), 1);
+        try (val executor = new ExecutorAsync(id, configuration, worker, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
             TestUtility.stopAndWait(executor);
@@ -62,7 +62,8 @@ public class ExecutorAsyncTests {
         val worker = new DummyWorkerAsync();
 
         workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
-        try (val executor = new ExecutorAsync(configuration, worker, workinator)) {
+        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("aaa"), "asdfasf"),1);
+        try (val executor = new ExecutorAsync(id, configuration, worker, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
 

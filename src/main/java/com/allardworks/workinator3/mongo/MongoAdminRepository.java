@@ -94,7 +94,10 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
      */
     @Override
     public void createPartitions(List<PartitionDao> partitions) throws PartitionExistsException {
-        throw new NotImplementedException();
+        // TODO: insert many
+        for (val p : partitions) {
+            createPartition(p);
+        }
     }
 
     /**

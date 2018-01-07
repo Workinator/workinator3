@@ -22,6 +22,7 @@ public interface RepositoryTester extends AutoCloseable {
                 .mapToObj(i -> {
                     val p = new PartitionDao();
                     p.setPartitionKey("Key-" + i);
+                    p.getMaxWorkerCount().setValue(1);
                     return p;
                 })
                 .collect(toList());

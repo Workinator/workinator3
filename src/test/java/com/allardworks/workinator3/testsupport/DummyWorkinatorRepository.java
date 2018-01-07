@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.testsupport;
 
 import com.allardworks.workinator3.contracts.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class DummyWorkinatorRepository implements WorkinatorRepository {
     private Assignment nextAssignment;
@@ -20,11 +21,11 @@ public class DummyWorkinatorRepository implements WorkinatorRepository {
 
     @Override
     public ConsumerRegistration registerConsumer(ConsumerId id) {
-        return null;
+        return new ConsumerRegistration(id, "dummy");
     }
 
     @Override
     public void unregisterConsumer(ConsumerRegistration registration) {
-
+        throw new NotImplementedException();
     }
 }

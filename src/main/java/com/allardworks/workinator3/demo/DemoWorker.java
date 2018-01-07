@@ -14,11 +14,6 @@ public class DemoWorker implements WorkerAsync {
     }
 
     @Override
-    public ExecutorId getId() {
-        return id;
-    }
-
-    @Override
     public void close() throws Exception {
     }
 }

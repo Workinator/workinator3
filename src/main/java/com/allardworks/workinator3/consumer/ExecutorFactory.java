@@ -11,9 +11,9 @@ public class ExecutorFactory {
     @NonNull private final ConsumerConfiguration configuration;
     @NonNull private final WorkinatorRepository workinatorRepository;
 
-    public Service createExecutor(@NonNull final Worker worker) {
+    public Service createExecutor(@NonNull ExecutorId executorId, @NonNull final Worker worker) {
         if (worker instanceof WorkerAsync) {
-            return new ExecutorAsync(configuration, (WorkerAsync)worker, workinatorRepository);
+            return new ExecutorAsync(executorId, configuration, (WorkerAsync)worker, workinatorRepository);
         }
 
         // TODO: throw exception

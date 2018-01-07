@@ -38,9 +38,4 @@ public class DummyWorkerAsync implements WorkerAsync {
     public void close() throws Exception {
 
     }
-
-    @Override
-    public ExecutorId getId() {
-        return null;
-    }
 }

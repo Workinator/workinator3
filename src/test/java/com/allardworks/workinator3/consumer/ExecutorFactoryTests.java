@@ -1,7 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.ConsumerConfiguration;
-import com.allardworks.workinator3.contracts.WorkerAsync;
+import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.testsupport.DummyWorkinatorRepository;
 import com.allardworks.workinator3.testsupport.DummyWorkerAsync;
 import lombok.val;
@@ -17,8 +16,8 @@ public class ExecutorFactoryTests {
                 .build();
         val worker = new DummyWorkerAsync();
         val factory = new ExecutorFactory(config, new DummyWorkinatorRepository());
-        val executor = factory.createExecutor(worker);
-        Assert.isTrue(worker instanceof WorkerAsync, "just to prove the point");
+        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), "asdfasdfasfd"), 1);
+        val executor = factory.createExecutor(id, worker);
         Assert.isTrue(executor instanceof ExecutorAsync, "expected WorkerAsync");
     }
 }

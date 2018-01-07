@@ -26,7 +26,7 @@ public class MongoAdminRepositoryTests extends AdminRepositoryTests {
             partition.getMaxWorkerCount().setValue(18);
             partition.setPartitionKey("abc");
             tester.getAdminRepository().createPartition(partition);
-            assertEquals(partition.getMaxWorkerCount(), tester.getWorkersCollection().count());
+            assertEquals((long)partition.getMaxWorkerCount().getValue(), tester.getWorkersCollection().count());
         }
     }
 }
