@@ -17,6 +17,6 @@ public class ConsumerConfiguration {
     private final int maxExecutorCount;
 
     public static class ConsumerConfigurationBuilder {
-        private int maxExecutorCount = 1;
+        private int maxExecutorCount = 10;
     }
 }

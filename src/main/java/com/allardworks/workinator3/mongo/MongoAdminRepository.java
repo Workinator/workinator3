@@ -51,7 +51,7 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
     private static PartitionDao toPartition(final Document document) {
         val dao = new PartitionDao();
         dao.setPartitionKey(document.getString("partitionKey"));
-        dao.getMaxWorkerCount().setValue(document.getInteger("maxWorkerCount");
+        dao.getMaxWorkerCount().setValue(document.getInteger("maxWorkerCount"));
         dao.getHasMoreWork().setValue(document.getBoolean("hasMoreWork"));
         dao.getLastCheckEnd().setValue(toLocalDateTime(document.getDate("lastCheckEnd")));
         dao.getLastCheckStart().setValue(toLocalDateTime(document.getDate("lastCheckStart")));
@@ -140,7 +140,7 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
     @Override
     public List<PartitionDao> getPartitions() {
         val result = new ArrayList<PartitionDao>();
-        for (val doc :  dal.getWorkersCollection().find()) {
+        for (val doc :  dal.getPartitionsCollection().find()) {
             result.add(toPartition(doc));
         }
         return result;

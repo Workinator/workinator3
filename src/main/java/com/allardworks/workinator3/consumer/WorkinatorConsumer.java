@@ -93,6 +93,7 @@ public class WorkinatorConsumer extends ServiceBase {
 
     public Map<String, Object> getInfo() {
         val map = new HashMap<String, Object>();
+        map.put("consumerId", consumerId);
         map.put("serviceStatus", getStatus().toString());
 
         val exeuctorInfo = executors.stream().map(Service::getInfo).collect(toList());
