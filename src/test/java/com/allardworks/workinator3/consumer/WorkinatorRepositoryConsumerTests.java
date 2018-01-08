@@ -23,7 +23,7 @@ public class WorkinatorRepositoryConsumerTests {
         val registration = new ConsumerRegistration(consumerId, "whatever");
         val workerId = new ExecutorId(registration, 1);
         val workinator = new DummyWorkinatorRepository();
-        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
+        workinator.setNextAssignment(new Assignment(workerId, "ab", 0, ""));
 
         val executorSupplier = new ExecutorFactory(configuration, workinator);
 

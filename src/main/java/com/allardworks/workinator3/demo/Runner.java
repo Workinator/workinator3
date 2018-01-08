@@ -90,7 +90,7 @@ public class Runner implements CommandLineRunner {
                     out.println();
                     continue;
                 }
-                out.println(assignment.getPartition().getPartitionKey());
+                out.println(assignment.getPartitionKey() + "." + assignment.getPartitionWorkerNumber());
             }
         }
         return true;

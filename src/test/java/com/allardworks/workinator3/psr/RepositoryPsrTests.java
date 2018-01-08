@@ -43,7 +43,7 @@ public abstract class RepositoryPsrTests {
                 val keys = new HashSet<String>();
                 for (int i = 0; i < PartitionCount; i++) {
                     val assignment = repo.getAssignment(workerId);
-                    keys.add(assignment.getPartition().getPartitionKey());
+                    keys.add(assignment.getPartitionKey());
                 }
 
                 // make sure each partition was only returned once.
@@ -66,7 +66,7 @@ public abstract class RepositoryPsrTests {
                 val keys = new HashSet<String>();
                 for (int i = 0; i < PartitionCount; i++) {
                     val assignment = repo.getAssignment(workerId);
-                    keys.add(assignment.getPartition().getPartitionKey());
+                    keys.add(assignment.getPartitionKey());
                     repo.releaseAssignment(assignment);
                 }
 

@@ -31,7 +31,7 @@ public class ExecutorAsyncTests {
         val workinator = new DummyWorkinatorRepository();
         val worker = new DummyWorkerAsync();
 
-        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
+        workinator.setNextAssignment(new Assignment(workerId, "ab", 1, ""));
         val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), "asdfasdfasfd"), 1);
         try (val executor = new ExecutorAsync(id, configuration, worker, workinator)) {
             startAndWait(executor);
@@ -61,7 +61,7 @@ public class ExecutorAsyncTests {
         val workinator = new DummyWorkinatorRepository();
         val worker = new DummyWorkerAsync();
 
-        workinator.setNextAssignment(new Assignment(workerId, new Partition("ab"), "", 1));
+        workinator.setNextAssignment(new Assignment(workerId, "ab", 0, ""));
         val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("aaa"), "asdfasf"),1);
         try (val executor = new ExecutorAsync(id, configuration, worker, workinator)) {
             startAndWait(executor);

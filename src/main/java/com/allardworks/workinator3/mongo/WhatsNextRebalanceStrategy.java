@@ -1,6 +1,5 @@
 package com.allardworks.workinator3.mongo;
 
-import com.allardworks.workinator3.consumer.Partition;
 import com.allardworks.workinator3.contracts.Assignment;
 import com.allardworks.workinator3.contracts.ExecutorId;
 import com.mongodb.BasicDBObject;
@@ -39,23 +38,26 @@ public class WhatsNextRebalanceStrategy implements RebalanceStrategy {
     public Assignment getNextAssignment(final ExecutorId executorId) {
         val updateDoc = new BasicDBObject("$set",
                 new BasicDBObject()
-                .append("currentAssignee", executorId.getAssignee())
-                .append("lastCheckStart", toDate(LocalDateTime.now()))
-                .append("lastCheckEnd", null));
+                        .append("currentAssignee", executorId.getAssignee())
+                        .append("lastCheckStart", toDate(LocalDateTime.now()))
+                        .append("lastCheckEnd", null));
 
         val match = dal.getWorkersCollection().findOneAndUpdate(rule1Filter, updateDoc, updateOptions);
         if (match == null) {
             return null;
         }
 
-        val partitionWorkerNumber = match.getInteger("partitionWorkerNumber");
-        return new Assignment(executorId, new Partition(match.getString("partitionKey")), "rule 1 - worker 1 due", partitionWorkerNumber);
+        return new Assignment(
+                executorId,
+                match.getString("partitionKey"),
+                match.getInteger("partitionWorkerNumber"),
+                "rule 1 - worker 1 due");
     }
 
     @Override
     public void releaseAssignment(Assignment assignment) {
         val queryDoc = and(
-                eq("partitionKey", assignment.getPartition().getPartitionKey()),
+                eq("partitionKey", assignment.getPartitionKey()),
                 eq("partitionWorkerNumber", assignment.getPartitionWorkerNumber()),
                 eq("currentAssignee", assignment.getExecutorId().getAssignee()));
 

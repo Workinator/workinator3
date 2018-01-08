@@ -19,11 +19,14 @@ public class Context implements WorkerContext {
     @NonNull private final ServiceStatus executorStatus;
 
     public boolean getHasMoreWork() {
-        return assignment.getPartition().isHasMoreWork();
+        return false;
+        // TODO
+        //return assignment.isHasMoreWork();
     }
 
     public void setHasMoreWork(boolean hasMoreWork) {
-        assignment.getPartition().setMoreWork(hasMoreWork);
+        // TODO
+        //assignment.getPartition().setMoreWork(hasMoreWork);
     }
 
     public WorkerContext didWork() {
@@ -32,7 +35,8 @@ public class Context implements WorkerContext {
     }
 
     public WorkerContext didWork(final int workCount) {
-        assignment.getPartition().didWork(workCount);
+        // TODO
+        //assignment.getPartition().didWork(workCount);
         return this;
     }
 

@@ -1,6 +1,5 @@
 package com.allardworks.workinator3;
 
-import com.allardworks.workinator3.consumer.Partition;
 import com.allardworks.workinator3.contracts.CreatePartitionCommand;
 import com.allardworks.workinator3.contracts.PartitionDao;
 import com.allardworks.workinator3.contracts.PartitionExistsException;
