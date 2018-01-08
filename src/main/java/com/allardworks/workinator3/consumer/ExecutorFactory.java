@@ -8,15 +8,23 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class ExecutorFactory {
-    @NonNull private final ConsumerConfiguration configuration;
-    @NonNull private final WorkinatorRepository workinatorRepository;
+    @NonNull
+    private final ConsumerConfiguration configuration;
 
-    public Service createExecutor(@NonNull ExecutorId executorId, @NonNull final Worker worker) {
-        if (worker instanceof WorkerAsync) {
-            return new ExecutorAsync(executorId, configuration, (WorkerAsync)worker, workinatorRepository);
+    @NonNull
+    private final WorkinatorRepository workinatorRepository;
+
+    /**
+     * Creates an executor for the type of worker returned by the worker factory.
+     * @param executorId
+     * @param workerFactory used to determine what type of executor to create.
+     * @return
+     */
+    public Service createExecutor(@NonNull ExecutorId executorId, @NonNull final WorkerFactory workerFactory) {
+        if (workerFactory instanceof AsyncWorkerFactory) {
+            return new ExecutorAsync(executorId, configuration, (AsyncWorkerFactory) workerFactory, workinatorRepository);
         }
 
-        // TODO: throw exception
-        return null;
+        throw new RuntimeException("Unknown type of WorkerFactory. The factory must implement AsyncWorkerFactory.");
     }
 }

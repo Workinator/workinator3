@@ -1,5 +1,5 @@
 package com.allardworks.workinator3.contracts;
 
-public interface WorkerAsync extends Worker {
+public interface AsyncWorker extends Worker {
     void execute(WorkerContext context);
 }

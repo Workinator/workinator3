@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static java.lang.System.out;
 import static org.assertj.core.api.Fail.fail;
 
 public class TestUtility {
@@ -45,6 +46,8 @@ public class TestUtility {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (Exception ex) {
+            out.println();
         }
     }
 

@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static com.allardworks.workinator3.testsupport.TestUtility.stopAndWait;
+import static com.allardworks.workinator3.testsupport.TestUtility.waitFor;
 import static org.junit.Assert.assertEquals;
 
 public class WorkinatorRepositoryConsumerTests {
@@ -16,7 +18,7 @@ public class WorkinatorRepositoryConsumerTests {
                 ConsumerConfiguration
                         .builder()
                         //.consumerName("yea")
-                        .maxExecutorCount(5)
+                        .maxExecutorCount(1)
                         .build();
 
         val consumerId = new ConsumerId("booyea");
@@ -27,26 +29,27 @@ public class WorkinatorRepositoryConsumerTests {
 
         val executorSupplier = new ExecutorFactory(configuration, workinator);
 
-        val workers = new ArrayList<DummyWorkerAsync>();
+        val workers = new ArrayList<DummyAsyncWorker>();
         val workerFactory = new DummyWorkerFactory(() -> {
-            val w = new DummyWorkerAsync();
+            val w = new DummyAsyncWorker();
             workers.add(w);
 
             // lombok requires the cast even though java does not
-            return (WorkerAsync) w;
+            return (AsyncWorker) w;
         });
 
         try (val consumer = new WorkinatorConsumer(configuration, workinator, executorSupplier, workerFactory, consumerId)) {
             consumer.start();
             TestUtility.startAndWait(consumer);
+            Thread.sleep(1000);
             assertEquals(configuration.getMaxExecutorCount(), workers.size());
 
             // make sure all works do some work
-            TestUtility.waitFor(() -> workers
+            waitFor(() -> workers
                     .stream()
-                    .filter(w -> w.getHitCount() < 100)
+                    .filter(w -> w.getHitCount() < 25)
                     .count() == 0);
-            TestUtility.stopAndWait(consumer);
+            stopAndWait(consumer);
         }
     }
 }

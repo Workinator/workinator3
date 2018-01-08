@@ -1,14 +1,13 @@
 package com.allardworks.workinator3.testsupport;
 
-import com.allardworks.workinator3.contracts.WorkerAsync;
+import com.allardworks.workinator3.contracts.AsyncWorker;
 import com.allardworks.workinator3.contracts.WorkerContext;
-import com.allardworks.workinator3.contracts.ExecutorId;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public class DummyWorkerDelegate implements WorkerAsync {
+public class DummyDelegateWorker implements AsyncWorker {
     private final Consumer<WorkerContext> contextMethod;
 
     //@Override

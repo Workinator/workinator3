@@ -1,14 +1,13 @@
 package com.allardworks.workinator3.testsupport;
 
-import com.allardworks.workinator3.contracts.WorkerAsync;
+import com.allardworks.workinator3.contracts.AsyncWorker;
 import com.allardworks.workinator3.contracts.WorkerContext;
-import com.allardworks.workinator3.contracts.ExecutorId;
 import lombok.Data;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
-public class DummyWorkerAsync implements WorkerAsync {
+public class DummyAsyncWorker implements AsyncWorker {
     private WorkerContext lastContext;
     private long hitCount = 0;
     private boolean isFrozen;

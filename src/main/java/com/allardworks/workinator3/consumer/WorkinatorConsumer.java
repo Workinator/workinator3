@@ -113,8 +113,7 @@ public class WorkinatorConsumer extends ServiceBase {
 
         executors = new ArrayList<>();
         for (val ex : executorIds) {
-            val worker = workerFactory.createWorker(ex);
-            val executor = executorFactory.createExecutor(ex, worker);
+            val executor = executorFactory.createExecutor(ex, workerFactory);
             executors.add(executor);
 
             // createPartitions start and stop events
