@@ -1,7 +1,6 @@
 package com.allardworks.workinator3.demo;
 
 import com.allardworks.workinator3.contracts.ConsumerConfiguration;
-import com.allardworks.workinator3.contracts.ConsumerId;
 import com.allardworks.workinator3.mongo.MongoConfiguration;
 import com.allardworks.workinator3.mongo.MongoDal;
 import com.allardworks.workinator3.mongo.RebalanceStrategy;

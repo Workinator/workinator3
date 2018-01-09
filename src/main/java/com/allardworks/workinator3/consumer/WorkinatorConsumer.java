@@ -32,7 +32,7 @@ public class WorkinatorConsumer extends ServiceBase {
      * The workinator. Provides the partition assignments per worker.
      */
     @NonNull
-    private final WorkinatorRepository workinatorRepository;
+    private final WorkinatorClient client;
 
     /**
      * Creates the executors.
@@ -78,8 +78,12 @@ public class WorkinatorConsumer extends ServiceBase {
             s.getEventHandlers().onPostStarting(t -> {
                 startCount = new CountDownLatch(configuration.getMaxExecutorCount());
                 stopCount = new CountDownLatch(configuration.getMaxExecutorCount());
-                setupConsumer();
-                setupAndStartExecutors();
+                try {
+                    setupConsumer();
+                    setupAndStartExecutors();
+                } catch (ConsumerExistsException e) {
+                    e.printStackTrace();
+                }
             });
 
             s.getEventHandlers().onPostStopping(t -> {
@@ -128,8 +132,8 @@ public class WorkinatorConsumer extends ServiceBase {
     /**
      * Register this consumer with the workinator.
      */
-    private void setupConsumer() {
-        registration = workinatorRepository.registerConsumer(consumerId);
+    private void setupConsumer() throws ConsumerExistsException {
+        registration = client.registerConsumer(consumerId);
         if (registration == null) {
             throw new RuntimeException("Critcal problem... ");
         }

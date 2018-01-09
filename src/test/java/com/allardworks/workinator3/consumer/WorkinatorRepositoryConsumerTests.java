@@ -1,6 +1,8 @@
 package com.allardworks.workinator3.consumer;
 
+import com.allardworks.workinator3.WorkinatorAdmin;
 import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.local.LocalWorkinator;
 import com.allardworks.workinator3.testsupport.*;
 import lombok.val;
 import org.junit.Test;
@@ -23,12 +25,14 @@ public class WorkinatorRepositoryConsumerTests {
 
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "whatever");
-        val workerId = new ExecutorId(registration, 1);
-        val workinator = new DummyWorkinatorRepository();
-        workinator.setNextAssignment(new Assignment(workerId, "ab", 0, ""));
+        val executorId = new ExecutorId(registration, 1);
+        val repo = new DummyWorkinatorRepository();
+        repo.setNextAssignment(new Assignment(executorId, "ab", 0, ""));
 
-        val executorSupplier = new ExecutorFactory(configuration, workinator);
+        val adminRepo = new WorkinatorAdmin(new DummyAdminRepository());
+        val client = new LocalWorkinator(adminRepo, repo);
 
+        val executorSupplier = new ExecutorFactory(configuration, repo);
         val workers = new ArrayList<DummyAsyncWorker>();
         val workerFactory = new DummyAsyncWorkerFactory(() -> {
             val w = new DummyAsyncWorker();
@@ -38,7 +42,7 @@ public class WorkinatorRepositoryConsumerTests {
             return (AsyncWorker) w;
         });
 
-        try (val consumer = new WorkinatorConsumer(configuration, workinator, executorSupplier, workerFactory, consumerId)) {
+        try (val consumer = new WorkinatorConsumer(configuration, client, executorSupplier, workerFactory, consumerId)) {
             consumer.start();
             TestUtility.startAndWait(consumer);
             Thread.sleep(1000);

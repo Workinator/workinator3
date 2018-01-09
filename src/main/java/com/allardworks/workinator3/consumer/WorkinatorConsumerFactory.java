@@ -1,9 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.ConsumerConfiguration;
-import com.allardworks.workinator3.contracts.ConsumerId;
-import com.allardworks.workinator3.contracts.WorkerFactory;
-import com.allardworks.workinator3.contracts.WorkinatorRepository;
+import com.allardworks.workinator3.contracts.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +19,7 @@ public class WorkinatorConsumerFactory {
     private final ConsumerConfiguration consumerConfiguration;
 
     @Autowired
-    private final WorkinatorRepository workinatorRepository;
+    private final WorkinatorClient client;
 
     @Autowired
     private final ExecutorFactory executorFactory;
@@ -31,6 +28,6 @@ public class WorkinatorConsumerFactory {
     private final WorkerFactory workerFactory;
 
     public WorkinatorConsumer create(final ConsumerId id) {
-        return new WorkinatorConsumer(consumerConfiguration, workinatorRepository, executorFactory, workerFactory, id);
+        return new WorkinatorConsumer(consumerConfiguration, client, executorFactory, workerFactory, id);
     }
 }

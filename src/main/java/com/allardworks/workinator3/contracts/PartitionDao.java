@@ -14,5 +14,5 @@ public class PartitionDao {
     private final NullableOptional<Boolean> hasMoreWork = new NullableOptional<>();;
     private final NullableOptional<Long> workCount = new NullableOptional<>();;
     private final NullableOptional<Integer> maxIdleTimeSeconds = new NullableOptional<>();;
-    private final NullableOptional<Integer> maxWorkerCount = new NullableOptional<>();;
+    private final NullableOptional<Integer> maxWorkerCount = new NullableOptional<>();
 }
