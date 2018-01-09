@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.repository;
 
 import com.allardworks.workinator3.contracts.PartitionDao;
+import com.allardworks.workinator3.contracts.PartitionExistsException;
 import com.allardworks.workinator3.testsupport.RepositoryTester;
 import lombok.val;
 import org.junit.Test;
@@ -24,46 +25,22 @@ public abstract class AdminRepositoryTests {
             partition.getMaxIdleTimeSeconds().setValue(400);
             partition.getMaxWorkerCount().setValue(3);
 
-            /*
             val output = tester.getAdminRepository().createPartition(partition);
             assertEquals(partition.getPartitionKey(), output.getPartitionKey());
-            assertEquals(partition.getMaxIdleTimeSeconds(), output.getMaxIdleTimeSeconds());
-            assertEquals(partition.getMaxWorkerCount(), output.getMaxWorkerCount());
-            assertEquals(partition.getLastWork(), output.getLastWork());
-            assertEquals(partition.getLastCheckStart(), output.getLastCheckStart());
-            assertEquals(partition.getWorkCount(), output.getWorkCount());
-            */
-        }
-    }
-
-    /**
-     * Only partiiton key is required. don't set anything else.
-     * Make sure it creates and reads.
-     *
-     * @throws Exception
-     */
-    @Test
-    public void createFewestValues() throws Exception {
-        try (val tester = getRepoTester()) {
-            val partition = new PartitionDao();
-            partition.setPartitionKey("abc");
-            /*
-            val output = tester.getAdminRepository().createPartition(partition);
-            assertEquals(partition.getPartitionKey(), output.getPartitionKey());
-            assertEquals(partition.getMaxIdleTimeSeconds(), output.getMaxIdleTimeSeconds());
-            assertEquals(partition.getMaxWorkerCount(), output.getMaxWorkerCount());
-            assertEquals(partition.getLastWork(), output.getLastWork());
-            assertEquals(partition.getLastCheckStart(), output.getLastCheckStart());
-            assertEquals(partition.getWorkCount(), output.getWorkCount());*/
+            assertEquals(partition.getMaxIdleTimeSeconds().getValue(), output.getMaxIdleTimeSeconds().getValue());
+            assertEquals(partition.getMaxWorkerCount().getValue(), output.getMaxWorkerCount().getValue());
+            assertEquals(partition.getLastWork().getValue(), output.getLastWork().getValue());
+            assertEquals(partition.getLastCheckStart().getValue(), output.getLastCheckStart().getValue());
+            assertEquals(partition.getWorkCount().getValue(), output.getWorkCount().getValue());
         }
     }
 
     @Test
-    public void createCantCreateDuplicate() throws Exception {
-        /*
+    public void createCantCreateDuplicatePartition() throws Exception {
         try (val tester = getRepoTester()) {
             val partition = new PartitionDao();
             partition.setPartitionKey("abc");
+            partition.getMaxWorkerCount().setValue(5);
 
             tester.getAdminRepository().createPartition(partition);
             try {
@@ -72,6 +49,6 @@ public abstract class AdminRepositoryTests {
             } catch (final PartitionExistsException e) {
                 assertEquals(partition.getPartitionKey(), e.getPartitionKey());
             }
-        }*/
+        }
     }
 }

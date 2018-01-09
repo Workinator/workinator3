@@ -2,6 +2,7 @@ package com.allardworks.workinator3.mongo;
 
 import com.allardworks.workinator3.contracts.*;
 import com.mongodb.MongoWriteException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bson.BsonDocument;
@@ -121,7 +122,7 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
      * @throws PartitionExistsException
      */
     @Override
-    public void createPartition(final PartitionDao partition) throws PartitionExistsException {
+    public PartitionDao createPartition(final PartitionDao partition) throws PartitionExistsException {
         val doc = toBson(partition);
         try {
             dal.getPartitionsCollection().insertOne(doc);
@@ -135,6 +136,13 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
         }
 
         createWorkers(singletonList(partition));
+        try {
+            return getPartition(partition.getPartitionKey());
+        } catch (PartitionDoesntExistException e) {
+            e.printStackTrace();
+            // TODO log. this shouldn't happen. we just created it, so why wouldn't it exist/
+            return null;
+        }
     }
 
     @Override
@@ -144,6 +152,17 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
             result.add(toPartition(doc));
         }
         return result;
+    }
+
+    @Override
+    public PartitionDao getPartition(@NonNull final String partitionKey) throws PartitionDoesntExistException {
+        val filter = new Document();
+        filter.put("partitionKey", partitionKey);
+        val partition = dal.getPartitionsCollection().find(filter).first();
+        if (partition == null) {
+            throw new PartitionDoesntExistException(partitionKey);
+        }
+        return toPartition(partition);
     }
 
     /**

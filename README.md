@@ -126,3 +126,16 @@ The assignments rebalance as consumers start and stop.
 The `What's Next` strategy covers the same use cases. If the number of executors exceeds the number of partitions, then the result is the same as the `assignment` strategy.
 
 
+# Configuration
+
+## Partition Settings
+
+* MaxIdleTime - the maximum amount of time that a partition can go without being checked. It doesn't mean that it will be checked immediately once this time elapses, only that it will be scheduled.
+* MaxWorkerCount - the maximum number of workers that can consume the partition concurrently.
+
+## Consumer Settings
+
+* MinWorkTime - the minimum amount of time that an executor will work on a parition uninterruped (assuming that the partition has work)
+    * Considering making this a partition setting.
+* MaxExecutorCount - the maximum number of executors that the consumer can support.
+
