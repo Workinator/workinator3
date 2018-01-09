@@ -54,9 +54,7 @@ public class ExecutorAsync extends ServiceBase {
         try {
             getServiceStatus().started();
             while (getServiceStatus().getStatus().isStarted()) {
-                out.println("-- before lookup");
                 val runner = runnerProvider.lookupRunner();
-                out.println("-- after lookup");
                 if (runner == null) {
                     // TODO
                     continue;
@@ -64,7 +62,7 @@ public class ExecutorAsync extends ServiceBase {
 
                 runner.run();
             }
-            out.println("====================== out");
+
             try {
                 runnerProvider.close();
             } catch (Exception e) {

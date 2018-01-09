@@ -24,10 +24,10 @@ class WorkerRunnerProvider implements AutoCloseable {
         current = null;
     }
 
-    private void createWorkerRunner(final Assignment newAssignment) {
+    private WorkerRunner createWorkerRunner(final Assignment newAssignment) {
         val worker = workerFactory.createWorker(newAssignment);
         val context = new Context(canContinue, newAssignment, serviceStatus);
-        current = new WorkerRunner(repo, newAssignment, worker, context);
+        return new WorkerRunner(repo, newAssignment, worker, context);
     }
 
     public Assignment getCurrentAssignment() {
@@ -60,8 +60,7 @@ class WorkerRunnerProvider implements AutoCloseable {
         // new assignment.
         if (current == null || !current.getAssignment().equals(newAssignment)) {
             closeCurrent();
-            createWorkerRunner(newAssignment);
-            return current;
+            current = createWorkerRunner(newAssignment);
         }
 
         return current;
