@@ -38,7 +38,7 @@ public class ExecutorAsync extends ServiceBase {
     }
 
     private boolean canContinue(final Context context) {
-        return context.getElapsed().compareTo(consumerConfiguration.getMinWorkTime()) < 0;
+        return getStatus().isStarted() && context.getElapsed().compareTo(consumerConfiguration.getMinWorkTime()) < 0;
     }
 
     public Map<String, Object> getInfo() {

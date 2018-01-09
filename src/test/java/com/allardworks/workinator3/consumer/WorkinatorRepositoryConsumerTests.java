@@ -30,7 +30,7 @@ public class WorkinatorRepositoryConsumerTests {
         val executorSupplier = new ExecutorFactory(configuration, workinator);
 
         val workers = new ArrayList<DummyAsyncWorker>();
-        val workerFactory = new DummyWorkerFactory(() -> {
+        val workerFactory = new DummyAsyncWorkerFactory(() -> {
             val w = new DummyAsyncWorker();
             workers.add(w);
 

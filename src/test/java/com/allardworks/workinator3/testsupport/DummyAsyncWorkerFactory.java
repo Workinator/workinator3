@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class DummyWorkerFactory implements AsyncWorkerFactory {
+public class DummyAsyncWorkerFactory implements AsyncWorkerFactory {
     private final Supplier<AsyncWorker> supplier;
 
     @Override

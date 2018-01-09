@@ -5,9 +5,11 @@ import com.allardworks.workinator3.mongo.MongoConfiguration;
 import com.allardworks.workinator3.mongo.MongoDal;
 import com.mongodb.MongoClient;
 import lombok.val;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class Junk {
+    @Ignore
     @Test
     public void createDatabase() throws PartitionExistsException {
         val config = MongoConfiguration.builder().partitionType("yadda").build();
@@ -17,8 +19,8 @@ public class Junk {
         val repo = new MongoAdminRepository(dal);
 
         val partition = new PartitionDao();
+        partition.getMaxWorkerCount().setValue(1);
         partition.setPartitionKey("test");
         repo.createPartition(partition);
     }
-
 }

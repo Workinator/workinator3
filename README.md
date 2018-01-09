@@ -61,6 +61,27 @@ context.onStop(c -> {
 
 Anything that can be done by SyncExecutor can also be done, less efficiently, by AsyncExecutor. I am focusing on AsyncExecutor to start.
 
+# Partitions per Executor
+
+Each partition get assigned to an executor.
+
+## One Executor per Partition
+
+STATUS: In progress
+
+Each partition get it's own executor. All partition are processed independently of each other.
+
+This is expected to be the more commonly used implementation.
+
+## Multiple Partitions Per Executor
+
+STATUS: Thought of it, then forgot about it, then remembered it again.
+
+Using this strategy, multiple partitions are assigned to each executor.
+
+This may be useful for some applications. There was a concrete use case of this that has slipped my mind.
+
+IE: Executor A handles Partitions 1,2,3,4,5. Executor B handles Partiton 6,7,8.
 
 # Rebalance Strategies
 
