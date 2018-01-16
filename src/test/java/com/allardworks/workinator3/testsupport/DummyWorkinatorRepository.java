@@ -9,6 +9,7 @@ public class DummyWorkinatorRepository implements WorkinatorRepository {
     public void setNextAssignment(Assignment assignment) {
         nextAssignment = assignment;
     }
+
     @Override
     public Assignment getAssignment(ExecutorId executorId) {
         return nextAssignment;
@@ -23,15 +24,9 @@ public class DummyWorkinatorRepository implements WorkinatorRepository {
     public void createConsumer(ConsumerDao consumer) throws ConsumerExistsException {
 
     }
-/*
 
     @Override
-    public ConsumerRegistration registerConsumer(ConsumerId id) {
-        return new ConsumerRegistration(id, "dummy");
+    public ConsumerDao getConsumer(String consumerId) throws ConsumerDoesntExistsException {
+        return null;
     }
-
-    @Override
-    public void unregisterConsumer(ConsumerRegistration registration) {
-        throw new NotImplementedException();
-    }*/
 }

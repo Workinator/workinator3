@@ -32,10 +32,9 @@ public class LocalWorkinator implements WorkinatorClient {
     public ConsumerRegistration registerConsumer(final ConsumerId id) throws ConsumerExistsException {
         val dao = new ConsumerDao();
         dao.setConsumerId(id.getName());
-        dao.setConsumerRegistration(UUID.randomUUID().toString());
         dao.getMaxExecutorCount().setValue(1);
         repo.createConsumer(dao);
-        return new ConsumerRegistration(id, dao.getConsumerRegistration());
+        return new ConsumerRegistration(id);
     }
 
     @Override

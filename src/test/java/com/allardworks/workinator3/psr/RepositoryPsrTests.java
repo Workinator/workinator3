@@ -37,7 +37,7 @@ public abstract class RepositoryPsrTests {
             }
 
             val repo = tester.getRepository();
-            val workerId = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
+            val workerId = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo")), 1);
 
             try (val timer = new TimedActivity("lockAll.lock " + PartitionCount)) {
                 val keys = new HashSet<String>();
@@ -60,7 +60,7 @@ public abstract class RepositoryPsrTests {
             }
 
             val repo = tester.getRepository();
-            val workerId = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
+            val workerId = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo")), 1);
 
             try (val timer = new TimedActivity("lockAndReleaseAll.lock and release" + PartitionCount)) {
                 val keys = new HashSet<String>();
@@ -84,7 +84,7 @@ public abstract class RepositoryPsrTests {
             }
 
             val repo = tester.getRepository();
-            val workerId = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
+            val workerId = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo")), 1);
             val assignments = new ArrayList<Assignment>();
 
             // lock

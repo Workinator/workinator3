@@ -24,7 +24,7 @@ public class WorkinatorRepositoryConsumerTests {
                         .build();
 
         val consumerId = new ConsumerId("booyea");
-        val registration = new ConsumerRegistration(consumerId, "whatever");
+        val registration = new ConsumerRegistration(consumerId);
         val executorId = new ExecutorId(registration, 1);
         val repo = new DummyWorkinatorRepository();
         repo.setNextAssignment(new Assignment(executorId, "ab", 0, ""));

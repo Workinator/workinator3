@@ -26,14 +26,14 @@ public class ExecutorAsyncTests {
                 .builder()
                 .build();
         val consumerId = new ConsumerId("booyea");
-        val registration = new ConsumerRegistration(consumerId, "whatever");
+        val registration = new ConsumerRegistration(consumerId);
         val workerId = new ExecutorId(registration, 1);
         val worker = new DummyAsyncWorker();
         val factory = new DummyAsyncWorkerFactory(() -> worker);
         val workinator = new DummyWorkinatorRepository();
 
         workinator.setNextAssignment(new Assignment(workerId, "ab", 1, ""));
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), "asdfasdfasfd"), 1);
+        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo")), 1);
         try (val executor = new ExecutorAsync(id, configuration, factory, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
@@ -57,14 +57,14 @@ public class ExecutorAsyncTests {
                 //.consumerName("boo")
                 .build();
         val consumerId = new ConsumerId("booyea");
-        val registration = new ConsumerRegistration(consumerId, "whatever");
+        val registration = new ConsumerRegistration(consumerId);
         val workerId = new ExecutorId(registration, 1);
         val workinator = new DummyWorkinatorRepository();
         val worker = new DummyAsyncWorker();
         val workerFactory = new DummyAsyncWorkerFactory(() -> worker);
 
         workinator.setNextAssignment(new Assignment(workerId, "ab", 0, ""));
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("aaa"), "asdfasf"),1);
+        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("aaa")),1);
         try (val executor = new ExecutorAsync(id, configuration, workerFactory, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);

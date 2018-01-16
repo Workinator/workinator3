@@ -131,7 +131,6 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
                 throw new PartitionExistsException(partition.getPartitionKey());
             }
 
-            // otherwise...
             throw e;
         }
 

@@ -6,6 +6,5 @@ import lombok.Data;
 @Data
 public class ConsumerDao {
     private String consumerId;
-    private String consumerRegistration;
     private final NullableOptional<Integer> maxExecutorCount = new NullableOptional<>();
 }

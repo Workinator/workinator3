@@ -18,16 +18,14 @@ public class MongoRepository implements WorkinatorRepository {
     private static Document toBson(final ConsumerDao consumerDao) {
         val doc = new Document();
         doc.put("consumerId", consumerDao.getConsumerId());
-        doc.put("registrationId", consumerDao.getConsumerRegistration());
         consumerDao.getMaxExecutorCount().ifPresent(c -> doc.put("maxExecutorCount", c.getValue()));
         return doc;
     }
 
     private static ConsumerDao toDao(final Document doc){
         val dao = new ConsumerDao();
-        dao.getMaxExecutorCount().setValue(doc.getInteger("consumerId"));
+        dao.getMaxExecutorCount().setValue(doc.getInteger("maxExecutorCount"));
         dao.setConsumerId(doc.getString("consumerId"));
-        dao.setConsumerRegistration(doc.getString("consumerRegistration"));
         return dao;
     }
 
@@ -58,8 +56,18 @@ public class MongoRepository implements WorkinatorRepository {
                 throw new ConsumerExistsException(consumer.getConsumerId());
             }
 
-            // otherwise...
             throw e;
         }
+    }
+
+    @Override
+    public ConsumerDao getConsumer(String consumerId) throws ConsumerDoesntExistsException {
+        val filter = new Document();
+        filter.put("consumerId", consumerId);
+        val consumer = dal.getConsumersCollection().find(filter).first();
+        if (consumer == null) {
+            throw new ConsumerDoesntExistsException(consumerId);
+        }
+        return toDao(consumer);
     }
 }

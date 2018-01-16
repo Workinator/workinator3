@@ -1,12 +1,11 @@
 package com.allardworks.workinator3.repository;
 
 import com.allardworks.workinator3.contracts.ConsumerDao;
+import com.allardworks.workinator3.contracts.ConsumerDoesntExistsException;
 import com.allardworks.workinator3.contracts.ConsumerExistsException;
 import com.allardworks.workinator3.testsupport.RepositoryTester;
 import lombok.val;
 import org.junit.Test;
-
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -18,7 +17,6 @@ public abstract class RepositoryTests {
     public void createCantCreateDuplicateConsumer() throws Exception {
         try (val tester = getRepoTester()) {
             val consumer = new ConsumerDao();
-            consumer.setConsumerRegistration(UUID.randomUUID().toString());
             consumer.setConsumerId("blah blah");
             consumer.getMaxExecutorCount().setValue(10);
 
@@ -29,6 +27,30 @@ public abstract class RepositoryTests {
             } catch (final ConsumerExistsException e) {
                 assertEquals(consumer.getConsumerId(), e.getConsumerId());
             }
+        }
+    }
+
+    @Test
+    public void getConsumer_DoestExistThrowsException() throws Exception {
+        try (val tester = getRepoTester()) {
+            try {
+                tester.getRepository().getConsumer("aaa");
+                fail("Should've failed");
+            } catch (final ConsumerDoesntExistsException ex) {
+                assertEquals("aaa", ex.getConsumerId());
+            }
+        }
+    }
+
+    @Test
+    public void createConsumer_success() throws Exception {
+        val consumer = new ConsumerDao();
+        consumer.setConsumerId("aaa");
+        consumer.getMaxExecutorCount().setValue(12345);
+        try (val tester = getRepoTester()) {
+            tester.getRepository().createConsumer(consumer);
+            val fromDb = tester.getRepository().getConsumer("aaa");
+            assertEquals(12345, (int) fromDb.getMaxExecutorCount().getValue());
         }
     }
 }
