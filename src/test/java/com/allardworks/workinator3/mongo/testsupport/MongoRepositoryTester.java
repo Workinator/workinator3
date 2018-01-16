@@ -1,9 +1,7 @@
 package com.allardworks.workinator3.mongo.testsupport;
 
-import com.allardworks.workinator3.contracts.WorkinatorRepository;
 import com.allardworks.workinator3.mongo.*;
 import com.allardworks.workinator3.testsupport.RepositoryTester;
-import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;

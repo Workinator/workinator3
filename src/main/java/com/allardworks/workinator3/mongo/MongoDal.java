@@ -23,6 +23,9 @@ public class MongoDal implements AutoCloseable {
     private final MongoCollection<Document> partitionsCollection;
 
     @Getter
+    private final MongoCollection<Document> consumersCollection;
+
+    @Getter
     private final MongoCollection<Document> workersCollection;
 
     @Getter
@@ -34,6 +37,7 @@ public class MongoDal implements AutoCloseable {
         database = client.getDatabase(config.getDatabaseName());
         partitionsCollection = database.getCollection(config.getPartitionsCollectionName(), Document.class);
         workersCollection = database.getCollection(config.getWorkersCollectionName(), Document.class);
+        consumersCollection = database.getCollection("Consumers", Document.class);
         setupDatabase();
     }
 
@@ -43,6 +47,13 @@ public class MongoDal implements AutoCloseable {
     }
 
     private void setupDatabase() {
+        // ------------------------------------------------
+        // consumers - primary key
+        // ------------------------------------------------
+        val pkConsumer = new BasicDBObject().append("consumerId", 1);
+        val pkConsumerOptions = new IndexOptions().name("consumerId").unique(true).background(false);
+        consumersCollection.createIndex(pkConsumer, pkConsumerOptions);
+
         // ------------------------------------------------
         // partitions - primary key
         // ------------------------------------------------

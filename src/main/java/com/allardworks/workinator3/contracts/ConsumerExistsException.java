@@ -6,9 +6,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ConsumerExistsException extends Exception {
-    private final String consumerName;
-    public ConsumerExistsException(final String consumerName) {
-        super("The consumer already exists: " + consumerName);
-        this.consumerName = consumerName;
+    private final String consumerId;
+    public ConsumerExistsException(final String consumerId) {
+        super("The consumer already exists: " + consumerId);
+        this.consumerId = consumerId;
     }
 }

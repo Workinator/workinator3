@@ -20,6 +20,12 @@ public class DummyWorkinatorRepository implements WorkinatorRepository {
     }
 
     @Override
+    public void createConsumer(ConsumerDao consumer) throws ConsumerExistsException {
+
+    }
+/*
+
+    @Override
     public ConsumerRegistration registerConsumer(ConsumerId id) {
         return new ConsumerRegistration(id, "dummy");
     }
@@ -27,5 +33,5 @@ public class DummyWorkinatorRepository implements WorkinatorRepository {
     @Override
     public void unregisterConsumer(ConsumerRegistration registration) {
         throw new NotImplementedException();
-    }
+    }*/
 }

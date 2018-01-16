@@ -3,7 +3,10 @@ package com.allardworks.workinator3.local;
 import com.allardworks.workinator3.WorkinatorAdmin;
 import com.allardworks.workinator3.contracts.*;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * Created by jaya on 1/9/18.
@@ -27,12 +30,18 @@ public class LocalWorkinator implements WorkinatorClient {
 
     @Override
     public ConsumerRegistration registerConsumer(final ConsumerId id) throws ConsumerExistsException {
-        return repo.registerConsumer(id);
+        val dao = new ConsumerDao();
+        dao.setConsumerId(id.getName());
+        dao.setConsumerRegistration(UUID.randomUUID().toString());
+        dao.getMaxExecutorCount().setValue(1);
+        repo.createConsumer(dao);
+        return new ConsumerRegistration(id, dao.getConsumerRegistration());
     }
 
     @Override
     public void unregisterConsumer(final ConsumerRegistration registration) {
-        repo.unregisterConsumer(registration);
+
+        //repo.unregisterConsumer(registration);
     }
 
     @Override
