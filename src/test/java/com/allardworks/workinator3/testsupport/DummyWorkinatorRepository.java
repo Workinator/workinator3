@@ -29,4 +29,9 @@ public class DummyWorkinatorRepository implements WorkinatorRepository {
     public ConsumerDao getConsumer(String consumerId) throws ConsumerDoesntExistsException {
         return null;
     }
+
+    @Override
+    public void deleteConsumer(String consumerId) {
+
+    }
 }

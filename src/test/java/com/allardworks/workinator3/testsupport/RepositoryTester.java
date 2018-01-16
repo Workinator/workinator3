@@ -1,9 +1,7 @@
 package com.allardworks.workinator3.testsupport;
 
-import com.allardworks.workinator3.contracts.PartitionDao;
-import com.allardworks.workinator3.contracts.PartitionExistsException;
-import com.allardworks.workinator3.contracts.WorkinatorAdminRepository;
-import com.allardworks.workinator3.contracts.WorkinatorRepository;
+import com.allardworks.workinator3.contracts.*;
+import lombok.NonNull;
 import lombok.val;
 
 import java.util.List;
@@ -15,7 +13,7 @@ public interface RepositoryTester extends AutoCloseable {
     WorkinatorAdminRepository getAdminRepository();
     WorkinatorRepository getRepository();
 
-    default void createPartitions(final int howMany) throws PartitionExistsException {
+    default void createPartitions(@NonNull final int howMany) throws PartitionExistsException {
         final List<PartitionDao> partitions =
                 IntStream
                 .range(0, howMany)
@@ -27,5 +25,14 @@ public interface RepositoryTester extends AutoCloseable {
                 })
                 .collect(toList());
         getAdminRepository().createPartitions(partitions);
+    }
+
+    default boolean consumerExists(@NonNull final String consumerId) {
+        try {
+            getRepository().getConsumer(consumerId);
+            return true;
+        } catch (final ConsumerDoesntExistsException e) {
+            return false;
+        }
     }
 }

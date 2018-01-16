@@ -70,4 +70,11 @@ public class MongoRepository implements WorkinatorRepository {
         }
         return toDao(consumer);
     }
+
+    @Override
+    public void deleteConsumer(String consumerId) {
+        val filter = new Document();
+        filter.put("consumerId", consumerId);
+        dal.getConsumersCollection().deleteOne(filter);
+    }
 }

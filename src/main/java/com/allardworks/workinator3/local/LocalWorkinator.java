@@ -2,6 +2,7 @@ package com.allardworks.workinator3.local;
 
 import com.allardworks.workinator3.WorkinatorAdmin;
 import com.allardworks.workinator3.contracts.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,17 @@ public class LocalWorkinator implements WorkinatorClient {
     private final WorkinatorRepository repo;
 
     @Override
-    public Assignment getAssignment(final ExecutorId executorId) {
+    public Assignment getAssignment(@NonNull final ExecutorId executorId) {
         return repo.getAssignment(executorId);
     }
 
     @Override
-    public void releaseAssignment(final Assignment assignment) {
+    public void releaseAssignment(@NonNull final Assignment assignment) {
         repo.releaseAssignment(assignment);
     }
 
     @Override
-    public ConsumerRegistration registerConsumer(final ConsumerId id) throws ConsumerExistsException {
+    public ConsumerRegistration registerConsumer(@NonNull final ConsumerId id) throws ConsumerExistsException {
         val dao = new ConsumerDao();
         dao.setConsumerId(id.getName());
         dao.getMaxExecutorCount().setValue(1);
@@ -38,13 +39,12 @@ public class LocalWorkinator implements WorkinatorClient {
     }
 
     @Override
-    public void unregisterConsumer(final ConsumerRegistration registration) {
-
-        //repo.unregisterConsumer(registration);
+    public void unregisterConsumer(@NonNull final ConsumerRegistration registration) {
+        repo.deleteConsumer(registration.getConsumerId().getName());
     }
 
     @Override
-    public void createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
+    public void createPartition(@NonNull final CreatePartitionCommand command) throws PartitionExistsException {
         admin.createPartition(command);
     }
 }
