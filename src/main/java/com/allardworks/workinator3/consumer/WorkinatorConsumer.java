@@ -79,6 +79,8 @@ public class WorkinatorConsumer extends ServiceBase {
                 startCount = new CountDownLatch(configuration.getMaxExecutorCount());
                 stopCount = new CountDownLatch(configuration.getMaxExecutorCount());
                 try {
+                    // TODO: if consumer already exists, or other exception,
+                    // then the wc is stuck in starting. need to work out proper error handling.
                     setupConsumer();
                     setupAndStartExecutors();
                 } catch (ConsumerExistsException e) {

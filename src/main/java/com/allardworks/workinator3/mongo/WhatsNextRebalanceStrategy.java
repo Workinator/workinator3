@@ -5,7 +5,6 @@ import com.allardworks.workinator3.contracts.ExecutorId;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bson.conversions.Bson;
 
@@ -25,7 +24,7 @@ public class WhatsNextRebalanceStrategy implements RebalanceStrategy {
     public WhatsNextRebalanceStrategy(@NonNull final MongoDal dal) {
         this.dal = dal;
         rule1Filter = and(
-                eq("partitionWorkerNumber", 0),
+                eq("workerNumber", 0),
                 eq("currentAssignee", null)
         );
 
@@ -36,6 +35,7 @@ public class WhatsNextRebalanceStrategy implements RebalanceStrategy {
 
     @Override
     public Assignment getNextAssignment(final ExecutorId executorId) {
+        // TODO: implement the rest of the rules
         val updateDoc = new BasicDBObject("$set",
                 new BasicDBObject()
                         .append("currentAssignee", executorId.getAssignee())
@@ -50,7 +50,7 @@ public class WhatsNextRebalanceStrategy implements RebalanceStrategy {
         return new Assignment(
                 executorId,
                 match.getString("partitionKey"),
-                match.getInteger("partitionWorkerNumber"),
+                match.getInteger("workerNumber"),
                 "rule 1 - worker 1 due");
     }
 
@@ -58,7 +58,7 @@ public class WhatsNextRebalanceStrategy implements RebalanceStrategy {
     public void releaseAssignment(Assignment assignment) {
         val queryDoc = and(
                 eq("partitionKey", assignment.getPartitionKey()),
-                eq("partitionWorkerNumber", assignment.getPartitionWorkerNumber()),
+                eq("workerNumber", assignment.getWorkerNumber()),
                 eq("currentAssignee", assignment.getExecutorId().getAssignee()));
 
         val updateDoc = new BasicDBObject("$set",

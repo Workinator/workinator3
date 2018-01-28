@@ -79,10 +79,10 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
                 dal
                         .getWorkersCollection()
                         .find(in("partitionKey", keys))
-                        .projection(fields(include("partitionKey", "partitionWorkerNumber"), excludeId()))
+                        .projection(fields(include("partitionKey", "workerNumber"), excludeId()))
                         .into(new ArrayList<>())
                         .stream()
-                        .map(p -> p.getString("partitionKey") + "." + p.get("partitionWorkerNumber"))
+                        .map(p -> p.getString("partitionKey") + "." + p.get("workerNumber"))
                         .collect(toSet());
 
 
@@ -91,10 +91,10 @@ public class MongoAdminRepository implements WorkinatorAdminRepository {
             docsToCreate.addAll(IntStream
                     .range(0, partition.getMaxWorkerCount().getValue())
                     .filter(i -> !existing2.contains(partition.getPartitionKey() + "." + i))
-                    .mapToObj(partitionWorkerNumber -> {
+                    .mapToObj(workerNumber -> {
                         val doc = new Document();
                         doc.put("partitionKey", partition.getPartitionKey());
-                        doc.put("partitionWorkerNumber", partitionWorkerNumber);
+                        doc.put("workerNumber", workerNumber);
                         doc.put("currentAssignee", null);
                         return doc;
                     })

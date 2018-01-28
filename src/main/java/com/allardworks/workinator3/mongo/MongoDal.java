@@ -64,21 +64,21 @@ public class MongoDal implements AutoCloseable {
         // ------------------------------------------------
         // workers - primary key
         // ------------------------------------------------
-        val pkWorker = new BasicDBObject().append("partitionKey", 1).append("partitionWorkerNumber", 1);
+        val pkWorker = new BasicDBObject().append("partitionKey", 1).append("workerNumber", 1);
         val pkWorkerOptions = new IndexOptions().name("primary key").unique(true).background(false);
         workersCollection.createIndex(pkWorker, pkWorkerOptions);
 
         // ------------------------------------------------
         // workers - rule 1
         // ------------------------------------------------
-        val rule1 = new BasicDBObject().append("partitionWorkerNumber", 1).append("currentAssignee", 1).append("lastCheckEnd", 1);
+        val rule1 = new BasicDBObject().append("workerNumber", 1).append("currentAssignee", 1).append("lastCheckEnd", 1);
         val rule1options = new IndexOptions().name("rule1").unique(false).background(false);
         workersCollection.createIndex(rule1, rule1options);
 
         // ------------------------------------------------
         // workers - release
         // ------------------------------------------------
-        val release = new BasicDBObject().append("partitionKey", 1).append("partitionWorkerNumber", 1).append("currentAssignee", 1);
+        val release = new BasicDBObject().append("partitionKey", 1).append("workerNumber", 1).append("currentAssignee", 1);
         val options = new IndexOptions().name("release").unique(false).background(false);
         workersCollection.createIndex(release, options);
     }

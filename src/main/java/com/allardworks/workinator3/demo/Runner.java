@@ -4,7 +4,6 @@ import com.allardworks.workinator3.WorkinatorAdmin;
 import com.allardworks.workinator3.consumer.WorkinatorConsumer;
 import com.allardworks.workinator3.consumer.WorkinatorConsumerFactory;
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.core.MapNavigator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -90,7 +88,7 @@ public class Runner implements CommandLineRunner {
                     out.println();
                     continue;
                 }
-                out.println(assignment.getPartitionKey() + "." + assignment.getPartitionWorkerNumber());
+                out.println(assignment.getPartitionKey() + "." + assignment.getWorkerNumber());
             }
         }
         return true;
@@ -148,7 +146,7 @@ public class Runner implements CommandLineRunner {
                     showHelp(options);
                 }
             } catch (final Exception ex) {
-                out.println("  Error: " + ex.getMessage());
+                ex.printStackTrace();
                 showHelp(options);
             }
         }

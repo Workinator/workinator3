@@ -10,6 +10,6 @@ import lombok.RequiredArgsConstructor;
 public class Assignment {
     private final ExecutorId executorId;
     private final String partitionKey;
-    private final int partitionWorkerNumber;
+    private final int workerNumber;
     private final String rule;
 }
