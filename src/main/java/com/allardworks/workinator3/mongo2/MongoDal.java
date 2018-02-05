@@ -26,9 +26,6 @@ public class MongoDal implements AutoCloseable {
     private final MongoCollection<Document> consumersCollection;
 
     @Getter
-    private final MongoCollection<Document> workersCollection;
-
-    @Getter
     private final MongoDatabase database;
 
     public MongoDal(@NonNull MongoConfiguration config) {
@@ -36,7 +33,6 @@ public class MongoDal implements AutoCloseable {
         client = new MongoClient(config.getHost(), config.getPort());
         database = client.getDatabase(config.getDatabaseName());
         partitionsCollection = database.getCollection(config.getPartitionsCollectionName(), Document.class);
-        workersCollection = database.getCollection(config.getWorkersCollectionName(), Document.class);
         consumersCollection = database.getCollection("Consumers", Document.class);
         setupDatabase();
     }
@@ -50,8 +46,8 @@ public class MongoDal implements AutoCloseable {
         // ------------------------------------------------
         // consumers - primary key
         // ------------------------------------------------
-        val pkConsumer = new BasicDBObject().append("consumerId", 1);
-        val pkConsumerOptions = new IndexOptions().name("consumerId").unique(true).background(false);
+        val pkConsumer = new BasicDBObject().append("name", 1);
+        val pkConsumerOptions = new IndexOptions().name("name").unique(true).background(false);
         consumersCollection.createIndex(pkConsumer, pkConsumerOptions);
 
         // ------------------------------------------------
@@ -61,6 +57,7 @@ public class MongoDal implements AutoCloseable {
         val pkPartitionOptions = new IndexOptions().name("partitionKey").unique(true).background(false);
         partitionsCollection.createIndex(pkPartition, pkPartitionOptions);
 
+        /*
         // ------------------------------------------------
         // workers - primary key
         // ------------------------------------------------
@@ -81,5 +78,6 @@ public class MongoDal implements AutoCloseable {
         val release = new BasicDBObject().append("partitionKey", 1).append("workerNumber", 1).append("currentAssignee", 1);
         val options = new IndexOptions().name("release").unique(false).background(false);
         workersCollection.createIndex(release, options);
+        */
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class Config {
     @Bean
     public MongoConfiguration getMongoConfiguration() {
-        return MongoConfiguration.builder().partitionType("test").build();
+        return MongoConfiguration.builder().build();
     }
 
     @Bean

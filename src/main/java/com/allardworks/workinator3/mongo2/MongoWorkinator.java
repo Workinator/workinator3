@@ -1,7 +1,12 @@
 package com.allardworks.workinator3.mongo2;
 
+import com.allardworks.workinator3.commands.CreatePartitionCommand;
+import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.core.ConvertUtility;
 import com.mongodb.BasicDBObject;
+import com.mongodb.InsertOptions;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -15,30 +20,31 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.allardworks.workinator3.core.ConvertUtility.toDate;
+
 @RequiredArgsConstructor
 public class MongoWorkinator implements Workinator {
     private final MongoDal dal;
 
-    private MongoCollection<Document> getPartitions2Collection() {
-        return dal.getDatabase().getCollection("Partitions2");
-    }
-
-    public void createPartition(final CreatePartitionCommand createCommand) {
+    public void createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
         try {
             val create = new Document()
                     // key
-                    .append("partitionKey", createCommand.getPartitionKey())
+                    .append("partitionKey", command.getPartitionKey())
 
                     // configuration
-                    .append("maxIdleTimeSeconds", createCommand.getMaxIdleTimeSeconds())
+                    .append("maxIdleTimeSeconds", command.getMaxIdleTimeSeconds())
                     .append("hasWork", false)
 
                     // status
-                    .append("dueDate", new SimpleDateFormat("d/m/yyyy").parse("1/1/2000"))
+                    .append("dueDate", toDate(ConvertUtility.MinDate))
                     .append("workers", new ArrayList<BasicDBObject>());
-            getPartitions2Collection().insertOne(create);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            dal.getPartitionsCollection().insertOne(create);
+        } catch (final MongoWriteException e) {
+            if (e.getMessage().contains("E11000 duplicate key error collection")) {
+                throw new PartitionExistsException(command.getPartitionKey());
+            }
+            throw e;
         }
     }
 
@@ -56,13 +62,10 @@ public class MongoWorkinator implements Workinator {
                                         .append("insertDate", new Date())
                                         .append("rule", "Rule 1")));
 
-        // super fast
-        //val update = new Document().append("$set", new Document().append("hasWork", true));
-
         val options = new FindOneAndUpdateOptions();
         options.returnDocument(ReturnDocument.AFTER);
 
-        val result = getPartitions2Collection().findOneAndUpdate(filter, update, options);
+        val result = dal.getPartitionsCollection().findOneAndUpdate(filter, update, options);
         if (result == null) {
             return null;
         }
@@ -86,16 +89,34 @@ public class MongoWorkinator implements Workinator {
 
         val options = new FindOneAndUpdateOptions();
         options.projection(new Document().append("_id", 1));
-        val result = getPartitions2Collection().findOneAndUpdate(findPartition, removeWorker, options);
+        val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, options);
     }
 
     @Override
-    public ConsumerRegistration registerConsumer(ConsumerId id) throws ConsumerExistsException {
-        return null;
+    public ConsumerRegistration registerConsumer(final RegisterConsumerCommand command) throws ConsumerExistsException {
+        val consumer = new Document()
+                .append("name", command.getId().getName())
+                .append("connectDate", new Date())
+                .append("maxWorkerCount", command.getMaxWorkerCount());
+
+        try {
+            dal.getConsumersCollection().insertOne(consumer);
+        } catch (final MongoWriteException e) {
+            if (e.getMessage().contains("E11000 duplicate key error collection")) {
+                throw new ConsumerExistsException(command.getId().getName());
+            }
+            throw e;
+        }
+        return new ConsumerRegistration(command.getId(), "");
     }
 
     @Override
     public void unregisterConsumer(ConsumerRegistration registration) {
+
+    }
+
+    @Override
+    public void close() throws Exception {
 
     }
 }

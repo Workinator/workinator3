@@ -1,11 +1,14 @@
 package com.allardworks.workinator3.contracts;
 
-public interface Workinator {
+import com.allardworks.workinator3.commands.CreatePartitionCommand;
+import com.allardworks.workinator3.commands.RegisterConsumerCommand;
+
+public interface Workinator extends AutoCloseable {
     Assignment getAssignment(ExecutorStatus executorId);
 
     void releaseAssignment(Assignment assignment);
 
-    ConsumerRegistration registerConsumer(ConsumerId id) throws ConsumerExistsException;
+    ConsumerRegistration registerConsumer(RegisterConsumerCommand command) throws ConsumerExistsException;
 
     void unregisterConsumer(ConsumerRegistration registration);
 

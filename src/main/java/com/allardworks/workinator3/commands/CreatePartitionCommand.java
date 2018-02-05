@@ -1,4 +1,4 @@
-package com.allardworks.workinator3.contracts;
+package com.allardworks.workinator3.commands;
 
 import lombok.Builder;
 import lombok.Data;

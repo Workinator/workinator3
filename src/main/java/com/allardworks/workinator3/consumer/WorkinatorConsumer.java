@@ -1,5 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
+import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ServiceBase;
 import lombok.NonNull;
@@ -135,7 +136,8 @@ public class WorkinatorConsumer extends ServiceBase {
      * Register this consumer with the workinator.
      */
     private void setupConsumer() throws ConsumerExistsException {
-        registration = client.registerConsumer(consumerId);
+        val command = RegisterConsumerCommand.builder().id(consumerId).build();
+        registration = client.registerConsumer(command);
         if (registration == null) {
             throw new RuntimeException("Critcal problem... ");
         }

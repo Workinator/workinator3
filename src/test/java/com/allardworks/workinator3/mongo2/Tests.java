@@ -1,5 +1,6 @@
 package com.allardworks.workinator3.mongo2;
 
+import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.testsupport.TimedActivity;
 import com.mongodb.BasicDBObject;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 public class Tests {
+/*
     @Test
     public void boo() throws Exception {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -60,5 +62,5 @@ public class Tests {
                 workinator.releaseAssignment(a);
             }
         }
-    }
+    }*/
 }

@@ -1,5 +1,6 @@
 package com.allardworks.workinator3.demo;
 
+import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.consumer.WorkinatorConsumer;
 import com.allardworks.workinator3.consumer.WorkinatorConsumerFactory;
 import com.allardworks.workinator3.contracts.*;

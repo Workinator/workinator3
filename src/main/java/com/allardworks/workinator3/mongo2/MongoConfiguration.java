@@ -10,17 +10,16 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Builder
 public class MongoConfiguration {
-    private final String partitionType;
     private final String host;
     private final int port;
     private final String databaseName;
 
     public String getPartitionsCollectionName() {
-        return "Partitions_" + partitionType;
+        return "Partitions";
     }
 
-    public String getWorkersCollectionName() {
-        return "Workers_" + partitionType;
+    public String getConsumersCollectionName() {
+        return "Consumers";
     }
 
     public static class MongoConfigurationBuilder {

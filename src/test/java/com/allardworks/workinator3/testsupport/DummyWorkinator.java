@@ -1,7 +1,8 @@
 package com.allardworks.workinator3.testsupport;
 
+import com.allardworks.workinator3.commands.CreatePartitionCommand;
+import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.contracts.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class DummyWorkinator implements Workinator {
     private Assignment next;
@@ -21,7 +22,7 @@ public class DummyWorkinator implements Workinator {
     }
 
     @Override
-    public ConsumerRegistration registerConsumer(ConsumerId id) throws ConsumerExistsException {
+    public ConsumerRegistration registerConsumer(RegisterConsumerCommand command) throws ConsumerExistsException {
         return null;
     }
 
@@ -32,6 +33,11 @@ public class DummyWorkinator implements Workinator {
 
     @Override
     public void createPartition(CreatePartitionCommand command) throws PartitionExistsException {
+
+    }
+
+    @Override
+    public void close() throws Exception {
 
     }
 }
