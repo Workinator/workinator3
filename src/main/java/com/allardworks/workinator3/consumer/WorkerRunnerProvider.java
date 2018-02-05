@@ -11,8 +11,8 @@ import java.util.function.Function;
 class WorkerRunnerProvider implements AutoCloseable {
     private final Function<Context, Boolean> canContinue;
     private final AsyncWorkerFactory workerFactory;
-    private final WorkinatorRepository repo;
-    private final ExecutorId executorId;
+    private final Workinator repo;
+    private final ExecutorStatus executorId;
     private final ServiceStatus serviceStatus;
     private WorkerRunner current;
 

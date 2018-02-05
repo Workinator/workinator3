@@ -1,6 +1,5 @@
 package com.allardworks.workinator3.demo;
 
-import com.allardworks.workinator3.WorkinatorAdmin;
 import com.allardworks.workinator3.consumer.WorkinatorConsumer;
 import com.allardworks.workinator3.consumer.WorkinatorConsumerFactory;
 import com.allardworks.workinator3.contracts.*;
@@ -31,7 +30,7 @@ public class Runner implements CommandLineRunner {
     private final Map<String, WorkinatorConsumer> consumers = new HashMap<>();
 
     @Autowired
-    private final WorkinatorAdmin admin;
+    private final Workinator admin;
 
     @Autowired
     private final WorkinatorConsumerFactory consumerFactory;
@@ -88,7 +87,6 @@ public class Runner implements CommandLineRunner {
                     out.println();
                     continue;
                 }
-                out.println(assignment.getPartitionKey() + "." + assignment.getWorkerNumber());
             }
         }
         return true;
@@ -114,10 +112,10 @@ public class Runner implements CommandLineRunner {
             return false;
         }
 
-        val partitions = admin.getPartitions();
-        for (val partition : partitions) {
-            out.println("Partition Key=" + partition.getPartitionKey() + ", Max Worker Count=" + partition.getMaxWorkerCount().getValue() + ", Last Check Complete=" + partition.getLastCheckEnd().getValue());
-        }
+        //val partitions = admin.getPartitions();
+        //for (val partition : partitions) {
+            //out.println("Partition Key=" + partition.getPartitionKey() + ", Max Worker Count=" + partition.getMaxWorkerCount().getValue() + ", Last Check Complete=" + partition.getLastCheckEnd().getValue());
+        //}
         //out.println(mapper.writerWithDefaultPrettyPrnter().writeValueAsString(partitions));
         return true;
     }

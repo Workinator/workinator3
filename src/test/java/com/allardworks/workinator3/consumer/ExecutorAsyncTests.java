@@ -3,7 +3,7 @@ package com.allardworks.workinator3.consumer;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.testsupport.DummyAsyncWorker;
 import com.allardworks.workinator3.testsupport.DummyAsyncWorkerFactory;
-import com.allardworks.workinator3.testsupport.DummyWorkinatorRepository;
+import com.allardworks.workinator3.testsupport.DummyWorkinator;
 import com.allardworks.workinator3.testsupport.TestUtility;
 import lombok.val;
 import org.junit.Assert;
@@ -26,14 +26,14 @@ public class ExecutorAsyncTests {
                 .builder()
                 .build();
         val consumerId = new ConsumerId("booyea");
-        val registration = new ConsumerRegistration(consumerId);
+        val registration = new ConsumerRegistration(consumerId, "");
         val workerId = new ExecutorId(registration, 1);
         val worker = new DummyAsyncWorker();
         val factory = new DummyAsyncWorkerFactory(() -> worker);
-        val workinator = new DummyWorkinatorRepository();
+        val workinator = new DummyWorkinator();
 
-        workinator.setNextAssignment(new Assignment(workerId, "ab", 1, ""));
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo")), 1);
+        workinator.setNextAssignment(new Assignment(workerId, "ab", ""));
+        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
         try (val executor = new ExecutorAsync(id, configuration, factory, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
@@ -57,14 +57,14 @@ public class ExecutorAsyncTests {
                 //.consumerName("boo")
                 .build();
         val consumerId = new ConsumerId("booyea");
-        val registration = new ConsumerRegistration(consumerId);
+        val registration = new ConsumerRegistration(consumerId, "");
         val workerId = new ExecutorId(registration, 1);
-        val workinator = new DummyWorkinatorRepository();
+        val workinator = new DummyWorkinator();
         val worker = new DummyAsyncWorker();
         val workerFactory = new DummyAsyncWorkerFactory(() -> worker);
 
-        workinator.setNextAssignment(new Assignment(workerId, "ab", 0, ""));
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("aaa")),1);
+        workinator.setNextAssignment(new Assignment(workerId, "ab", ""));
+        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("aaa"), ""),1);
         try (val executor = new ExecutorAsync(id, configuration, workerFactory, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);

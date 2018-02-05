@@ -1,15 +1,18 @@
 package com.allardworks.workinator3.testsupport;
 
 import com.allardworks.workinator3.contracts.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-/**
- * Created by jaya on 1/9/18.
- * k?
- */
-public class DummyAdminRepository implements Workinator {
+public class DummyWorkinator implements Workinator {
+    private Assignment next;
+
+    public void setNextAssignment(final Assignment assignment) {
+        next = assignment;
+    }
+
     @Override
     public Assignment getAssignment(ExecutorStatus executorId) {
-        return null;
+        return next;
     }
 
     @Override

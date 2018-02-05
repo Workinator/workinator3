@@ -28,12 +28,11 @@ public class ExecutorAsync extends ServiceBase {
             final ExecutorId executorId,
             final ConsumerConfiguration configuration,
             final AsyncWorkerFactory workerFactory,
-            final WorkinatorRepository workinatorRepository) {
+            final Workinator workinatorRepository) {
 
-        // can continue = true for the partition's minimum work time
-        //Function<Context, Boolean> canContinue = c -> ;
+        val status = new ExecutorStatus(executorId);
         consumerConfiguration = configuration;
-        runnerProvider = new WorkerRunnerProvider(this::canContinue, workerFactory, workinatorRepository, executorId, getServiceStatus());
+        runnerProvider = new WorkerRunnerProvider(this::canContinue, workerFactory, workinatorRepository, status, getServiceStatus());
         id = executorId;
     }
 

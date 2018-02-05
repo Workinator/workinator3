@@ -19,7 +19,7 @@ public class WorkinatorConsumerFactory {
     private final ConsumerConfiguration consumerConfiguration;
 
     @Autowired
-    private final WorkinatorClient client;
+    private final Workinator client;
 
     @Autowired
     private final ExecutorFactory executorFactory;

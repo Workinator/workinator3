@@ -1,4 +1,4 @@
-package com.allardworks.workinator3.mongo2;
+package com.allardworks.workinator3.contracts;
 
 import com.allardworks.workinator3.contracts.ExecutorId;
 import lombok.Data;

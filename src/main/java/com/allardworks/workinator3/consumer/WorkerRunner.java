@@ -3,7 +3,7 @@ package com.allardworks.workinator3.consumer;
 import com.allardworks.workinator3.contracts.Assignment;
 import com.allardworks.workinator3.contracts.AsyncWorker;
 import com.allardworks.workinator3.contracts.WorkerContext;
-import com.allardworks.workinator3.contracts.WorkinatorRepository;
+import com.allardworks.workinator3.contracts.Workinator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 class WorkerRunner {
-    private final WorkinatorRepository repo;
+    private final Workinator repo;
     private final Assignment assignment;
     private final AsyncWorker worker;
     private final WorkerContext context;

@@ -1,11 +1,7 @@
 package com.allardworks.workinator3.contracts;
 
-/**
- * Created by jaya on 1/9/18.
- * k?
- */
-public interface WorkinatorClient {
-    Assignment getAssignment(ExecutorId executorId);
+public interface Workinator {
+    Assignment getAssignment(ExecutorStatus executorId);
 
     void releaseAssignment(Assignment assignment);
 
@@ -13,5 +9,5 @@ public interface WorkinatorClient {
 
     void unregisterConsumer(ConsumerRegistration registration);
 
-    void createPartition(final CreatePartitionCommand command) throws PartitionExistsException;
+    void createPartition(CreatePartitionCommand command) throws PartitionExistsException;
 }

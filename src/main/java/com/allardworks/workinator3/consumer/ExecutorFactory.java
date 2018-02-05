@@ -12,7 +12,7 @@ public class ExecutorFactory {
     private final ConsumerConfiguration configuration;
 
     @NonNull
-    private final WorkinatorRepository workinatorRepository;
+    private final Workinator workinatorRepository;
 
     /**
      * Creates an executor for the type of worker returned by the worker factory.

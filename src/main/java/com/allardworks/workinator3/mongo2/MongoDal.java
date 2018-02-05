@@ -1,4 +1,4 @@
-package com.allardworks.workinator3.mongo;
+package com.allardworks.workinator3.mongo2;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;

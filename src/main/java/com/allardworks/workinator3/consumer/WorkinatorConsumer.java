@@ -32,7 +32,7 @@ public class WorkinatorConsumer extends ServiceBase {
      * The workinator. Provides the partition assignments per worker.
      */
     @NonNull
-    private final WorkinatorClient client;
+    private final Workinator client;
 
     /**
      * Creates the executors.
