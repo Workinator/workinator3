@@ -13,7 +13,7 @@ public abstract class WorkinatorTests {
     protected abstract WorkinatorTester getTester();
 
     @Test
-    public void partitionCanOnlyBeCreatedonce() throws Exception {
+    public void partitionCanOnlyBeCreatedOnce() throws Exception {
         try (val tester = getTester()) {
             try (val workinator = tester.getWorkinator()) {
                 val partition = CreatePartitionCommand.builder().partitionKey("abc").build();

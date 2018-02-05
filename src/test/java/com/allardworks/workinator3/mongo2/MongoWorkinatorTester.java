@@ -12,7 +12,7 @@ public class MongoWorkinatorTester implements WorkinatorTester {
                 .builder()
                 .databaseName("test")
                 .build());
-        return new MongoWorkinator(dal);
+        return new MongoWorkinator(dal, new WhatsNextAssignmentStrategy(dal));
     }
 
     @Override

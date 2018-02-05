@@ -20,25 +20,35 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.allardworks.workinator3.core.ConvertUtility.MinDate;
 import static com.allardworks.workinator3.core.ConvertUtility.toDate;
+import static com.allardworks.workinator3.mongo2.DocumentUtility.createFlatDoc;
 
+/**
+ * Mongo implementation of the workinator.
+ */
 @RequiredArgsConstructor
 public class MongoWorkinator implements Workinator {
     private final MongoDal dal;
+    private final AssignmentStrategy assignmentStrategy;
 
+    /**
+     * Create a partition.
+     * @param command
+     * @throws PartitionExistsException
+     */
     public void createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
+        val create = createFlatDoc(
+                // key
+                "partitionKey", command.getPartitionKey(),
+                // configuration
+                "maxIdleTimeSeconds", command.getPartitionKey(),
+                "hasWork", false,
+                // status
+                "dueDate", toDate(MinDate),
+                "workers", new ArrayList<BasicDBObject>());
+
         try {
-            val create = new Document()
-                    // key
-                    .append("partitionKey", command.getPartitionKey())
-
-                    // configuration
-                    .append("maxIdleTimeSeconds", command.getMaxIdleTimeSeconds())
-                    .append("hasWork", false)
-
-                    // status
-                    .append("dueDate", toDate(ConvertUtility.MinDate))
-                    .append("workers", new ArrayList<BasicDBObject>());
             dal.getPartitionsCollection().insertOne(create);
         } catch (final MongoWriteException e) {
             if (e.getMessage().contains("E11000 duplicate key error collection")) {
@@ -48,56 +58,44 @@ public class MongoWorkinator implements Workinator {
         }
     }
 
-    private Assignment executeRule1(@NonNull final ExecutorStatus status) {
-        val filter = new Document()
-                //.append("workers", new Document().append("$size", 0))
-                .append("dueDate", new Document().append("$lt", new Date()));
-
-
-        val update = new Document()
-                .append("$push",
-                        new Document().append("workers",
-                                new Document()
-                                        .append("id", status.getExecutorId().getAssignee())
-                                        .append("insertDate", new Date())
-                                        .append("rule", "Rule 1")));
-
-        val options = new FindOneAndUpdateOptions();
-        options.returnDocument(ReturnDocument.AFTER);
-
-        val result = dal.getPartitionsCollection().findOneAndUpdate(filter, update, options);
-        if (result == null) {
-            return null;
-        }
-        return new Assignment(status.getExecutorId(), result.getString("partitionKey"), "");
-    }
-
+    /**
+     * Get an assignment for the executor.
+     * @param status
+     * @return
+     */
     public Assignment getAssignment(@NonNull ExecutorStatus status) {
-        val assignment = executeRule1(status);
-        if (assignment == null) {
-            return null;
-        }
-
-        return assignment;
+        return assignmentStrategy.getAssignment(status);
     }
 
+    /**
+     * Release the assignment.
+     * @param assignment
+     */
     public void releaseAssignment(@NonNull Assignment assignment) {
-        val findPartition = new Document().append("partitionKey", assignment.getPartitionKey());
-        val removeWorker = new Document().append("$pull",
-                new Document().append("workers",
-                        new Document().append("id", assignment.getExecutorId().getAssignee())));
+        val findPartition = createFlatDoc("partitionKey", assignment.getPartitionKey());
+
+        val removeWorker =
+                createFlatDoc("$pull",
+                        createFlatDoc("workers",
+                                createFlatDoc("id", assignment.getExecutorId().getAssignee())));
 
         val options = new FindOneAndUpdateOptions();
         options.projection(new Document().append("_id", 1));
         val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, options);
     }
 
+    /**
+     * Register a consumer.
+     * @param command
+     * @return
+     * @throws ConsumerExistsException
+     */
     @Override
     public ConsumerRegistration registerConsumer(final RegisterConsumerCommand command) throws ConsumerExistsException {
-        val consumer = new Document()
-                .append("name", command.getId().getName())
-                .append("connectDate", new Date())
-                .append("maxWorkerCount", command.getMaxWorkerCount());
+        val consumer =
+                createFlatDoc("name", command.getId().getName(),
+                        "connectDate", new Date(),
+                        "maxWorkerCount", command.getMaxWorkerCount());
 
         try {
             dal.getConsumersCollection().insertOne(consumer);
@@ -110,6 +108,10 @@ public class MongoWorkinator implements Workinator {
         return new ConsumerRegistration(command.getId(), "");
     }
 
+    /**
+     * Unregister the consumer.
+     * @param registration
+     */
     @Override
     public void unregisterConsumer(ConsumerRegistration registration) {
 
