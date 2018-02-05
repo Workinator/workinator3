@@ -3,26 +3,20 @@ package com.allardworks.workinator3.mongo2;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.core.ConvertUtility;
 import com.mongodb.BasicDBObject;
-import com.mongodb.InsertOptions;
 import com.mongodb.MongoWriteException;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.model.ReturnDocument;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bson.Document;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import static com.allardworks.workinator3.core.ConvertUtility.MinDate;
 import static com.allardworks.workinator3.core.ConvertUtility.toDate;
-import static com.allardworks.workinator3.mongo2.DocumentUtility.createFlatDoc;
+import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 
 /**
  * Mongo implementation of the workinator.
@@ -38,7 +32,7 @@ public class MongoWorkinator implements Workinator {
      * @throws PartitionExistsException
      */
     public void createPartition(final CreatePartitionCommand command) throws PartitionExistsException {
-        val create = createFlatDoc(
+        val create = doc(
                 // key
                 "partitionKey", command.getPartitionKey(),
                 // configuration
@@ -72,12 +66,12 @@ public class MongoWorkinator implements Workinator {
      * @param assignment
      */
     public void releaseAssignment(@NonNull Assignment assignment) {
-        val findPartition = createFlatDoc("partitionKey", assignment.getPartitionKey());
+        val findPartition = doc("partitionKey", assignment.getPartitionKey());
 
         val removeWorker =
-                createFlatDoc("$pull",
-                        createFlatDoc("workers",
-                                createFlatDoc("id", assignment.getExecutorId().getAssignee())));
+                doc("$pull",
+                        doc("workers",
+                                doc("id", assignment.getExecutorId().getAssignee())));
 
         val options = new FindOneAndUpdateOptions();
         options.projection(new Document().append("_id", 1));
@@ -93,7 +87,7 @@ public class MongoWorkinator implements Workinator {
     @Override
     public ConsumerRegistration registerConsumer(final RegisterConsumerCommand command) throws ConsumerExistsException {
         val consumer =
-                createFlatDoc("name", command.getId().getName(),
+                doc("name", command.getId().getName(),
                         "connectDate", new Date(),
                         "maxWorkerCount", command.getMaxWorkerCount());
 

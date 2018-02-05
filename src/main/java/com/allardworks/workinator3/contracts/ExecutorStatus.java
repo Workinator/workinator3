@@ -7,4 +7,8 @@ import lombok.Data;
 public class ExecutorStatus {
     private final ExecutorId executorId;
 
+    private boolean busy;
+
+    private Assignment currentAssignment;
+
 }

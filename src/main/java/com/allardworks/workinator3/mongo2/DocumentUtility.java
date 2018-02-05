@@ -13,7 +13,7 @@ public class DocumentUtility {
      * @param fieldsAndValues
      * @return
      */
-    public static Document createFlatDoc(Object... fieldsAndValues) {
+    public static Document doc(Object... fieldsAndValues) {
         val doc = new Document();
         for (int i = 0; i < fieldsAndValues.length; i += 2) {
             doc.append((String)fieldsAndValues[i], fieldsAndValues[i+1]);
