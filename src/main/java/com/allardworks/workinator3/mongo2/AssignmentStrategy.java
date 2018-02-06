@@ -5,4 +5,6 @@ import com.allardworks.workinator3.contracts.ExecutorStatus;
 
 public interface AssignmentStrategy {
     Assignment getAssignment(ExecutorStatus executor);
+    void releaseAssignment(Assignment assignment);
+
 }

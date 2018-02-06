@@ -28,6 +28,7 @@ public class MongoWorkinator implements Workinator {
 
     /**
      * Create a partition.
+     *
      * @param command
      * @throws PartitionExistsException
      */
@@ -39,7 +40,9 @@ public class MongoWorkinator implements Workinator {
                 "maxIdleTimeSeconds", command.getPartitionKey(),
                 "hasWork", false,
                 // status
+                "lastCheckedDate", toDate(MinDate),
                 "dueDate", toDate(MinDate),
+                "workerCount", 0,
                 "workers", new ArrayList<BasicDBObject>());
 
         try {
@@ -54,6 +57,7 @@ public class MongoWorkinator implements Workinator {
 
     /**
      * Get an assignment for the executor.
+     *
      * @param status
      * @return
      */
@@ -63,23 +67,16 @@ public class MongoWorkinator implements Workinator {
 
     /**
      * Release the assignment.
+     *
      * @param assignment
      */
     public void releaseAssignment(@NonNull Assignment assignment) {
-        val findPartition = doc("partitionKey", assignment.getPartitionKey());
-
-        val removeWorker =
-                doc("$pull",
-                        doc("workers",
-                                doc("id", assignment.getExecutorId().getAssignee())));
-
-        val options = new FindOneAndUpdateOptions();
-        options.projection(new Document().append("_id", 1));
-        val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, options);
+        assignmentStrategy.releaseAssignment(assignment);
     }
 
     /**
      * Register a consumer.
+     *
      * @param command
      * @return
      * @throws ConsumerExistsException
@@ -104,6 +101,7 @@ public class MongoWorkinator implements Workinator {
 
     /**
      * Unregister the consumer.
+     *
      * @param registration
      */
     @Override

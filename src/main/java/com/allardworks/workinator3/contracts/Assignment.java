@@ -11,4 +11,5 @@ public class Assignment {
     private final ExecutorId executorId;
     private final String partitionKey;
     private final String receipt;
+    private final String ruleName;
 }

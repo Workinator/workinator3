@@ -15,33 +15,17 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 public class Tests {
-/*
     @Test
     public void boo() throws Exception {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger("org.mongodb.driver");
         rootLogger.setLevel(Level.OFF);
 
-        val dal = new MongoDal(MongoConfiguration.builder().build());
-        dal.getDatabase().getCollection("Partitions2").drop();
-
-        {
-            val pkPartitions2 = new BasicDBObject().append("partitionKey", 1);
-            val pkIndexOptions = new IndexOptions().name("PartitionKey").unique(true).background(false);
-            dal.getDatabase().getCollection("Partitions2").createIndex(pkPartitions2, pkIndexOptions);
-        }
-
-        {
-            val rule1 = new BasicDBObject().append("dueDate", 1);
-            val rule1Options = new IndexOptions().name("Rule1").background(false);
-            dal.getDatabase().getCollection("Partitions2").createIndex(rule1, rule1Options);
-        }
-
-
-        val workinator = new MongoWorkinator(dal);
+        val dal = new MongoDal(MongoConfiguration.builder().databaseName("test").build());
+        val workinator = new MongoWorkinator(dal, new WhatsNextAssignmentStrategy(dal));
         val assignments = new ArrayList<Assignment>();
 
-        val partitionCount = 4000;
+        val partitionCount = 1;
 
         try (val timer = new TimedActivity("create partitions")) {
             for (int i = 0; i < partitionCount; i++) {
@@ -54,6 +38,8 @@ public class Tests {
             for (int i = 0; i < partitionCount; i++) {
                 val assignment = workinator.getAssignment(new ExecutorStatus(new ExecutorId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1)));
                 assignments.add(assignment);
+
+                workinator.releaseAssignment(assignment);
             }
         }
 
@@ -62,5 +48,5 @@ public class Tests {
                 workinator.releaseAssignment(a);
             }
         }
-    }*/
+    }
 }
