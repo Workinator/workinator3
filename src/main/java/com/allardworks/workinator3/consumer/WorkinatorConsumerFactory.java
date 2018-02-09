@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * This is a convenience in cases where a single program
  * wants to createPartitions multiple consumers. Usually, that's not how WorkinatorConsumer should
  * be used. But, for tests and demos, you may need multiple.
- * In a usual program, you would just createPartitions the beans and inject WorkinatorConsumer, letting spring do the work.
+ * In a usual program, you would just create the beans and inject WorkinatorConsumer. Let spring do the work.
  */
 @Component
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class WorkinatorConsumerFactory {
     private final ConsumerConfiguration consumerConfiguration;
 
     @Autowired
-    private final Workinator client;
+    private final Workinator workinator;
 
     @Autowired
     private final ExecutorFactory executorFactory;
@@ -28,6 +28,6 @@ public class WorkinatorConsumerFactory {
     private final WorkerFactory workerFactory;
 
     public WorkinatorConsumer create(final ConsumerId id) {
-        return new WorkinatorConsumer(consumerConfiguration, client, executorFactory, workerFactory, id);
+        return new WorkinatorConsumer(consumerConfiguration, workinator, executorFactory, workerFactory, id);
     }
 }

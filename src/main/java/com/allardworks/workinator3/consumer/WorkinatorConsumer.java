@@ -5,17 +5,14 @@ import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ServiceBase;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.*;
@@ -33,7 +30,7 @@ public class WorkinatorConsumer extends ServiceBase {
      * The workinator. Provides the partition assignments per worker.
      */
     @NonNull
-    private final Workinator client;
+    private final Workinator workinator;
 
     /**
      * Creates the executors.
@@ -137,9 +134,9 @@ public class WorkinatorConsumer extends ServiceBase {
      */
     private void setupConsumer() throws ConsumerExistsException {
         val command = RegisterConsumerCommand.builder().id(consumerId).build();
-        registration = client.registerConsumer(command);
+        registration = workinator.registerConsumer(command);
         if (registration == null) {
-            throw new RuntimeException("Critcal problem... ");
+            throw new RuntimeException("Critcal problem. Registration came back null. Doh!");
         }
     }
 

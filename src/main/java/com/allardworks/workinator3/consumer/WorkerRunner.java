@@ -8,15 +8,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Runs the worker until it is time for the worker to stop.
+ */
 @RequiredArgsConstructor
 @Getter
 @Slf4j
 class WorkerRunner {
-    private final Workinator repo;
+    private final Workinator workinator;
     private final Assignment assignment;
     private final AsyncWorker worker;
     private final WorkerContext context;
 
+    /**
+     * A loop that executes the worker until
+     * - coordinator says stop
+     * - or, the worker reports there isn't any more work.
+     */
     void run() {
         while (context.canContinue()) {
             try {
@@ -36,6 +44,6 @@ class WorkerRunner {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        repo.releaseAssignment(assignment);
+        workinator.releaseAssignment(assignment);
     }
 }

@@ -12,7 +12,7 @@ public class ExecutorFactory {
     private final ConsumerConfiguration configuration;
 
     @NonNull
-    private final Workinator workinatorRepository;
+    private final Workinator workinator;
 
     /**
      * Creates an executor for the type of worker returned by the worker factory.
@@ -22,7 +22,7 @@ public class ExecutorFactory {
      */
     public Service createExecutor(@NonNull ExecutorId executorId, @NonNull final WorkerFactory workerFactory) {
         if (workerFactory instanceof AsyncWorkerFactory) {
-            return new ExecutorAsync(executorId, configuration, (AsyncWorkerFactory) workerFactory, workinatorRepository);
+            return new ExecutorAsync(executorId, configuration, (AsyncWorkerFactory) workerFactory, workinator);
         }
 
         throw new RuntimeException("Unknown type of WorkerFactory. The factory must implement AsyncWorkerFactory.");
