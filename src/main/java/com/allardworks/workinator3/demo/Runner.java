@@ -81,9 +81,9 @@ public class Runner implements CommandLineRunner {
             out.println(consumerId.getName());
             val executors = (List<Map<String, Object>>) info.get("executors");
             for (val e : executors) {
-                val eid = (ExecutorId) e.get("executorId");
+                val eid = (WorkerId) e.get("executorId");
                 val assignment = (Assignment)e.get("currentAssignment");
-                out.print("\t" + eid.getExecutorNumber() + ", Assignment=");
+                out.print("\t" + eid.getWorkerNumber() + ", Assignment=");
                 if (assignment == null) {
                     out.println();
                     continue;

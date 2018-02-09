@@ -20,6 +20,8 @@ public class Context implements WorkerContext {
     @NonNull private final LocalTime startDate = LocalTime.now();
     @NonNull private final Function<Context, Boolean> canContinue;
     @NonNull private final Assignment assignment;
+
+    // TODO: this should be a supplier?
     @NonNull private final ServiceStatus executorStatus;
 
     public boolean getHasMoreWork() {

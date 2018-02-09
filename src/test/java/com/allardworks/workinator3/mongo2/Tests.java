@@ -3,8 +3,6 @@ package com.allardworks.workinator3.mongo2;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.testsupport.TimedActivity;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.model.IndexOptions;
 import lombok.val;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -36,7 +34,7 @@ public class Tests {
 
         try (val timer = new TimedActivity("create")) {
             for (int i = 0; i < partitionCount; i++) {
-                val assignment = workinator.getAssignment(new ExecutorStatus(new ExecutorId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1)));
+                val assignment = workinator.getAssignment(new WorkerStatus(new WorkerId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1)));
                 assignments.add(assignment);
 
                 workinator.releaseAssignment(assignment);

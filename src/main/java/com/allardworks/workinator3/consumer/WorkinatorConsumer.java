@@ -112,7 +112,7 @@ public class WorkinatorConsumer extends ServiceBase {
         // createPartitions the worker ids
         val executorIds = IntStream
                 .range(0, configuration.getMaxExecutorCount())
-                .mapToObj(i -> new ExecutorId(registration, i))
+                .mapToObj(i -> new WorkerId(registration, i))
                 .collect(toList());
 
         executors = new ArrayList<>();

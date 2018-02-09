@@ -2,14 +2,13 @@ package com.allardworks.workinator3.mongo2;
 
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
+import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
-import com.mongodb.client.model.FindOneAndUpdateOptions;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,13 +54,19 @@ public class MongoWorkinator implements Workinator {
         }
     }
 
+    @Override
+    public void updateStatus(UpdateWorkerStatusCommand workerStatus) {
+
+    }
+
+
     /**
      * Get an assignment for the executor.
      *
      * @param status
      * @return
      */
-    public Assignment getAssignment(@NonNull ExecutorStatus status) {
+    public Assignment getAssignment(@NonNull WorkerStatus status) {
         return assignmentStrategy.getAssignment(status);
     }
 

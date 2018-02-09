@@ -1,9 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.Assignment;
-import com.allardworks.workinator3.contracts.AsyncWorker;
-import com.allardworks.workinator3.contracts.WorkerContext;
-import com.allardworks.workinator3.contracts.Workinator;
+import com.allardworks.workinator3.contracts.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class WorkerRunner {
     private final Workinator workinator;
-    private final Assignment assignment;
+    private final WorkerStatus status;
     private final AsyncWorker worker;
     private final WorkerContext context;
 
@@ -38,12 +35,16 @@ class WorkerRunner {
         }
     }
 
+
+    /**
+     * Terminate the worker.
+     */
     void close(){
         try {
             worker.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        workinator.releaseAssignment(assignment);
+        workinator.releaseAssignment(status.getCurrentAssignment());
     }
 }

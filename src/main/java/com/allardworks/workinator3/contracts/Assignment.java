@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode
 @Getter
 public class Assignment {
-    private final ExecutorId executorId;
+    private final WorkerId workerId;
     private final String partitionKey;
     private final String receipt;
     private final String ruleName;

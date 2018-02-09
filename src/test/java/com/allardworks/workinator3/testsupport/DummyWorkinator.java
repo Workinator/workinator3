@@ -2,6 +2,7 @@ package com.allardworks.workinator3.testsupport;
 
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
+import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 
 public class DummyWorkinator implements Workinator {
@@ -12,7 +13,7 @@ public class DummyWorkinator implements Workinator {
     }
 
     @Override
-    public Assignment getAssignment(ExecutorStatus executorId) {
+    public Assignment getAssignment(WorkerStatus executorId) {
         return next;
     }
 
@@ -33,6 +34,11 @@ public class DummyWorkinator implements Workinator {
 
     @Override
     public void createPartition(CreatePartitionCommand command) throws PartitionExistsException {
+
+    }
+
+    @Override
+    public void updateStatus(UpdateWorkerStatusCommand workerStatus) {
 
     }
 

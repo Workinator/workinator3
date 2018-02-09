@@ -27,13 +27,13 @@ public class ExecutorAsyncTests {
                 .build();
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "");
-        val workerId = new ExecutorId(registration, 1);
+        val workerId = new WorkerId(registration, 1);
         val worker = new DummyAsyncWorker();
         val factory = new DummyAsyncWorkerFactory(() -> worker);
         val workinator = new DummyWorkinator();
 
         workinator.setNextAssignment(new Assignment(workerId, "ab", "", ""));
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
+        val id = new WorkerId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
         try (val executor = new ExecutorAsync(id, configuration, factory, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);
@@ -50,21 +50,20 @@ public class ExecutorAsyncTests {
      * @throws Exception
      */
     @Test
-    public void wontStopWhileWorkerIsBusy() throws Exception {
+    public void wontStopWhileWorkerFIsBusy() throws Exception {
         val freezeTime = 100;
         val configuration = ConsumerConfiguration
                 .builder()
-                //.consumerName("boo")
                 .build();
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "");
-        val workerId = new ExecutorId(registration, 1);
+        val workerId = new WorkerId(registration, 1);
         val workinator = new DummyWorkinator();
         val worker = new DummyAsyncWorker();
         val workerFactory = new DummyAsyncWorkerFactory(() -> worker);
 
         workinator.setNextAssignment(new Assignment(workerId, "ab", "", ""));
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("aaa"), ""),1);
+        val id = new WorkerId(new ConsumerRegistration(new ConsumerId("aaa"), ""),1);
         try (val executor = new ExecutorAsync(id, configuration, workerFactory, workinator)) {
             startAndWait(executor);
             TestUtility.waitFor(() -> worker.getLastContext() != null);

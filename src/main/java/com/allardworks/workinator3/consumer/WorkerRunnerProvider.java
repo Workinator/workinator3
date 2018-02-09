@@ -19,7 +19,7 @@ class WorkerRunnerProvider implements AutoCloseable {
     private final Function<Context, Boolean> canContinue;
     private final AsyncWorkerFactory workerFactory;
     private final Workinator workinator;
-    private final ExecutorStatus executorId;
+    private final WorkerStatus workerStatus;
     private final ServiceStatus serviceStatus;
     private WorkerRunner current;
 
@@ -36,17 +36,19 @@ class WorkerRunnerProvider implements AutoCloseable {
 
     /**
      * Creates a new WorkerRunner.
+     *
      * @param newAssignment
      * @return
      */
     private WorkerRunner createWorkerRunner(final Assignment newAssignment) {
         val worker = workerFactory.createWorker(newAssignment);
         val context = new Context(canContinue, newAssignment, serviceStatus);
-        return new WorkerRunner(workinator, newAssignment, worker, context);
+        return new WorkerRunner(workinator, workerStatus, worker, context);
     }
 
     /**
      * Returns the current assignment.
+     *
      * @return
      */
     public Assignment getCurrentAssignment() {
@@ -55,11 +57,12 @@ class WorkerRunnerProvider implements AutoCloseable {
             return null;
         }
 
-        return c.getAssignment();
+        return c.getStatus().getCurrentAssignment();
     }
 
     /**
      * Returns the current run context.
+     *
      * @return
      */
     public WorkerContext getCurrentContext() {
@@ -76,10 +79,11 @@ class WorkerRunnerProvider implements AutoCloseable {
      * - if there isn't an assignment for this worker, then returns null.
      * - if there's a new assignment, closes the old runner and returns a new one.
      * - if the assignment doesn't change, then returns the current runner.
+     *
      * @return
      */
     public WorkerRunner lookupRunner() {
-        val newAssignment = workinator.getAssignment(executorId);
+        val newAssignment = workinator.getAssignment(workerStatus);
 
         // no assignment. nothing to do.
         if (newAssignment == null) {
@@ -88,7 +92,10 @@ class WorkerRunnerProvider implements AutoCloseable {
         }
 
         // new assignment.
-        if (current == null || !current.getAssignment().equals(newAssignment)) {
+        if (
+                current == null ||
+                        current.getStatus().getCurrentAssignment() == null ||
+                        !current.getStatus().getCurrentAssignment().equals(newAssignment)) {
             closeCurrent();
             current = createWorkerRunner(newAssignment);
         }
@@ -97,7 +104,8 @@ class WorkerRunnerProvider implements AutoCloseable {
     }
 
     /**
-     * Terminate the current worker runner. 
+     * Terminate the current worker runner.
+     *
      * @throws Exception
      */
     @Override

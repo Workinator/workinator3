@@ -5,10 +5,9 @@ import com.allardworks.workinator3.WorkinatorTests;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.contracts.ConsumerId;
 import com.allardworks.workinator3.contracts.ConsumerRegistration;
-import com.allardworks.workinator3.contracts.ExecutorId;
-import com.allardworks.workinator3.contracts.ExecutorStatus;
+import com.allardworks.workinator3.contracts.WorkerId;
+import com.allardworks.workinator3.contracts.WorkerStatus;
 import lombok.val;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -19,8 +18,8 @@ public class MongoWorkinatorTests extends WorkinatorTests {
         return new MongoWorkinatorTester();
     }
 
-    private ExecutorStatus createStatus(final String consumerId) {
-        return new ExecutorStatus(new ExecutorId(new ConsumerRegistration(new ConsumerId(consumerId), ""), 1));
+    private WorkerStatus createStatus(final String consumerId) {
+        return new WorkerStatus(new WorkerId(new ConsumerRegistration(new ConsumerId(consumerId), ""), 1));
     }
 
     /**

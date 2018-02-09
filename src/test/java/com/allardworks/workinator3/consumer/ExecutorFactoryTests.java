@@ -21,7 +21,7 @@ public class ExecutorFactoryTests {
                 .build();
         val workerFactory = new DummyAsyncWorkerFactory(DummyAsyncWorker::new);
         val factory = new ExecutorFactory(config, new DummyWorkinator());
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
+        val id = new WorkerId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
         val executor = factory.createExecutor(id, workerFactory);
         Assert.isTrue(executor instanceof ExecutorAsync, "expected AsyncWorker");
     }

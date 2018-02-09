@@ -16,13 +16,13 @@ public class ExecutorFactory {
 
     /**
      * Creates an executor for the type of worker returned by the worker factory.
-     * @param executorId
+     * @param workerId
      * @param workerFactory used to determine what type of executor to create.
      * @return
      */
-    public Service createExecutor(@NonNull ExecutorId executorId, @NonNull final WorkerFactory workerFactory) {
+    public Service createExecutor(@NonNull WorkerId workerId, @NonNull final WorkerFactory workerFactory) {
         if (workerFactory instanceof AsyncWorkerFactory) {
-            return new ExecutorAsync(executorId, configuration, (AsyncWorkerFactory) workerFactory, workinator);
+            return new ExecutorAsync(workerId, configuration, (AsyncWorkerFactory) workerFactory, workinator);
         }
 
         throw new RuntimeException("Unknown type of WorkerFactory. The factory must implement AsyncWorkerFactory.");

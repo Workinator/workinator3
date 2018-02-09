@@ -5,11 +5,11 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 @Data
-public class ExecutorId {
+public class WorkerId {
     private final ConsumerRegistration consumer;
-    private final int executorNumber;
+    private final int workerNumber;
 
     public String getAssignee() {
-        return consumer.getConsumerId().getName() + ", #" + executorNumber;
+        return consumer.getConsumerId().getName() + ", #" + workerNumber;
     }
 }

@@ -2,17 +2,11 @@ package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import static java.lang.System.out;
 
 /**
  * Creates one thread per worker.
@@ -20,20 +14,20 @@ import static java.lang.System.out;
 @Slf4j
 public class ExecutorAsync extends ServiceBase {
     private final WorkerRunnerProvider runnerProvider;
-    private final ExecutorId id;
+    private final WorkerId id;
     private final ConsumerConfiguration consumerConfiguration;
     private Thread thread;
 
     public ExecutorAsync(
-            final ExecutorId executorId,
+            final WorkerId workerId,
             final ConsumerConfiguration configuration,
             final AsyncWorkerFactory workerFactory,
             final Workinator workinatorRepository) {
 
-        val status = new ExecutorStatus(executorId);
+        val status = new WorkerStatus(workerId);
         consumerConfiguration = configuration;
         runnerProvider = new WorkerRunnerProvider(this::canContinue, workerFactory, workinatorRepository, status, getServiceStatus());
-        id = executorId;
+        id = workerId;
     }
 
     private boolean canContinue(final Context context) {
@@ -64,12 +58,12 @@ public class ExecutorAsync extends ServiceBase {
 
             try {
                 runnerProvider.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (final Exception e) {
+                log.error("Error when closing runnerProvider", e);
             }
             getServiceStatus().stopped();
-        } catch (Exception e2) {
-            e2.printStackTrace();
+        } catch (final Exception e2) {
+            log.error("Error in run", e2);
         }
     }
 
