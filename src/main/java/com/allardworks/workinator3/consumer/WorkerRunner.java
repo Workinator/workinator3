@@ -1,5 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
+import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.contracts.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ class WorkerRunner {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        workinator.releaseAssignment(status.getCurrentAssignment());
+
+        workinator.releaseAssignment(new ReleaseAssignmentCommand(status.getCurrentAssignment()));
     }
 }

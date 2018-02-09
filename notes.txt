@@ -1,9 +1,0 @@
-{
-  $push : {
-    workers:
-      { blah : "a" }
-  },
-  $inc: {
-    workercount: 1
-  }
-}

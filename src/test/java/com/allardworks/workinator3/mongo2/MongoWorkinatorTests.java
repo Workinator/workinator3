@@ -3,6 +3,7 @@ package com.allardworks.workinator3.mongo2;
 import com.allardworks.workinator3.WorkinatorTester;
 import com.allardworks.workinator3.WorkinatorTests;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
+import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.contracts.ConsumerId;
 import com.allardworks.workinator3.contracts.ConsumerRegistration;
 import com.allardworks.workinator3.contracts.WorkerId;
@@ -177,7 +178,7 @@ public class MongoWorkinatorTests extends WorkinatorTests {
                 // release one, then get an assignment
                 // we'll get the same one back because rule 3 will see it has the fewest assignments
 
-                workinator.releaseAssignment(a2);
+                workinator.releaseAssignment(new ReleaseAssignmentCommand(a2));
                 val a7 = workinator.getAssignment(createStatus("consumer b"));
                 assertEquals("b", a7.getPartitionKey());
                 assertEquals("Rule 3", a7.getRuleName());

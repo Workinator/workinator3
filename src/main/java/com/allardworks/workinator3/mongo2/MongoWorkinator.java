@@ -2,6 +2,7 @@ package com.allardworks.workinator3.mongo2;
 
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
+import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.mongodb.BasicDBObject;
@@ -73,10 +74,11 @@ public class MongoWorkinator implements Workinator {
     /**
      * Release the assignment.
      *
-     * @param assignment
+     * @param command
      */
-    public void releaseAssignment(@NonNull Assignment assignment) {
-        assignmentStrategy.releaseAssignment(assignment);
+    @Override
+    public void releaseAssignment(@NonNull ReleaseAssignmentCommand command) {
+        assignmentStrategy.releaseAssignment(command.getAssignment());
     }
 
     /**

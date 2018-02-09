@@ -2,6 +2,7 @@ package com.allardworks.workinator3.testsupport;
 
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
+import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 
@@ -18,7 +19,7 @@ public class DummyWorkinator implements Workinator {
     }
 
     @Override
-    public void releaseAssignment(Assignment assignment) {
+    public void releaseAssignment(ReleaseAssignmentCommand assignment) {
 
     }
 

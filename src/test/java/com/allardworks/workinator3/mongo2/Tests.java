@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.mongo2;
 
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
+import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.testsupport.TimedActivity;
 import lombok.val;
@@ -37,13 +38,13 @@ public class Tests {
                 val assignment = workinator.getAssignment(new WorkerStatus(new WorkerId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1)));
                 assignments.add(assignment);
 
-                workinator.releaseAssignment(assignment);
+                workinator.releaseAssignment(new ReleaseAssignmentCommand(assignment));
             }
         }
 
         try (val timer = new TimedActivity("release")) {
             for (val a : assignments) {
-                workinator.releaseAssignment(a);
+                workinator.releaseAssignment(new ReleaseAssignmentCommand(a));
             }
         }
     }

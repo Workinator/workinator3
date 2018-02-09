@@ -81,8 +81,8 @@ public class WorkinatorConsumer extends ServiceBase {
                     // then the wc is stuck in starting. need to work out proper error handling.
                     setupConsumer();
                     setupAndStartExecutors();
-                } catch (ConsumerExistsException e) {
-                    e.printStackTrace();
+                } catch (final ConsumerExistsException e) {
+                    log.error("Consumer Exists", e);
                 }
             });
 

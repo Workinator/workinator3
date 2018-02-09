@@ -46,7 +46,6 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                         "$set", doc("lastChecked", new Date()));
         val options = new FindOneAndUpdateOptions().projection(doc("_id", 1));
         val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, options);
-        out.println(result);
     }
 
     @RequiredArgsConstructor
