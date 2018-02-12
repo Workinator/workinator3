@@ -93,9 +93,9 @@ class WorkerRunnerProvider implements AutoCloseable {
 
         // new assignment.
         if (
-                current == null ||
-                        current.getStatus().getCurrentAssignment() == null ||
-                        !current.getStatus().getCurrentAssignment().equals(newAssignment)) {
+                current == null
+                        || current.getStatus().getCurrentAssignment() == null
+                        || !current.getStatus().getCurrentAssignment().equals(newAssignment)) {
             closeCurrent();
             current = createWorkerRunner(newAssignment);
         }

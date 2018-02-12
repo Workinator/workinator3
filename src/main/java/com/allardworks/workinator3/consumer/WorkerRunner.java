@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
+import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,10 +44,11 @@ class WorkerRunner {
     void close(){
         try {
             worker.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            log.error("Error closing worker", e);
         }
 
+        workinator.updateStatus(new UpdateWorkerStatusCommand(status));
         workinator.releaseAssignment(new ReleaseAssignmentCommand(status.getCurrentAssignment()));
     }
 }
