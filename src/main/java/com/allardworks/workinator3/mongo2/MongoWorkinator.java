@@ -36,9 +36,11 @@ public class MongoWorkinator implements Workinator {
         val create = doc(
                 // key
                 "partitionKey", command.getPartitionKey(),
+
                 // configuration
                 "maxIdleTimeSeconds", command.getPartitionKey(),
                 "hasWork", false,
+
                 // status
                 "lastCheckedDate", toDate(MinDate),
                 "dueDate", toDate(MinDate),
@@ -56,8 +58,8 @@ public class MongoWorkinator implements Workinator {
     }
 
     @Override
-    public void updateStatus(UpdateWorkerStatusCommand workerStatus) {
-
+    public void updateStatus(final UpdateWorkerStatusCommand workerStatus) {
+        workerStatus.getStatus().
     }
 
 
@@ -67,7 +69,7 @@ public class MongoWorkinator implements Workinator {
      * @param status
      * @return
      */
-    public Assignment getAssignment(@NonNull WorkerStatus status) {
+    public Assignment getAssignment(@NonNull final WorkerStatus status) {
         return assignmentStrategy.getAssignment(status);
     }
 

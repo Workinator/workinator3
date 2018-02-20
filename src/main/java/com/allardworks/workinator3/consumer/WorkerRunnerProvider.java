@@ -42,7 +42,7 @@ class WorkerRunnerProvider implements AutoCloseable {
      */
     private WorkerRunner createWorkerRunner(final Assignment newAssignment) {
         val worker = workerFactory.createWorker(newAssignment);
-        val context = new Context(canContinue, newAssignment, serviceStatus);
+        val context = new Context(newAssignment, workerStatus, () ->serviceStatus, canContinue);
         return new WorkerRunner(workinator, workerStatus, worker, context);
     }
 

@@ -13,18 +13,14 @@ public class MongoConfiguration {
     private final String host;
     private final int port;
     private final String databaseName;
-
-    public String getPartitionsCollectionName() {
-        return "Partitions";
-    }
-
-    public String getConsumersCollectionName() {
-        return "Consumers";
-    }
+    private final String partitionsCollectionName;
+    private final String consumersCollectionName;
 
     public static class MongoConfigurationBuilder {
-        private String databaseName = "Workinator";
         private String host = "localhost";
         private int port = 27017;
+        private String databaseName = "Workinator";
+        private String partitionsCollectionName = "Partitions";
+        private String consumersCollectionName = "Consumers";
     }
 }

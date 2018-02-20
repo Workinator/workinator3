@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 import static com.mongodb.client.model.ReturnDocument.AFTER;
-import static java.lang.System.out;
 
 /**
  * Assignment strategy that determines a worker's assignment.
@@ -64,21 +63,28 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                 this::anyPartitionWithoutWorkers);
 
         /**
-         * Creates the update document. All rules need this.
+         * Creates the update document. Most rules need this.
          *
          * @param ruleName
          * @return
          */
-        private Document createUpdateDocument(final String ruleName) {
+        private Document createWorkerUpdateDocument(final String ruleName) {
             return doc("$push",
                     doc("workers",
                             doc("id", status.getWorkerId().getAssignee(),
                                     "insertDate", new Date(),
-                                    "rule", "Rule 1")),
+                                    "rule", ruleName)),
                     "$inc", doc("workerCount", 1),
                     "$set", doc("lastChecked", new Date()));
         }
 
+        /**
+         * Converts a partition BSON document to an assignment object.
+         * @param partition
+         * @param status
+         * @param ruleName
+         * @return
+         */
         private Assignment toAssignment(final Document partition, final WorkerStatus status, final String ruleName) {
             if (partition == null) {
                 return null;
@@ -99,7 +105,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          */
         private Assignment due() {
             val where = doc("workerCount", 0, "dueDate", doc("$lt", new Date()));
-            val update = createUpdateDocument("Rule 1");
+            val update = createWorkerUpdateDocument("Rule 1");
             return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(where, update, strategy.updateOptions), status, "Rule 1");
         }
 
@@ -131,7 +137,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                     .sort(doc("lastCheckedDate", 1, "workerCount", 1));
 
             val where = doc("hasWork", true);
-            val update = createUpdateDocument("Rule 3");
+            val update = createWorkerUpdateDocument("Rule 3");
             return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(where, update, updateOptions), status, "Rule 3");
         }
 
@@ -141,10 +147,16 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          */
         private Assignment anyPartitionWithoutWorkers() {
             val where = doc("workerCount", 0);
-            val update = createUpdateDocument("Rule 4");
+            val update = createWorkerUpdateDocument("Rule 4");
             return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(where, update, strategy.updateOptions), status, "Rule 4");
         }
 
+        /**
+         * Determines the assignment for the worker.
+         * Iterates a list of rules until one returns an assignment.
+         * If no rule returns an assignment, then there's nothing to do.
+         * @return
+         */
         public Assignment getAssignment() {
             for (val rule : rules) {
                 val assignment = rule.get();

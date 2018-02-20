@@ -141,11 +141,13 @@ public class WorkinatorConsumer extends ServiceBase {
     }
 
     /**
-     * Event handler for executer.started.
+     * Event handler for executor.started.
      */
     private void onExecutorStarted() {
         startCount.countDown();
         if (startCount.getCount() == 0) {
+            // when all executors are started, then the service is started.
+            // until then, it is starting.
             getServiceStatus().started();
         }
     }
@@ -156,6 +158,8 @@ public class WorkinatorConsumer extends ServiceBase {
     private void onExecutorStopped() {
         stopCount.countDown();
         if (stopCount.getCount() == 0) {
+            // when all executors are stopped, then the service is stopped.
+            // until then, it is stopping.
             cleanupExecutors();
             getServiceStatus().stopped();
         }

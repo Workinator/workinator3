@@ -33,7 +33,9 @@ public class MongoDal implements AutoCloseable {
         client = new MongoClient(config.getHost(), config.getPort());
         database = client.getDatabase(config.getDatabaseName());
         partitionsCollection = database.getCollection(config.getPartitionsCollectionName(), Document.class);
-        consumersCollection = database.getCollection("Consumers", Document.class);
+
+        // TODO: name consumer collection by particion type
+        consumersCollection = database.getCollection(config.getConsumersCollectionName(), Document.class);
         setupDatabase();
     }
 
@@ -56,28 +58,5 @@ public class MongoDal implements AutoCloseable {
         val pkPartition = new BasicDBObject().append("partitionKey", 1);
         val pkPartitionOptions = new IndexOptions().name("partitionKey").unique(true).background(false);
         partitionsCollection.createIndex(pkPartition, pkPartitionOptions);
-
-        /*
-        // ------------------------------------------------
-        // workers - primary key
-        // ------------------------------------------------
-        val pkWorker = new BasicDBObject().append("partitionKey", 1).append("workerNumber", 1);
-        val pkWorkerOptions = new IndexOptions().name("primary key").unique(true).background(false);
-        workersCollection.createIndex(pkWorker, pkWorkerOptions);
-
-        // ------------------------------------------------
-        // workers - rule 1
-        // ------------------------------------------------
-        val rule1 = new BasicDBObject().append("workerNumber", 1).append("currentAssignee", 1).append("lastCheckEnd", 1);
-        val rule1options = new IndexOptions().name("rule1").unique(false).background(false);
-        workersCollection.createIndex(rule1, rule1options);
-
-        // ------------------------------------------------
-        // workers - release
-        // ------------------------------------------------
-        val release = new BasicDBObject().append("partitionKey", 1).append("workerNumber", 1).append("currentAssignee", 1);
-        val options = new IndexOptions().name("release").unique(false).background(false);
-        workersCollection.createIndex(release, options);
-        */
     }
 }

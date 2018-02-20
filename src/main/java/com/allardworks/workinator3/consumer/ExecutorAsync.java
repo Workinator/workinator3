@@ -44,6 +44,8 @@ public class ExecutorAsync extends ServiceBase {
     }
 
     private void run() {
+        // The executor runs as long as the service is started.
+        // the assignment it executes may change many times, but the thread nor executor stops.
         try {
             getServiceStatus().started();
             while (getServiceStatus().getStatus().isStarted()) {

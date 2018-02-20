@@ -2,6 +2,7 @@ package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.Assignment;
 import com.allardworks.workinator3.contracts.WorkerContext;
+import com.allardworks.workinator3.contracts.WorkerStatus;
 import com.allardworks.workinator3.core.ServiceStatus;
 import com.allardworks.workinator3.core.Status;
 import lombok.NonNull;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Runtime context for a worker. This is passed to the worker.
@@ -17,12 +19,12 @@ import java.util.function.Function;
  */
 @RequiredArgsConstructor
 public class Context implements WorkerContext {
-    @NonNull private final LocalTime startDate = LocalTime.now();
-    @NonNull private final Function<Context, Boolean> canContinue;
     @NonNull private final Assignment assignment;
+    @NonNull private final WorkerStatus workerStatus;
+    @NonNull private final Supplier<ServiceStatus> executorStatus;
+    @NonNull private final Function<Context, Boolean> canContinue;
 
-    // TODO: this should be a supplier?
-    @NonNull private final ServiceStatus executorStatus;
+    @NonNull private final LocalTime startDate = LocalTime.now();
 
     public boolean getHasMoreWork() {
         return false;
@@ -35,28 +37,7 @@ public class Context implements WorkerContext {
      * @param hasMoreWork
      */
     public void setHasMoreWork(boolean hasMoreWork) {
-        // TODO
-        //assignment.getPartition().setMoreWork(hasMoreWork);
-    }
-
-    /**
-     * The worker reports that it completed one unit of work.
-     * @return
-     */
-    public WorkerContext didWork() {
-        didWork(1);
-        return this;
-    }
-
-    /**
-     * The worker reports that it did 0 or more units of work.
-     * @param workCount
-     * @return
-     */
-    public WorkerContext didWork(final int workCount) {
-        // TODO
-        //assignment.getPartition().didWork(workCount);
-        return this;
+        workerStatus.setHasWork(hasMoreWork);
     }
 
     /**
@@ -72,7 +53,7 @@ public class Context implements WorkerContext {
      * @return
      */
     public Status getExecutorStatus() {
-        return executorStatus.getStatus();
+        return executorStatus.get().getStatus();
     }
 
     /**
