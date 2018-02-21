@@ -176,7 +176,7 @@ public class MongoWorkinatorTests extends WorkinatorTests {
                 assertEquals("Rule 3", a6.getRuleName());
 
                 // release one, then get an assignment
-                // we'll get the same one back because rule 3 will see it has the fewest assignments
+                // we'll get the same one back because rule 3 will see it has the fewest workers
 
                 workinator.releaseAssignment(new ReleaseAssignmentCommand(a2));
                 val a7 = workinator.getAssignment(createStatus("consumer b"));

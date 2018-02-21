@@ -2,15 +2,88 @@ package com.allardworks.workinator3;
 
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
-import com.allardworks.workinator3.contracts.ConsumerExistsException;
-import com.allardworks.workinator3.contracts.ConsumerId;
-import com.allardworks.workinator3.contracts.PartitionExistsException;
+import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
+import com.allardworks.workinator3.contracts.*;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 public abstract class WorkinatorTests {
     protected abstract WorkinatorTester getTester();
+
+    @Test
+    public void canOnlyGetPartitionOnce() throws Exception {
+        try (val tester = getTester()) {
+            try (val workinator = tester.getWorkinator()) {
+                val partition = CreatePartitionCommand.builder().partitionKey("yadda").maxWorkerCount(1).build();
+                workinator.createPartition(partition);
+
+                val register = RegisterConsumerCommand.builder().id(new ConsumerId("smashing")).build();
+                val registration = workinator.registerConsumer(register);
+
+                val worker1 = new WorkerStatus(new WorkerId(registration, 1));
+                val worker2 = new WorkerStatus(new WorkerId(registration, 2));
+                val assignment1 = workinator.getAssignment(worker1);
+                assertEquals("yadda", assignment1.getPartitionKey());
+
+                val assignment2 = workinator.getAssignment(worker2);
+                assertNull(assignment2);
+            }
+        }
+    }
+
+    @Test
+    public void getsSameAssignmentIfNothingElseAvailable() throws Exception {
+        try (val tester = getTester()) {
+            try (val workinator = tester.getWorkinator()) {
+                val partition = CreatePartitionCommand.builder().partitionKey("yadda").maxWorkerCount(1).build();
+                workinator.createPartition(partition);
+
+                val register = RegisterConsumerCommand.builder().id(new ConsumerId("smashing")).build();
+                val registration = workinator.registerConsumer(register);
+
+                val worker1 = new WorkerStatus(new WorkerId(registration, 1));
+                val assignment1 = workinator.getAssignment(worker1);
+                worker1.setCurrentAssignment(assignment1);
+                assertEquals("yadda", assignment1.getPartitionKey());
+
+                val assignment2 = workinator.getAssignment(worker1);
+                assertEquals(assignment1, assignment2);
+            }
+        }
+    }
+
+    @Test
+    public void canGetAssignmentAfterItIsReleased() throws Exception {
+        try (val tester = getTester()) {
+            try (val workinator = tester.getWorkinator()) {
+                val partition = CreatePartitionCommand.builder().partitionKey("yadda").maxWorkerCount(1).build();
+                workinator.createPartition(partition);
+
+                val register = RegisterConsumerCommand.builder().id(new ConsumerId("smashing")).build();
+                val registration = workinator.registerConsumer(register);
+
+                val worker1 = new WorkerStatus(new WorkerId(registration, 1));
+                val assignment1 = workinator.getAssignment(worker1);
+                worker1.setCurrentAssignment(assignment1);
+                assertEquals("yadda", assignment1.getPartitionKey());
+
+                // one partition already assigned, so nothing to do here.
+                val worker2 = new WorkerStatus(new WorkerId(registration, 2));
+                val assignment2 = workinator.getAssignment(worker2);
+                assertNull(assignment2);
+
+                // release the partition, then another worker can get it
+                workinator.releaseAssignment(new ReleaseAssignmentCommand(assignment1));
+                val assignment3 = workinator.getAssignment(worker2);
+                assertEquals("yadda", assignment3.getPartitionKey());
+            }
+        }
+    }
 
     @Test
     public void partitionCanOnlyBeCreatedOnce() throws Exception {
@@ -23,7 +96,7 @@ public abstract class WorkinatorTests {
                     workinator.createPartition(partition);
                     Assert.fail("should've failed");
                 } catch (final PartitionExistsException ex) {
-                    Assert.assertEquals("abc", partition.getPartitionKey());
+                    assertEquals("abc", partition.getPartitionKey());
                 }
             }
         }
@@ -40,7 +113,7 @@ public abstract class WorkinatorTests {
                     workinator.registerConsumer(register);
                     Assert.fail("should've failed");
                 } catch (final ConsumerExistsException ex) {
-                    Assert.assertEquals("boo", ex.getConsumerId());
+                    assertEquals("boo", ex.getConsumerId());
                 }
             }
         }

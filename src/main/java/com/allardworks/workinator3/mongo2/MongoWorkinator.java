@@ -39,9 +39,9 @@ public class MongoWorkinator implements Workinator {
 
                 // configuration
                 "maxIdleTimeSeconds", command.getPartitionKey(),
-                "hasWork", false,
 
                 // status
+                "hasWork", false,
                 "lastCheckedDate", toDate(MinDate),
                 "dueDate", toDate(MinDate),
                 "workerCount", 0,
@@ -59,7 +59,13 @@ public class MongoWorkinator implements Workinator {
 
     @Override
     public void updateStatus(final UpdateWorkerStatusCommand workerStatus) {
-        workerStatus.getStatus().
+        val updatePartition = doc(
+                "hasWork", workerStatus.getStatus().isHasWork(),
+                "lastCheckedDate", new Date());
+
+        val find = doc("partitionKey", workerStatus.getStatus().getCurrentAssignment().getPartitionKey());
+
+        dal.getPartitionsCollection().updateOne(find, updatePartition);
     }
 
 

@@ -42,7 +42,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                         doc("workers",
                                 doc("id", assignment.getWorkerId().getAssignee())),
                         "$inc", doc("workerCount", -1),
-                        "$set", doc("lastChecked", new Date()));
+                        "$set", doc("lastCheckedDate", new Date()));
         val options = new FindOneAndUpdateOptions().projection(doc("_id", 1));
         val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, options);
     }
@@ -75,7 +75,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                                     "insertDate", new Date(),
                                     "rule", ruleName)),
                     "$inc", doc("workerCount", 1),
-                    "$set", doc("lastChecked", new Date()));
+                    "$set", doc("lastCheckedDate", new Date()));
         }
 
         /**
@@ -134,7 +134,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
             // TODO: workerCount < maxWorkerCount
             val updateOptions = new FindOneAndUpdateOptions()
                     .returnDocument(AFTER)
-                    .sort(doc("lastCheckedDate", 1, "workerCount", 1));
+                    .sort(doc("workerCount", 1, "lastCheckedDate", 1));
 
             val where = doc("hasWork", true);
             val update = createWorkerUpdateDocument("Rule 3");
