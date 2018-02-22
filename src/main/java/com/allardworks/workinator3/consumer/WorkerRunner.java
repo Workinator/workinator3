@@ -28,7 +28,7 @@ class WorkerRunner {
         while (context.canContinue()) {
             try {
                 worker.execute(context);
-                if (!context.getHasMoreWork()) {
+                if (!status.isHasWork()) {
                     break;
                 }
             } catch (final Exception ex) {

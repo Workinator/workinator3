@@ -6,6 +6,8 @@ import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 
+import java.util.List;
+
 /**
  * Created by jaya on 1/9/18.
  * k?
@@ -40,6 +42,11 @@ public class DummyAdminRepository implements Workinator {
     @Override
     public void updateStatus(UpdateWorkerStatusCommand workerStatus) {
 
+    }
+
+    @Override
+    public List<PartitionInfo> getPartitions() {
+        return null;
     }
 
     @Override

@@ -92,12 +92,14 @@ class WorkerRunnerProvider implements AutoCloseable {
         }
 
         // new assignment.
-        if (
-                current == null
+        if (current == null
                         || current.getStatus().getCurrentAssignment() == null
                         || !current.getStatus().getCurrentAssignment().equals(newAssignment)) {
             closeCurrent();
             current = createWorkerRunner(newAssignment);
+
+            // this is weird
+            workerStatus.setCurrentAssignment(newAssignment);
         }
 
         return current;

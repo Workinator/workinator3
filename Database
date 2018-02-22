@@ -15,7 +15,7 @@ Partitions
 
     -- STATUS
     hasMoreWork
-    lastCheckStart
-    lastCheckEnd
+    lastChecked
+    workerCount
     workers
         TODO

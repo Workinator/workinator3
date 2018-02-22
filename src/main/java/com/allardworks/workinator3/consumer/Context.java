@@ -26,12 +26,6 @@ public class Context implements WorkerContext {
 
     @NonNull private final LocalTime startDate = LocalTime.now();
 
-    public boolean getHasMoreWork() {
-        return false;
-        // TODO
-        //return assignment.isHasMoreWork();
-    }
-
     /**
      * The worker reports to the coordinator that there is more work to do.
      * @param hasMoreWork

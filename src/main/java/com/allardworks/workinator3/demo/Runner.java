@@ -31,7 +31,7 @@ public class Runner implements CommandLineRunner {
     private final Map<String, WorkinatorConsumer> consumers = new HashMap<>();
 
     @Autowired
-    private final Workinator admin;
+    private final Workinator workinator;
 
     @Autowired
     private final WorkinatorConsumerFactory consumerFactory;
@@ -52,7 +52,7 @@ public class Runner implements CommandLineRunner {
                 .builder()
                 .partitionKey(partitionName)
                 .build();
-        admin.createPartition(partition);
+        workinator.createPartition(partition);
         return true;
     }
 
@@ -113,11 +113,13 @@ public class Runner implements CommandLineRunner {
             return false;
         }
 
-        //val partitions = admin.getPartitions();
-        //for (val partition : partitions) {
-            //out.println("Partition Key=" + partition.getPartitionKey() + ", Max Worker Count=" + partition.getMaxWorkerCount().getValue() + ", Last Check Complete=" + partition.getLastCheckEnd().getValue());
-        //}
-        //out.println(mapper.writerWithDefaultPrettyPrnter().writeValueAsString(partitions));
+        val partitions = workinator.getPartitions();
+        for (val partition : partitions) {
+            out.println("Partition Key=" + partition.getPartitionKey() + ", Max Worker Count=" + partition.getMaxWorkerCount() + ", Last Checked=" + partition.getLastChecked() + ", Current Worker Count=" + partition.getCurrentWorkerCount());
+            for (val worker : partition.getWorkers()) {
+                out.println("\t" + worker.getId() + ", Rule: " + worker.getRule());
+            }
+        }
         return true;
     }
 
