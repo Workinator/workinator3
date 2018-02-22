@@ -18,4 +18,6 @@ Partitions
     lastChecked
     workerCount
     workers
-        TODO
+        id
+        insertDate
+        rule

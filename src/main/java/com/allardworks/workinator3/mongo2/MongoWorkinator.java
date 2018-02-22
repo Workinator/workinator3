@@ -86,7 +86,11 @@ public class MongoWorkinator implements Workinator {
             val workers = new ArrayList<WorkerInfo>();
             val workersSource = (List<Document>)doc.get("workers");
             workersSource.iterator().forEachRemaining(d -> {
-                workers.add(WorkerInfo.builder().id(d.getString("id")).build());
+                workers.add(WorkerInfo.builder()
+                        .id(d.getString("id"))
+                        .createDate(toLocalDateTime(d.getDate("insertDate")))
+                        .rule(d.getString("rule"))
+                        .build());
             });
 
             result.add(PartitionInfo
