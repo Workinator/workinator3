@@ -74,7 +74,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                             doc("id", status.getWorkerId().getAssignee(),
                                     "insertDate", new Date(),
                                     "rule", ruleName)),
-                    "$inc", doc("workerCount", 1),
+                    "$inc", doc("workerCount", 1, "assignmentCount", 1),
                     "$set", doc("lastCheckedDate", new Date()));
         }
 

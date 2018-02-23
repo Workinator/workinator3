@@ -69,13 +69,18 @@ public class Runner implements CommandLineRunner {
         return true;
     }
 
-    private boolean showConsumerStatus(final CommandLine command) throws JsonProcessingException {
-        if (!command.hasOption("sc")) {
+    /**
+     * Shows the status of the consumers running in process.
+     * @param command
+     * @return
+     * @throws JsonProcessingException
+     */
+    private boolean showLocalConsumerStatus(final CommandLine command) throws JsonProcessingException {
+        if (!command.hasOption("scl")) {
             return false;
         }
 
         for (val c : consumers.values()) {
-            //out.println(mapper.writeValueAsString(c.getInfo()));
             val info = c.getInfo();
             val consumerId = (ConsumerId) info.get("consumerId");
             out.println(consumerId.getName());
@@ -88,7 +93,10 @@ public class Runner implements CommandLineRunner {
                     out.println();
                     continue;
                 }
+
+                out.println(assignment.getPartitionKey());
             }
+            out.println();
         }
         return true;
     }
@@ -130,7 +138,7 @@ public class Runner implements CommandLineRunner {
         val options = new Options();
         options.addOption(new Option("cc", "createconsumer", true, "Create a consumer"));
         options.addOption(new Option("cp", "createpartition", true, "Create a partition"));
-        options.addOption(new Option("sc", "showconsumers", false, "Display Consumers"));
+        options.addOption(new Option("scl", "showconsumerslocal", false, "Display In Process Consumer Information"));
         options.addOption(new Option("help", "help", false, "print this message"));
         options.addOption(new Option("sp", "showpartitions", false, "show partitions"));
         while (true) {
@@ -139,7 +147,7 @@ public class Runner implements CommandLineRunner {
                 val processed =
                         createPartition(command)
                                 || createConsumer(command)
-                                || showConsumerStatus(command)
+                                || showLocalConsumerStatus(command)
                                 || showHelp(command, options)
                                 || showPartitions(command);
 

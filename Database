@@ -15,6 +15,7 @@ Partitions
 
     -- STATUS
     hasMoreWork
+    assignmentCount - how many times a worker was assigned
     lastChecked
     workerCount
     workers

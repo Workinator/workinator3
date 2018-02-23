@@ -47,6 +47,7 @@ public class MongoWorkinator implements Workinator {
                 "maxWorkerCount", command.getMaxWorkerCount(),
 
                 // status
+                "assignmentCount", 0,
                 "hasWork", false,
                 "lastCheckedDate", toDate(MIN_DATE),
                 "dueDate", toDate(MIN_DATE),
