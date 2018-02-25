@@ -24,7 +24,7 @@ public class Tests {
         val workinator = new MongoWorkinator(dal, new WhatsNextAssignmentStrategy(dal));
         val assignments = new ArrayList<Assignment>();
 
-        val partitionCount = 1;
+        val partitionCount = 25000;
 
         try (val timer = new TimedActivity("create partitions")) {
             for (int i = 0; i < partitionCount; i++) {
@@ -33,16 +33,16 @@ public class Tests {
             }
         }
 
-        try (val timer = new TimedActivity("create")) {
+        try (val timer = new TimedActivity("get assignments")) {
             for (int i = 0; i < partitionCount; i++) {
-                val assignment = workinator.getAssignment(new WorkerStatus(new WorkerId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1)));
+                val workerStatus = new WorkerStatus(new WorkerId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1));
+                val assignment = workinator.getAssignment(workerStatus);
                 assignments.add(assignment);
-
-                workinator.releaseAssignment(new ReleaseAssignmentCommand(assignment));
+                //workinator.releaseAssignment(new ReleaseAssignmentCommand(assignment));
             }
         }
 
-        try (val timer = new TimedActivity("release")) {
+        try (val timer = new TimedActivity("release assignments")) {
             for (val a : assignments) {
                 workinator.releaseAssignment(new ReleaseAssignmentCommand(a));
             }

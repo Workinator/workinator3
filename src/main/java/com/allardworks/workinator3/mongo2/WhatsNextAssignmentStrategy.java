@@ -106,11 +106,12 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
         private Assignment due() {
             val where = doc("workerCount", 0, "dueDate", doc("$lt", new Date()));
             val update = createWorkerUpdateDocument("Rule 1");
-            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(where, update, strategy.updateOptions), status, "Rule 1");
+            return toAssignment(strategy.dal.getPartitionsCollection()
+                    .findOneAndUpdate(where, update, strategy.updateOptions), status, "Rule 1");
         }
 
         /**
-         * RULE 1
+         * RULE 2
          * If the executor is already hasWork, then let it keep doing what it's doing.
          *
          * @return
