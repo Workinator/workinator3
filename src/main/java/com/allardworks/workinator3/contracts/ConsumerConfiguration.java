@@ -12,7 +12,7 @@ import java.time.Duration;
 @Getter
 public class ConsumerConfiguration {
     @NonNull
-    private final Duration minWorkTime = Duration.ofSeconds(30);
+    private final Duration minWorkTime = Duration.ofSeconds(10);
 
     private final int maxExecutorCount;
 

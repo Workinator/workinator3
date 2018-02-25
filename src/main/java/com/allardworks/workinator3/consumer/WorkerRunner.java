@@ -21,7 +21,7 @@ class WorkerRunner {
 
     /**
      * A loop that executes the worker until
-     * - coordinator says stop
+     * - workinator says stop
      * - or, the worker reports there isn't any more work.
      */
     void run() {

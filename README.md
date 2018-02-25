@@ -23,7 +23,7 @@ Implementations of this interface are executed by SyncExecutors.
 
 # Executors
 
-Each worker is managed by an executor. The executor retrieves assignments from the coordinator, and forwards it to the worker. It instructs the worker when to stop working.
+Each worker is managed by an executor. The executor retrieves assignments from the workinator, and forwards it to the worker. It instructs the worker when to stop working.
 
 The executor manages the worker. The worker does the work.
 
@@ -105,7 +105,7 @@ The total number of available threads is `(# of partitions) * (# of threads per 
 
 The number of executors could be significantly less than the number of partitions.
 
-Each thread requests and assignment from the coordinator. If an assignment is given, then the executor starts working on that partition.
+Each thread requests and assignment from the workinator. If an assignment is given, then the executor starts working on that partition.
 
 
 ## The "Assignment" Strategy

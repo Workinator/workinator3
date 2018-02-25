@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class DemoWorker implements AsyncWorker {
     @Override
     public void execute(WorkerContext context) {
+        context.setHasMoreWork(true);
     }
 
     @Override

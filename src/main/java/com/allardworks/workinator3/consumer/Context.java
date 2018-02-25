@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * Runtime context for a worker. This is passed to the worker.
- * The worker uses it to communicate with the coordinator.
+ * The worker uses it to communicate with the workinator.
  */
 @RequiredArgsConstructor
 public class Context implements WorkerContext {
@@ -27,7 +27,10 @@ public class Context implements WorkerContext {
     @NonNull private final LocalTime startDate = LocalTime.now();
 
     /**
-     * The worker reports to the coordinator that there is more work to do.
+     * The worker reports to the workinator that there is more work to do.
+     * This is important for prioritization. It defaults to false.
+     * If set to true, then the workinator will give the assigned partition priority
+     * over partitions that don't have work.
      * @param hasMoreWork
      */
     public void setHasMoreWork(boolean hasMoreWork) {
@@ -39,7 +42,7 @@ public class Context implements WorkerContext {
      * @return
      */
     public Duration getElapsed() {
-        return Duration.between(LocalTime.now(), startDate);
+        return Duration.between(startDate, LocalTime.now());
     }
 
     /**
