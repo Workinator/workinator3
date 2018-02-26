@@ -133,7 +133,6 @@ public class Runner implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        // TODO: refactor this... should just be a list of stuff that works itself out
         val parser = new DefaultParser();
         val options = new Options();
         options.addOption(new Option("cc", "createconsumer", true, "Create a consumer"));

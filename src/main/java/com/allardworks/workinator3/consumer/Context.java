@@ -33,7 +33,7 @@ public class Context implements WorkerContext {
      * over partitions that don't have work.
      * @param hasMoreWork
      */
-    public void setHasMoreWork(boolean hasMoreWork) {
+    public void setHasWork(boolean hasMoreWork) {
         workerStatus.setHasWork(hasMoreWork);
     }
 
