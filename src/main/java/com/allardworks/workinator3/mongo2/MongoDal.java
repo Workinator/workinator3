@@ -1,5 +1,6 @@
 package com.allardworks.workinator3.mongo2;
 
+import com.allardworks.workinator3.contracts.PartitionConfiguration;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -35,8 +36,6 @@ public class MongoDal implements AutoCloseable {
         client = new MongoClient(config.getHost(), config.getPort());
         database = client.getDatabase(config.getDatabaseName());
         partitionsCollection = database.getCollection(config.getPartitionsCollectionName(), Document.class);
-
-        // TODO: name consumer collection by particion type
         consumersCollection = database.getCollection(config.getConsumersCollectionName(), Document.class);
         setupDatabase();
     }
@@ -45,6 +44,28 @@ public class MongoDal implements AutoCloseable {
     public void close() throws Exception {
         client.close();
     }
+
+    /**
+     * Gets the partition configuration from the database.
+     * @param partitionKey
+     * @return
+     */
+    public PartitionConfiguration getPartitionConfiguration(final String partitionKey) {
+        val where = doc("partitionKey", partitionKey);
+        val found = getPartitionsCollection().find(where).first();
+        if (found == null) {
+            return null;
+        }
+
+        return
+                PartitionConfiguration
+                        .builder()
+                        .partitionKey(partitionKey)
+                        .maxIdleTimeSeconds(found.getInteger("maxIdleTimeSeconds"))
+                        .maxWorkerCount(found.getInteger("maxWorkerCount"))
+                        .build();
+    }
+
 
     private void setupDatabase() {
         // ------------------------------------------------

@@ -8,13 +8,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bson.Document;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.Supplier;
 
+import static com.allardworks.workinator3.core.ConvertUtility.toDate;
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 import static com.mongodb.client.model.ReturnDocument.AFTER;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 /**
  * Assignment strategy that determines a worker's assignment.
@@ -27,6 +28,29 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
             .sort(doc("lastCheckedDate", 1));
 
     private final MongoDal dal;
+    private final PartitionConfigurationCache partitionConfigurationCache;
+    private final FindOneAndUpdateOptions releaseOptions = new FindOneAndUpdateOptions().projection(doc("_id", 1));
+
+    /**
+     * The WHERE for rule #3.
+     * All documents that have work and capacity for more workers.
+     */
+    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { hasWork: true }, { $expr :  { $lt: [ \"$workerCount\", \"$maxWorkerCount\" ] } } ] }");
+
+    /**
+     * The UPDATE options for rule #3.
+     * Order by the worker count and the date.
+     */
+    private final FindOneAndUpdateOptions alreadyBeingWorkedOnUpdateOptions =  new FindOneAndUpdateOptions()
+                    .returnDocument(AFTER)
+                    .sort(doc("workerCount", 1, "lastCheckedDate", 1));
+
+    /**
+     * The WHERE for rule #4.
+     * An partition that doesn't have any workers.
+     */
+    private final Document noWorkers = doc("workerCount", 0);
+
 
     @Override
     public Assignment getAssignment(@NonNull final WorkerStatus status) {
@@ -34,17 +58,17 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
     }
 
     @Override
-    public void releaseAssignment(Assignment assignment) {
-        // TODO: due date
+    public void releaseAssignment(final Assignment assignment) {
+        // due date is now + maxIdleTimeSeconds.
+        val dueDate = toDate(LocalDateTime.now().plus(partitionConfigurationCache.getConfiguration(assignment.getPartitionKey()).getMaxIdleTimeSeconds(), SECONDS));
         val findPartition = doc("partitionKey", assignment.getPartitionKey());
         val removeWorker =
                 doc("$pull",
                         doc("workers",
                                 doc("id", assignment.getWorkerId().getAssignee())),
                         "$inc", doc("workerCount", -1),
-                        "$set", doc("lastCheckedDate", new Date()));
-        val options = new FindOneAndUpdateOptions().projection(doc("_id", 1));
-        val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, options);
+                        "$set", doc("lastCheckedDate", new Date(), "dueDate", dueDate));
+        val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, releaseOptions);
     }
 
     @RequiredArgsConstructor
@@ -128,28 +152,21 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          * RULE 3
          * Return a partition that is already being worked on.
          * Partitions that are being worked on, but support multiple workers.
-         *
          * @return
          */
         private Assignment alreadyBeingWorkedOn() {
-            // TODO: workerCount < maxWorkerCount
-            val updateOptions = new FindOneAndUpdateOptions()
-                    .returnDocument(AFTER)
-                    .sort(doc("workerCount", 1, "lastCheckedDate", 1));
-
-            val where = doc("hasWork", true);
             val update = createWorkerUpdateDocument("Rule 3");
-            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(where, update, updateOptions), status, "Rule 3");
+            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.alreadyBeingWorkedOnFilter, update, strategy.alreadyBeingWorkedOnUpdateOptions), status, "Rule 3");
         }
 
         /**
+         * Rule 4
          * Find any partition that doesn't have a worker, even if it's not due yet.
          * If we have capacity to do work, might as well even though the partition isn't due.
          */
         private Assignment anyPartitionWithoutWorkers() {
-            val where = doc("workerCount", 0);
             val update = createWorkerUpdateDocument("Rule 4");
-            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(where, update, strategy.updateOptions), status, "Rule 4");
+            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.noWorkers, update, strategy.updateOptions), status, "Rule 4");
         }
 
         /**

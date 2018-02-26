@@ -19,7 +19,8 @@ public class MongoWorkinatorTester implements WorkinatorTester {
                 .builder()
                 .databaseName("test")
                 .build());
-        return new MongoWorkinator(dal, new WhatsNextAssignmentStrategy(dal));
+        val cache = new PartitionConfigurationCache(dal);
+        return new MongoWorkinator(dal, cache, new WhatsNextAssignmentStrategy(dal, cache));
     }
 
     public void setHasWork(final String partitionKey, final boolean hasWork) {

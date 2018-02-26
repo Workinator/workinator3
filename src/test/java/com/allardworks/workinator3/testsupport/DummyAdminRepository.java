@@ -50,6 +50,11 @@ public class DummyAdminRepository implements Workinator {
     }
 
     @Override
+    public PartitionConfiguration getPartitionConfiguration(String partitionKey) {
+        return null;
+    }
+
+    @Override
     public void close() throws Exception {
 
     }

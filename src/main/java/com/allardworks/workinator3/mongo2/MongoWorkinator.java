@@ -4,6 +4,7 @@ import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
+import com.allardworks.workinator3.consumer.StupidCache;
 import com.allardworks.workinator3.contracts.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
@@ -11,6 +12,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 @Service
 public class MongoWorkinator implements Workinator {
     private final MongoDal dal;
+    private final PartitionConfigurationCache configurationCache;
     private final AssignmentStrategy assignmentStrategy;
 
     /**
@@ -106,6 +109,17 @@ public class MongoWorkinator implements Workinator {
                     .build());
         });
         return result;
+    }
+
+    /**
+     * Retrieves and caches partition configuration objects.
+     * They are cached for 5 minutes.
+     * @param partitionKey
+     * @return
+     */
+    @Override
+    public PartitionConfiguration getPartitionConfiguration(final String partitionKey) {
+        return configurationCache.getConfiguration(partitionKey);
     }
 
     /**

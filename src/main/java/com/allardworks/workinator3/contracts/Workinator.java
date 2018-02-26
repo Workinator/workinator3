@@ -21,4 +21,6 @@ public interface Workinator extends AutoCloseable {
     void updateStatus(UpdateWorkerStatusCommand workerStatus);
 
     List<PartitionInfo> getPartitions();
+
+    PartitionConfiguration getPartitionConfiguration(String partitionKey);
 }
