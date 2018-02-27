@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
+import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ServiceBase;
 import lombok.NonNull;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +61,7 @@ public class WorkinatorConsumer extends ServiceBase {
     /**
      * One executor per worker.
      */
-    private List<Service> executors;
+    private List<ExecutorAsync> executors;
 
     /**
      * Tracks how many executors have stopped. When 0, all done. Fire the stopped event.
@@ -70,7 +73,7 @@ public class WorkinatorConsumer extends ServiceBase {
      */
     private CountDownLatch stopCount;
 
-    private MaintenanceThread maintenanceThread;
+    private ScheduledTaskThread maintenanceThread;
 
     @Override
     public void start() {
@@ -78,7 +81,7 @@ public class WorkinatorConsumer extends ServiceBase {
             s.getEventHandlers().onPostStarting(t -> {
                 // setup and run the maintenance thread.
                 // when the maintenance thread stops, set it's reference to null.
-                maintenanceThread = new MaintenanceThread();
+                maintenanceThread = new ScheduledTaskThread(Duration.ofSeconds(25), this::updateWorkerStatuses);
                 maintenanceThread.getTransitionEventHandlers().onPostStopped(maintenanceTransition -> maintenanceThread = null);
                 maintenanceThread.start();
 
@@ -103,6 +106,19 @@ public class WorkinatorConsumer extends ServiceBase {
             });
         });
         super.start();
+    }
+
+    private void updateWorkerStatuses() {
+        val ex = executors;
+        if (ex == null) {
+            // occurs during startup.
+            // timer fires before executors have been initialized.
+            return;
+        }
+
+        val statuses = ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList());
+        workinator.updateStatus(new UpdateWorkersStatusCommand(statuses));
+        System.out.println("\n\n" + LocalDateTime.now() + " updated worker statues " + statuses.size());
     }
 
     public Map<String, Object> getInfo() {

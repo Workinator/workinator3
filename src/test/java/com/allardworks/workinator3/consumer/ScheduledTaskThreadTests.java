@@ -1,11 +1,11 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.testsupport.TestUtility;
 import com.allardworks.workinator3.testsupport.TimedActivity;
 import lombok.val;
 import org.junit.Test;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.allardworks.workinator3.testsupport.TestUtility.waitFor;
 import static org.junit.Assert.assertTrue;
@@ -14,39 +14,22 @@ import static org.junit.Assert.assertTrue;
  * Created by jaya on 2/26/18.
  * k?
  */
-public class MaintenanceThreadTests {
-    public class MaintenanceThreadDummy extends MaintenanceThread {
-        private int hitCount = 0;
-
-        public int getHitCount() {
-            return hitCount;
-        }
-
-        @Override
-        protected void updateWorkerStatus() {
-            hitCount ++;
-        }
-
-        @Override
-        protected Duration getDelay() {
-            return Duration.ofMillis(100);
-        }
-    }
-
+public class ScheduledTaskThreadTests {
     /**
      * Make sure that the worker method fired at it's configured intervals.
      * @throws Exception
      */
     @Test
     public void firesAtInterval() throws Exception {
-        val thread = new MaintenanceThreadDummy();
+        val hitCount = new AtomicInteger(0);
+        val thread = new ScheduledTaskThread(Duration.ofMillis(100), hitCount::incrementAndGet);
         thread.start();
         try (val timer = new TimedActivity("2 hits")) {
             // first hit is immediate.
             // then delays 100 milliseconds and hits again.
             // 2 hits in about 100 milliseconds.
-            waitFor(() -> thread.hitCount == 2);
-            assertTrue(timer.getElapsed().toMillis() < 110);
+            waitFor(() -> hitCount.get() == 2);
+            assertTrue(timer.getElapsed().toMillis() < 150);
         }
     }
 
@@ -56,13 +39,14 @@ public class MaintenanceThreadTests {
      */
     @Test
     public void delayInterruptedWhenStops() throws Exception {
-        val thread = new MaintenanceThreadDummy();
+        val hitCount = new AtomicInteger(0);
+        val thread = new ScheduledTaskThread(Duration.ofMillis(100), hitCount::incrementAndGet);
         thread.start();
         try (val timer = new TimedActivity("2 hits")) {
             // first his is immediate.
             // then delays 100 milliseconds and hits again.
             // 2 hits in about 100 milliseconds.
-            waitFor(() -> thread.hitCount == 2);
+            waitFor(() -> hitCount.get() == 2);
             assertTrue(timer.getElapsed().toMillis() < 150);
         }
 

@@ -1,11 +1,13 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
-import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
+import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collections;
 
 /**
  * Runs the worker until it is time for the worker to stop.
@@ -48,7 +50,7 @@ class WorkerRunner {
             log.error("Error closing worker", e);
         }
 
-        workinator.updateStatus(new UpdateWorkerStatusCommand(status));
+        workinator.updateStatus(new UpdateWorkersStatusCommand(Collections.singletonList(status)));
         workinator.releaseAssignment(new ReleaseAssignmentCommand(status.getCurrentAssignment()));
     }
 }

@@ -3,16 +3,15 @@ package com.allardworks.workinator3.mongo2;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
-import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
-import com.allardworks.workinator3.consumer.StupidCache;
+import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 /**
  * Mongo implementation of the workinator.
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MongoWorkinator implements Workinator {
@@ -68,18 +68,23 @@ public class MongoWorkinator implements Workinator {
     }
 
     @Override
-    public void updateStatus(final UpdateWorkerStatusCommand workerStatus) {
-        if (workerStatus.getStatus().getCurrentAssignment() == null) {
-            return;
+    public void updateStatus(final UpdateWorkersStatusCommand workerStatus) {
+        for (val status : workerStatus.getStatus()) {
+            if (status.getCurrentAssignment() == null) {
+                continue;
+            }
+
+            try {
+                val updatePartition = doc("$set", doc(
+                        "hasWork", status.isHasWork(),
+                        "lastCheckedDate", new Date()));
+
+                val find = doc("partitionKey", status.getCurrentAssignment().getPartitionKey());
+                dal.getPartitionsCollection().updateOne(find, updatePartition);
+            } catch (final Exception ex) {
+                log.error("Error updating worker status.", ex);
+            }
         }
-
-        val updatePartition = doc("$set", doc(
-                "hasWork", workerStatus.getStatus().isHasWork(),
-                "lastCheckedDate", new Date()));
-
-        val find = doc("partitionKey", workerStatus.getStatus().getCurrentAssignment().getPartitionKey());
-
-        dal.getPartitionsCollection().updateOne(find, updatePartition);
     }
 
     @Override

@@ -16,6 +16,7 @@ public class ExecutorAsync extends ServiceBase {
     private final WorkerRunnerProvider runnerProvider;
     private final WorkerId id;
     private final ConsumerConfiguration consumerConfiguration;
+    private final WorkerStatus workerStatus;
     private Thread thread;
 
     public ExecutorAsync(
@@ -24,10 +25,14 @@ public class ExecutorAsync extends ServiceBase {
             final AsyncWorkerFactory workerFactory,
             final Workinator workinatorRepository) {
 
-        val status = new WorkerStatus(workerId);
+        workerStatus = new WorkerStatus(workerId);
         consumerConfiguration = configuration;
-        runnerProvider = new WorkerRunnerProvider(this::canContinue, workerFactory, workinatorRepository, status, getServiceStatus());
+        runnerProvider = new WorkerRunnerProvider(this::canContinue, workerFactory, workinatorRepository, workerStatus, getServiceStatus());
         id = workerId;
+    }
+
+    public WorkerStatus getWorkerStatus() {
+        return workerStatus.clone();
     }
 
     private boolean canContinue(final Context context) {

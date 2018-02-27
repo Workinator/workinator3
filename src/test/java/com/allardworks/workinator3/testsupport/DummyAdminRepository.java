@@ -3,7 +3,7 @@ package com.allardworks.workinator3.testsupport;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
-import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
+import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class DummyAdminRepository implements Workinator {
     }
 
     @Override
-    public void updateStatus(UpdateWorkerStatusCommand workerStatus) {
+    public void updateStatus(UpdateWorkersStatusCommand workerStatus) {
 
     }
 

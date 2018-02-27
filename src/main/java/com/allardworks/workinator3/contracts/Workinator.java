@@ -3,7 +3,7 @@ package com.allardworks.workinator3.contracts;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
-import com.allardworks.workinator3.commands.UpdateWorkerStatusCommand;
+import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public interface Workinator extends AutoCloseable {
 
     void createPartition(CreatePartitionCommand command) throws PartitionExistsException;
 
-    void updateStatus(UpdateWorkerStatusCommand workerStatus);
+    void updateStatus(UpdateWorkersStatusCommand workerStatus);
 
     List<PartitionInfo> getPartitions();
 

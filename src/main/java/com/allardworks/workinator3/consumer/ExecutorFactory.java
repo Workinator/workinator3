@@ -20,7 +20,7 @@ public class ExecutorFactory {
      * @param workerFactory used to determine what type of executor to create.
      * @return
      */
-    public Service createExecutor(@NonNull WorkerId workerId, @NonNull final WorkerFactory workerFactory) {
+    public ExecutorAsync createExecutor(@NonNull WorkerId workerId, @NonNull final WorkerFactory workerFactory) {
         if (workerFactory instanceof AsyncWorkerFactory) {
             return new ExecutorAsync(workerId, configuration, (AsyncWorkerFactory) workerFactory, workinator);
         }

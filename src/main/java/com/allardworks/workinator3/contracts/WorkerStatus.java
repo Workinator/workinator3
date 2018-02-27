@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.contracts;
 
 import lombok.Data;
+import lombok.val;
 
 @Data
 public class WorkerStatus {
@@ -9,4 +10,11 @@ public class WorkerStatus {
     private boolean hasWork;
 
     private Assignment currentAssignment;
+
+    public WorkerStatus clone() {
+        val copy = new WorkerStatus(workerId);
+        copy.hasWork = hasWork;
+        copy.currentAssignment = currentAssignment;
+        return copy;
+    }
 }
