@@ -50,6 +50,11 @@ public class ExecutorAsync extends ServiceBase {
             getServiceStatus().started();
             while (getServiceStatus().getStatus().isStarted()) {
                 val runner = runnerProvider.lookupRunner();
+                if (runner == null) {
+                    // TODO: is null if there isn't an assignment.
+                    // log it or something.
+                    return;
+                }
                 runner.run();
             }
 

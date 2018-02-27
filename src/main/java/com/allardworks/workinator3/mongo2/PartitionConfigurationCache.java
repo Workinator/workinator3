@@ -27,5 +27,4 @@ public class PartitionConfigurationCache {
     public PartitionConfiguration getConfiguration(final String partitionKey) {
         return partitionConfigurationStupidCache.getItem(partitionKey);
     }
-
 }

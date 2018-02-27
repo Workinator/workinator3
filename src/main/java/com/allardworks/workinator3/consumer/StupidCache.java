@@ -20,7 +20,6 @@ import static java.time.temporal.ChronoUnit.MINUTES;
  * - consumer needs to know the max number of workers (maxWorkerCount)
  */
 @RequiredArgsConstructor
-@Component
 public class StupidCache<TInput, TOutput> {
     // TODO: switch this to use spring caching.
     // default memory cache doesn't have ttl. need to dig into that more

@@ -36,6 +36,13 @@ public class ServiceStatus {
     private Status status = Status.Stopped;
 
 
+    /**
+     * Thread safe method to execute intialization code.
+     * The intialization method will only do work once regardless
+     * of how many times it's called.
+     * @param initializationMethod
+     * @return
+     */
     public ServiceStatus initialize(Consumer<ServiceStatus> initializationMethod) {
         synchronized (syncroot) {
             if (initialized) {

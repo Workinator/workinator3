@@ -70,10 +70,18 @@ public class WorkinatorConsumer extends ServiceBase {
      */
     private CountDownLatch stopCount;
 
+    private MaintenanceThread maintenanceThread;
+
     @Override
     public void start() {
         getServiceStatus().initialize(s -> {
             s.getEventHandlers().onPostStarting(t -> {
+                // setup and run the maintenance thread.
+                // when the maintenance thread stops, set it's reference to null.
+                maintenanceThread = new MaintenanceThread();
+                maintenanceThread.getTransitionEventHandlers().onPostStopped(maintenanceTransition -> maintenanceThread = null);
+                maintenanceThread.start();
+
                 startCount = new CountDownLatch(configuration.getMaxExecutorCount());
                 stopCount = new CountDownLatch(configuration.getMaxExecutorCount());
                 try {
@@ -87,6 +95,8 @@ public class WorkinatorConsumer extends ServiceBase {
             });
 
             s.getEventHandlers().onPostStopping(t -> {
+                maintenanceThread.stop();
+                maintenanceThread = null;
                 for (val executor : executors) {
                     executor.stop();
                 }

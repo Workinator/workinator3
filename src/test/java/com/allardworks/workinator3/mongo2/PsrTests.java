@@ -56,7 +56,6 @@ public class PsrTests {
                 val workerStatus = new WorkerStatus(new WorkerId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1));
                 val assignment = workinator.getAssignment(workerStatus);
                 assignments.add(assignment);
-                //workinator.releaseAssignment(new ReleaseAssignmentCommand(assignment));
             }
         }
 
