@@ -9,7 +9,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static com.allardworks.workinator3.testsupport.TestUtility.*;
+import static com.allardworks.workinator3.testsupport.TestUtility.startAndWait;
 
 public class ExecutorAsyncTests {
 

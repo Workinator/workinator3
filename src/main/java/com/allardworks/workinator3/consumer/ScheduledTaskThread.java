@@ -35,9 +35,7 @@ public class ScheduledTaskThread extends ServiceBase {
 
             // the RUN loop blocks on the countdown latch.
             // release the block when stopping.
-            s.getEventHandlers().onPostStopping(t -> {
-                block.countDown();
-            });
+            s.getEventHandlers().onPostStopping(t -> block.countDown());
         });
         super.start();
     }

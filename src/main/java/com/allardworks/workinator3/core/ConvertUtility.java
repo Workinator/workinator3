@@ -10,7 +10,7 @@ public class ConvertUtility {
     private ConvertUtility() {
     }
 
-    public static LocalDateTime MIN_DATE = LocalDateTime.of(2000, 1, 1, 0, 0);
+    public final static LocalDateTime MIN_DATE = LocalDateTime.of(2000, 1, 1, 0, 0);
 
     public static Date toDate(final LocalDateTime from) {
         if (from == null) {

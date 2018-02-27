@@ -32,7 +32,7 @@ public class TimedActivity implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         stop();
         val elapsed = Duration.between(started, stopped).toMillis();
         out.println("--------------------------" + name + ": " + elapsed + "ms");

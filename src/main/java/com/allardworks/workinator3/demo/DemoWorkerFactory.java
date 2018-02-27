@@ -1,6 +1,8 @@
 package com.allardworks.workinator3.demo;
 
-import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.contracts.Assignment;
+import com.allardworks.workinator3.contracts.AsyncWorker;
+import com.allardworks.workinator3.contracts.AsyncWorkerFactory;
 import org.springframework.stereotype.Component;
 
 @Component

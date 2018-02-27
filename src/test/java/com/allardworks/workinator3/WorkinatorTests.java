@@ -9,10 +9,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public abstract class WorkinatorTests {
@@ -23,7 +20,7 @@ public abstract class WorkinatorTests {
     }
 
     @Test
-    public void dontExceedMaxWorkerCount() throws Exception {
+    public void doNotExceedMaxWorkerCount() throws Exception {
         val testSize = 10;
 
         try (val tester = getTester()) {
@@ -213,7 +210,7 @@ public abstract class WorkinatorTests {
 
     /**
      * None of the partitions are due, and none have work.
-     * Thus Rule4 will take effect: the first partion
+     * Thus Rule4 will take effect: the first partition
      * @throws Exception
      */
     @Test

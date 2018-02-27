@@ -1,7 +1,7 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.core.*;
+import com.allardworks.workinator3.core.ServiceBase;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -76,12 +76,10 @@ public class ExecutorAsync extends ServiceBase {
 
     @Override
     public void start() {
-        getServiceStatus().initialize(s -> {
-            s.getEventHandlers().onPostStarting(t -> {
-                thread = new Thread(this::run);
-                thread.start();
-            });
-        });
+        getServiceStatus().initialize(s -> s.getEventHandlers().onPostStarting(t -> {
+            thread = new Thread(this::run);
+            thread.start();
+        }));
         super.start();
     }
 

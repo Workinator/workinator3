@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -126,8 +126,8 @@ public class WorkinatorConsumer extends ServiceBase {
         map.put("consumerId", consumerId);
         map.put("serviceStatus", getStatus().toString());
 
-        val exeuctorInfo = executors.stream().map(Service::getInfo).collect(toList());
-        map.put("executors", exeuctorInfo);
+        val executorInfo = executors.stream().map(Service::getInfo).collect(toList());
+        map.put("executors", executorInfo);
         return map;
     }
 
@@ -162,7 +162,7 @@ public class WorkinatorConsumer extends ServiceBase {
         val command = RegisterConsumerCommand.builder().id(consumerId).build();
         registration = workinator.registerConsumer(command);
         if (registration == null) {
-            throw new RuntimeException("Critcal problem. Registration came back null. Doh!");
+            throw new RuntimeException("Critical problem. Registration came back null. Doh!");
         }
     }
 

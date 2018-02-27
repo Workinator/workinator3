@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>workinator3</name>
-	<description></description>
+	<description>Workinator v3</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

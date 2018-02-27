@@ -2,7 +2,6 @@ package com.allardworks.workinator3.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 
 /**
  * Created by jaya on 2/25/18.
- * A cache of parttition configuration objects.
+ * A cache of partition configuration objects.
  * This is poorly implemented. A better solution is needed, but not urgent.
  * The workinator needs configuration for thing such as
  * - set due date when partition is released (needs maxIdleTime)
@@ -39,7 +38,7 @@ public class StupidCache<TInput, TOutput> {
     }
 
     private CacheItem<TOutput> getFromCache(final TInput key) {
-        return cache.computeIfAbsent(key, pk -> new CacheItem<TOutput>(lookup.apply(key), LocalDateTime.now().plus(5, MINUTES)));
+        return cache.computeIfAbsent(key, pk -> new CacheItem<>(lookup.apply(key), LocalDateTime.now().plus(5, MINUTES)));
     }
 
     /**

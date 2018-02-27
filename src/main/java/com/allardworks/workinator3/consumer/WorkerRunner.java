@@ -2,7 +2,10 @@ package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
-import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.contracts.AsyncWorker;
+import com.allardworks.workinator3.contracts.WorkerContext;
+import com.allardworks.workinator3.contracts.WorkerStatus;
+import com.allardworks.workinator3.contracts.Workinator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

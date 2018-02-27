@@ -2,6 +2,8 @@ package com.allardworks.workinator3.core;
 
 import lombok.Data;
 
+import static com.allardworks.workinator3.core.TransitionStage.AfterTransition;
+
 /**
  * Describes a state change in a service.
  * The state change may be about to occur (pre),
@@ -14,17 +16,18 @@ public class Transition {
     private final Status after;
 
     public boolean isPostStarting() {
-        return stage.equals(TransitionStage.AfterTransition) && after.equals(Status.Starting);
+        return stage.equals(AfterTransition) && after.equals(Status.Starting);
     }
 
     public boolean isPostStarted() {
-        return stage.equals(TransitionStage.AfterTransition) && after.equals(Status.Started);
+        return stage.equals(AfterTransition) && after.equals(Status.Started);
     }
 
     public boolean isPostStopping() {
-        return stage.equals(TransitionStage.AfterTransition) && after.equals(Status.Stopping);
+        return stage.equals(AfterTransition) && after.equals(Status.Stopping);
     }
 
     public boolean isPostStopped() {
-        return stage.equals(TransitionStage.AfterTransition) && after.equals(Status.Stopped);
-    }}
+        return stage.equals(AfterTransition) && after.equals(Status.Stopped);
+    }
+}

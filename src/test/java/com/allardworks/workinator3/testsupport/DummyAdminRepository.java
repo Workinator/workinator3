@@ -21,7 +21,7 @@ public class DummyAdminRepository implements Workinator {
     }
 
     @Override
-    public ConsumerRegistration registerConsumer(RegisterConsumerCommand command) throws ConsumerExistsException {
+    public ConsumerRegistration registerConsumer(RegisterConsumerCommand command) {
         return null;
     }
 
@@ -32,7 +32,7 @@ public class DummyAdminRepository implements Workinator {
     }
 
     @Override
-    public void createPartition(CreatePartitionCommand command) throws PartitionExistsException {
+    public void createPartition(CreatePartitionCommand command) {
 
     }
 
@@ -52,7 +52,7 @@ public class DummyAdminRepository implements Workinator {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 }

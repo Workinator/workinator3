@@ -2,9 +2,7 @@ package com.allardworks.workinator3.mongo2;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Getter

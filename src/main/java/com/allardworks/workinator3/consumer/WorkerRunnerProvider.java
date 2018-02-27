@@ -111,7 +111,7 @@ class WorkerRunnerProvider implements AutoCloseable {
      * @throws Exception
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         closeCurrent();
     }
 }

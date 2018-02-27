@@ -12,6 +12,6 @@ public class DemoWorker implements AsyncWorker {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
     }
 }

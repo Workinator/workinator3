@@ -1,13 +1,13 @@
 package com.allardworks.workinator3.mongo2;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.testsupport.TimedActivity;
 import lombok.val;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class PsrTests {
         }
 
         // warm up the cache - preload all config objects
-        try (val timer = new TimedActivity("warmup config cache")) {
+        try (val timer = new TimedActivity("warm up config cache")) {
             for (int i = 0; i < partitionCount; i++) {
                 workinator.getPartitionConfiguration("p-" + i);
             }

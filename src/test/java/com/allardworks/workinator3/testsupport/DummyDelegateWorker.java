@@ -16,7 +16,7 @@ public class DummyDelegateWorker implements AsyncWorker {
     }
 
     //@Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 }

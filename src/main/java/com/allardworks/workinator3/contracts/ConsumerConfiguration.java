@@ -3,8 +3,6 @@ package com.allardworks.workinator3.contracts;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 

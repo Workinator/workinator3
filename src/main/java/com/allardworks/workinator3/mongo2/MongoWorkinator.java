@@ -4,7 +4,6 @@ import com.allardworks.workinator3.commands.*;
 import com.allardworks.workinator3.contracts.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
-import com.mongodb.client.model.DeleteOptions;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.allardworks.workinator3.core.ConvertUtility.MIN_DATE;
-import static com.allardworks.workinator3.core.ConvertUtility.toDate;
-import static com.allardworks.workinator3.core.ConvertUtility.toLocalDateTime;
+import static com.allardworks.workinator3.core.ConvertUtility.*;
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 
 /**
@@ -92,13 +89,11 @@ public class MongoWorkinator implements Workinator {
         partitions.forEachRemaining(doc -> {
             val workers = new ArrayList<WorkerInfo>();
             val workersSource = (List<Document>)doc.get("workers");
-            workersSource.iterator().forEachRemaining(d -> {
-                workers.add(WorkerInfo.builder()
-                        .id(d.getString("id"))
-                        .createDate(toLocalDateTime(d.getDate("insertDate")))
-                        .rule(d.getString("rule"))
-                        .build());
-            });
+            workersSource.iterator().forEachRemaining(d -> workers.add(WorkerInfo.builder()
+                    .id(d.getString("id"))
+                    .createDate(toLocalDateTime(d.getDate("insertDate")))
+                    .rule(d.getString("rule"))
+                    .build()));
 
             result.add(PartitionInfo
                     .builder()
@@ -184,7 +179,7 @@ public class MongoWorkinator implements Workinator {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 }

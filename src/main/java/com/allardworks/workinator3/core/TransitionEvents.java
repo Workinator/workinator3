@@ -1,6 +1,5 @@
 package com.allardworks.workinator3.core;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;

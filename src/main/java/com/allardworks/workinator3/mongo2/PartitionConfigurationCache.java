@@ -2,7 +2,6 @@ package com.allardworks.workinator3.mongo2;
 
 import com.allardworks.workinator3.consumer.StupidCache;
 import com.allardworks.workinator3.contracts.PartitionConfiguration;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,11 +12,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PartitionConfigurationCache {
-    private final MongoDal dal;
     private final StupidCache<String, PartitionConfiguration> partitionConfigurationStupidCache;
 
     public PartitionConfigurationCache(final MongoDal dal) {
-        this.dal = dal;
         partitionConfigurationStupidCache = new StupidCache<>(dal::getPartitionConfiguration);
     }
 

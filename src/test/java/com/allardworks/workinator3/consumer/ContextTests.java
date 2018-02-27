@@ -16,7 +16,6 @@ public class ContextTests {
      * Mae sure elapsed time increases.
      * This is in response to a bug where the parameters were backwards in the context,
      * so elapsed time was decreasing.
-     * @throws InterruptedException
      */
     @Test
     public void elapsed() throws InterruptedException {

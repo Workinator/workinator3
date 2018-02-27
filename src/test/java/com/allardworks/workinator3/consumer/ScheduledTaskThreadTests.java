@@ -20,7 +20,7 @@ public class ScheduledTaskThreadTests {
      * @throws Exception
      */
     @Test
-    public void firesAtInterval() throws Exception {
+    public void firesAtInterval() {
         val hitCount = new AtomicInteger(0);
         val thread = new ScheduledTaskThread(Duration.ofMillis(100), hitCount::incrementAndGet);
         thread.start();
@@ -38,7 +38,7 @@ public class ScheduledTaskThreadTests {
      * @throws Exception
      */
     @Test
-    public void delayInterruptedWhenStops() throws Exception {
+    public void delayInterruptedWhenStops() {
         val hitCount = new AtomicInteger(0);
         val thread = new ScheduledTaskThread(Duration.ofMillis(100), hitCount::incrementAndGet);
         thread.start();

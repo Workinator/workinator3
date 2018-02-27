@@ -1,8 +1,10 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.contracts.ConsumerConfiguration;
+import com.allardworks.workinator3.contracts.ConsumerId;
+import com.allardworks.workinator3.contracts.WorkerFactory;
+import com.allardworks.workinator3.contracts.Workinator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,16 +17,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class WorkinatorConsumerFactory {
-    @Autowired
     private final ConsumerConfiguration consumerConfiguration;
-
-    @Autowired
     private final Workinator workinator;
-
-    @Autowired
     private final ExecutorFactory executorFactory;
-
-    @Autowired
     private final WorkerFactory workerFactory;
 
     public WorkinatorConsumer create(final ConsumerId id) {

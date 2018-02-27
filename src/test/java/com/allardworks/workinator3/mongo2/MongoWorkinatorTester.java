@@ -41,7 +41,7 @@ public class MongoWorkinatorTester implements WorkinatorTester {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         dal.getDatabase().drop();
     }
 }

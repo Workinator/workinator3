@@ -5,11 +5,9 @@ import com.allardworks.workinator3.consumer.WorkinatorConsumer;
 import com.allardworks.workinator3.consumer.WorkinatorConsumerFactory;
 import com.allardworks.workinator3.contracts.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.apache.commons.cli.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +23,9 @@ import static java.lang.System.out;
 @Service
 @RequiredArgsConstructor
 public class Runner implements CommandLineRunner {
-
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    private final Map<String, WorkinatorConsumer> consumers = new HashMap<>();
-
-    @Autowired
     private final Workinator workinator;
-
-    @Autowired
     private final WorkinatorConsumerFactory consumerFactory;
+    private final Map<String, WorkinatorConsumer> consumers = new HashMap<>();
 
     /**
      * Create a partition.
@@ -75,7 +66,7 @@ public class Runner implements CommandLineRunner {
      * @return
      * @throws JsonProcessingException
      */
-    private boolean showLocalConsumerStatus(final CommandLine command) throws JsonProcessingException {
+    private boolean showLocalConsumerStatus(final CommandLine command) {
         if (!command.hasOption("scl")) {
             return false;
         }
@@ -116,7 +107,7 @@ public class Runner implements CommandLineRunner {
         return true;
     }
 
-    private boolean showPartitions(final CommandLine command) throws JsonProcessingException {
+    private boolean showPartitions(final CommandLine command) {
         if (!command.hasOption("sp")) {
             return false;
         }
@@ -132,7 +123,7 @@ public class Runner implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... strings) throws Exception {
+    public void run(String... strings) {
         val parser = new DefaultParser();
         val options = new Options();
         options.addOption(new Option("cc", "createconsumer", true, "Create a consumer"));

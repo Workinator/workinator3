@@ -9,7 +9,9 @@ import lombok.val;
 import org.bson.Document;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static com.allardworks.workinator3.core.ConvertUtility.toDate;
