@@ -1,12 +1,10 @@
 package com.allardworks.workinator3.mongo2;
 
-import com.allardworks.workinator3.commands.CreatePartitionCommand;
-import com.allardworks.workinator3.commands.RegisterConsumerCommand;
-import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
-import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
+import com.allardworks.workinator3.commands.*;
 import com.allardworks.workinator3.contracts.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
+import com.mongodb.client.model.DeleteOptions;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -156,6 +154,7 @@ public class MongoWorkinator implements Workinator {
      */
     @Override
     public ConsumerRegistration registerConsumer(final RegisterConsumerCommand command) throws ConsumerExistsException {
+        // todo: use receipt
         val consumer =
                 doc("name", command.getId().getName(),
                         "connectDate", new Date(),
@@ -175,11 +174,13 @@ public class MongoWorkinator implements Workinator {
     /**
      * Unregister the consumer.
      *
-     * @param registration
+     * @param command
      */
     @Override
-    public void unregisterConsumer(ConsumerRegistration registration) {
-
+    public void unregisterConsumer(UnregisterConsumerCommand command) {
+        // todo: use receipt
+        val delete = doc("name", command.getRegistration().getConsumerId().getName());
+        dal.getConsumersCollection().deleteOne(delete);
     }
 
     @Override

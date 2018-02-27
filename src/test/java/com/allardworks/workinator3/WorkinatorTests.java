@@ -3,6 +3,7 @@ package com.allardworks.workinator3;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
+import com.allardworks.workinator3.commands.UnregisterConsumerCommand;
 import com.allardworks.workinator3.contracts.*;
 import lombok.val;
 import org.junit.Assert;
@@ -119,18 +120,27 @@ public abstract class WorkinatorTests {
     }
 
     @Test
-    public void consumerCanOnlyRegisterOnce() throws Exception {
+    public void registerAndUnregisterConsumer() throws Exception {
         try (val tester = getTester()) {
             try (val workinator = tester.getWorkinator()) {
-                val register = RegisterConsumerCommand.builder().id(new ConsumerId("boo")).build();
-                workinator.registerConsumer(register);
+                val registerCommand = RegisterConsumerCommand.builder().id(new ConsumerId("boo")).build();
 
+                // this works because not already registered
+                val registration = workinator.registerConsumer(registerCommand);
+
+                //  now it fails because already registered
                 try {
-                    workinator.registerConsumer(register);
+                    workinator.registerConsumer(registerCommand);
                     Assert.fail("should've failed");
                 } catch (final ConsumerExistsException ex) {
                     assertEquals("boo", ex.getConsumerId());
                 }
+
+                // unregister
+                workinator.unregisterConsumer(new UnregisterConsumerCommand(registration));
+
+                // now can register again
+                workinator.registerConsumer(registerCommand);
             }
         }
     }

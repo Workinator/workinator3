@@ -1,9 +1,6 @@
 package com.allardworks.workinator3.contracts;
 
-import com.allardworks.workinator3.commands.CreatePartitionCommand;
-import com.allardworks.workinator3.commands.RegisterConsumerCommand;
-import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
-import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
+import com.allardworks.workinator3.commands.*;
 
 import java.util.List;
 
@@ -14,7 +11,7 @@ public interface Workinator extends AutoCloseable {
 
     ConsumerRegistration registerConsumer(RegisterConsumerCommand command) throws ConsumerExistsException;
 
-    void unregisterConsumer(ConsumerRegistration registration);
+    void unregisterConsumer(UnregisterConsumerCommand command);
 
     void createPartition(CreatePartitionCommand command) throws PartitionExistsException;
 
