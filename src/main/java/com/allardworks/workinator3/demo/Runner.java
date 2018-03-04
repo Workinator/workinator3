@@ -116,7 +116,7 @@ public class Runner implements CommandLineRunner {
         for (val partition : partitions) {
             out.println("Partition Key=" + partition.getPartitionKey() + ", Max Worker Count=" + partition.getMaxWorkerCount() + ", Last Checked=" + partition.getLastChecked() + ", Current Worker Count=" + partition.getCurrentWorkerCount());
             for (val worker : partition.getWorkers()) {
-                out.println("\t" + worker.getId() + ", Rule: " + worker.getRule());
+                out.println("\t" + worker.getAssignee() + ", Rule: " + worker.getRule());
             }
         }
         return true;

@@ -9,6 +9,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static com.allardworks.workinator3.mongo2.WhatsNextAssignmentStrategy.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -51,7 +52,7 @@ public abstract class WorkinatorTests {
     }
 
     @Test
-    public void RULE2_getsSameAssignmentIfNothingElseAvailable() throws Exception {
+    public void RULE2_getsSameAssignmentIfNothingElseAvailable_HasWork() throws Exception {
         try (val tester = getTester()) {
             try (val workinator = tester.getWorkinator()) {
                 val partition = CreatePartitionCommand.builder().partitionKey("yadda").maxWorkerCount(1).build();
@@ -64,9 +65,38 @@ public abstract class WorkinatorTests {
                 val assignment1 = workinator.getAssignment(worker1);
                 worker1.setCurrentAssignment(assignment1);
                 assertEquals("yadda", assignment1.getPartitionKey());
+                assertEquals(RULE1, assignment1.getRuleName());
 
+                // nothing else to do, so it will get the same assignment.
+                worker1.setHasWork(true);
                 val assignment2 = workinator.getAssignment(worker1);
-                assertEquals(assignment1, assignment2);
+                assertEquals(RULE2, assignment2.getRuleName());
+                assertEquals(assignment1.getPartitionKey(), assignment2.getPartitionKey());
+            }
+        }
+    }
+
+    @Test
+    public void KNOWN_FAILURE_RULE2_getsSameAssignmentIfNothingElseAvailable_DoesntHaveWork() throws Exception {
+        try (val tester = getTester()) {
+            try (val workinator = tester.getWorkinator()) {
+                val partition = CreatePartitionCommand.builder().partitionKey("yadda").maxWorkerCount(1).build();
+                workinator.createPartition(partition);
+
+                val register = RegisterConsumerCommand.builder().id(new ConsumerId("smashing")).build();
+                val registration = workinator.registerConsumer(register);
+
+                val worker1 = new WorkerStatus(new WorkerId(registration, 1));
+                val assignment1 = workinator.getAssignment(worker1);
+                worker1.setCurrentAssignment(assignment1);
+                assertEquals("yadda", assignment1.getPartitionKey());
+                assertEquals(RULE1, assignment1.getRuleName());
+
+                // nothing else to do, so it will get the same assignment.
+                worker1.setHasWork(false);
+                val assignment2 = workinator.getAssignment(worker1);
+                assertEquals(RULE2, assignment2.getRuleName());
+                assertEquals(assignment1.getPartitionKey(), assignment2.getPartitionKey());
             }
         }
     }
@@ -164,7 +194,7 @@ public abstract class WorkinatorTests {
 
                 val a1 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("b", a1.getPartitionKey());
-                assertEquals("Rule 1", a1.getRuleName());
+                assertEquals(RULE1, a1.getRuleName());
             }
         }
     }
@@ -195,16 +225,16 @@ public abstract class WorkinatorTests {
 
                 val a1 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("b", a1.getPartitionKey());
-                assertEquals("Rule 3", a1.getRuleName());
+                assertEquals(RULE3, a1.getRuleName());
                 tester.setHasWork("b", false);
 
                 val a2 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("a", a2.getPartitionKey());
-                assertEquals("Rule 4", a2.getRuleName());
+                assertEquals(RULE4, a2.getRuleName());
 
                 val a3 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("c", a3.getPartitionKey());
-                assertEquals("Rule 4", a3.getRuleName());}
+                assertEquals(RULE4, a3.getRuleName());}
         }
     }
 
@@ -232,15 +262,15 @@ public abstract class WorkinatorTests {
 
                 val a1 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("a", a1.getPartitionKey());
-                assertEquals("Rule 4", a1.getRuleName());
+                assertEquals(RULE4, a1.getRuleName());
 
                 val a2 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("b", a2.getPartitionKey());
-                assertEquals("Rule 4", a2.getRuleName());
+                assertEquals(RULE4, a2.getRuleName());
 
                 val a3 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("c", a3.getPartitionKey());
-                assertEquals("Rule 4", a3.getRuleName());}
+                assertEquals(RULE4, a3.getRuleName());}
         }
     }
 
@@ -261,15 +291,15 @@ public abstract class WorkinatorTests {
 
                 val a1 = workinator.getAssignment(createStatus("consumer a"));
                 assertEquals("a", a1.getPartitionKey());
-                assertEquals("Rule 1", a1.getRuleName());
+                assertEquals(RULE1, a1.getRuleName());
 
                 val a2 = workinator.getAssignment(createStatus("consumer b"));
                 assertEquals("b", a2.getPartitionKey());
-                assertEquals("Rule 1", a2.getRuleName());
+                assertEquals(RULE1, a2.getRuleName());
 
                 val a3 = workinator.getAssignment(createStatus("consumer c"));
                 assertEquals("c", a3.getPartitionKey());
-                assertEquals("Rule 1", a3.getRuleName());
+                assertEquals(RULE1, a3.getRuleName());
 
                 // -----------------------------------------------------------------
                 // now we'll start getting rule 3. Rule 3
@@ -284,15 +314,15 @@ public abstract class WorkinatorTests {
 
                 val a4 = workinator.getAssignment(createStatus("consumer a"));
                 assertEquals("a", a4.getPartitionKey());
-                assertEquals("Rule 3", a4.getRuleName());
+                assertEquals(RULE3, a4.getRuleName());
 
                 val a5 = workinator.getAssignment(createStatus("consumer b"));
                 assertEquals("b", a5.getPartitionKey());
-                assertEquals("Rule 3", a5.getRuleName());
+                assertEquals(RULE3, a5.getRuleName());
 
                 val a6 = workinator.getAssignment(createStatus("consumer c"));
                 assertEquals("c", a6.getPartitionKey());
-                assertEquals("Rule 3", a6.getRuleName());
+                assertEquals(RULE3, a6.getRuleName());
 
                 // release one, then get an assignment
                 // we'll get the same one back because rule 3 will see it has the fewest workers
@@ -300,7 +330,7 @@ public abstract class WorkinatorTests {
                 workinator.releaseAssignment(new ReleaseAssignmentCommand(a2));
                 val a7 = workinator.getAssignment(createStatus("consumer b"));
                 assertEquals("b", a7.getPartitionKey());
-                assertEquals("Rule 3", a7.getRuleName());
+                assertEquals(RULE3, a7.getRuleName());
             }
         }
     }

@@ -92,7 +92,7 @@ public class MongoWorkinator implements Workinator {
             val workers = new ArrayList<WorkerInfo>();
             val workersSource = (List<Document>)doc.get("status.workers");
             workersSource.iterator().forEachRemaining(d -> workers.add(WorkerInfo.builder()
-                    .id(d.getString("id"))
+                    .assignee(d.getString("assignee"))
                     .createDate(toLocalDateTime(d.getDate("insertDate")))
                     .rule(d.getString("rule"))
                     .build()));

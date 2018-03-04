@@ -11,7 +11,7 @@ public class CreatePartitionCommand {
     private int maxWorkerCount;
 
     public static class CreatePartitionCommandBuilder {
-        private int maxIdleTimeSeconds = 30;
+        private int maxIdleTimeSeconds = 5;
         private int maxWorkerCount = 1;
     }
 }

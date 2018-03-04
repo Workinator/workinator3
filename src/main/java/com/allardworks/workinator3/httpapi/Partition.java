@@ -1,6 +1,7 @@
 package com.allardworks.workinator3.httpapi;
 
 import lombok.Data;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class Partition {
 
     @Data
     public static class Worker {
-        private String id;
+        private String assignee;
         private String rule;
     }
 

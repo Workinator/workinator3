@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 public class WorkerInfo {
-    private final String id;
+    private final String assignee;
     private final LocalDateTime createDate;
     private final String rule;
 }

@@ -58,7 +58,8 @@ public class ExecutorAsync extends ServiceBase {
                 if (runner == null) {
                     // TODO: is null if there isn't an assignment.
                     // log it or something.
-                    return;
+                    Thread.sleep(1000);
+                    continue;
                 }
                 runner.run();
             }
@@ -68,6 +69,8 @@ public class ExecutorAsync extends ServiceBase {
             } catch (final Exception e) {
                 log.error("Error when closing runnerProvider", e);
             }
+
+            log.info("Stopped ExecutorAsync. Consumer={0}, Worker Number={1} " + getWorkerStatus().getWorkerId().getConsumer().getConsumerId().getName(), getWorkerStatus().getWorkerId().getWorkerNumber());
             getServiceStatus().stopped();
         } catch (final Exception e2) {
             log.error("Error in run", e2);

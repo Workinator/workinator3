@@ -24,6 +24,10 @@ import static java.time.temporal.ChronoUnit.SECONDS;
  */
 @RequiredArgsConstructor
 public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
+    public final static String RULE1 = "Rule 1 - Not being worked on, and is due to be checked.";
+    public final static String RULE2 = "Rule 2 - Already busy, so keep going.";
+    public final static String RULE3 = "Rule 3 - Partition already being worked on, but supports more workers.";
+    public final static String RULE4 = "Rule 4 - Any partition that doesn't have a worker, even if it's not due yet.";
 
     private final FindOneAndUpdateOptions updateOptions = new FindOneAndUpdateOptions()
             .returnDocument(AFTER)
@@ -37,7 +41,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
      * The WHERE for rule #3.
      * All documents that have work and capacity for more workers.
      */
-    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
+    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, {\"status.workerCount\": { \"$gt\": 0 } }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
 
     /**
      * The UPDATE options for rule #3.
@@ -67,7 +71,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
         val removeWorker =
                 doc("$pull",
                         doc("status.workers",
-                                doc("id", assignment.getWorkerId().getAssignee())),
+                                doc("assignee", assignment.getWorkerId().getAssignee())),
                         "$inc", doc("status.workerCount", -1),
                         "$set", doc("status.lastCheckedDate",
                                 new Date(), "status.dueDate", dueDate));
@@ -98,7 +102,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
         private Document createWorkerUpdateDocument(final String ruleName) {
             return doc("$push",
                     doc("status.workers",
-                            doc("id", status.getWorkerId().getAssignee(),
+                            doc("assignee", status.getWorkerId().getAssignee(),
                                     "insertDate", new Date(),
                                     "rule", ruleName)),
                     "$inc", doc("status.workerCount", 1, "status.assignmentCount", 1),
@@ -132,9 +136,9 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          */
         private Assignment due() {
             val where = doc("status.workerCount", 0, "status.dueDate", doc("$lt", new Date()));
-            val update = createWorkerUpdateDocument("Rule 1");
+            val update = createWorkerUpdateDocument(RULE1);
             return toAssignment(strategy.dal.getPartitionsCollection()
-                    .findOneAndUpdate(where, update, strategy.updateOptions), status, "Rule 1");
+                    .findOneAndUpdate(where, update, strategy.updateOptions), status, RULE1);
         }
 
         /**
@@ -144,8 +148,8 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          * @return
          */
         private Assignment ifBusyKeepGoing() {
-            if (!status.isHasWork()) {
-                return status.getCurrentAssignment();
+            if (status.isHasWork()) {
+                return status.getCurrentAssignment().setRule(RULE2);
             }
 
             return null;
@@ -158,8 +162,8 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          * @return
          */
         private Assignment alreadyBeingWorkedOn() {
-            val update = createWorkerUpdateDocument("Rule 3");
-            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.alreadyBeingWorkedOnFilter, update, strategy.alreadyBeingWorkedOnUpdateOptions), status, "Rule 3");
+            val update = createWorkerUpdateDocument(RULE3);
+            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.alreadyBeingWorkedOnFilter, update, strategy.alreadyBeingWorkedOnUpdateOptions), status, RULE3);
         }
 
         /**
@@ -168,8 +172,8 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          * If we have capacity to do work, might as well even though the partition isn't due.
          */
         private Assignment anyPartitionWithoutWorkers() {
-            val update = createWorkerUpdateDocument("Rule 4");
-            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.noWorkers, update, strategy.updateOptions), status, "Rule 4");
+            val update = createWorkerUpdateDocument(RULE4);
+            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.noWorkers, update, strategy.updateOptions), status, RULE4);
         }
 
         /**

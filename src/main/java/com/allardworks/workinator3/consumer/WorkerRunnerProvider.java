@@ -91,10 +91,12 @@ class WorkerRunnerProvider implements AutoCloseable {
             return null;
         }
 
-        // new assignment.
+        // determine if it's a new assignment, or the same as the old assignment.
+        // it's the same if the partition key matches.
+        // if new, then close the old before starting the new.
         if (current == null
                         || current.getStatus().getCurrentAssignment() == null
-                        || !current.getStatus().getCurrentAssignment().equals(newAssignment)) {
+                        || !current.getStatus().getCurrentAssignment().getPartitionKey().equals(newAssignment.getPartitionKey())) {
             closeCurrent();
             current = createWorkerRunner(newAssignment);
 
