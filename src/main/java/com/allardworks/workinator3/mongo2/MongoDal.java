@@ -100,6 +100,8 @@ public class MongoDal implements AutoCloseable {
 
         seems like an appropriate index, but doesn't affect performance with 25,000 partitions
 
+         */
+
         // ------------------------------------------------
         // rule 1 is based on worker count and due date
         // ------------------------------------------------
@@ -108,6 +110,5 @@ public class MongoDal implements AutoCloseable {
             val rule1Options = new IndexOptions().name("rule1").background(false);
             partitionsCollection.createIndex(rule1, rule1Options);
         }
-         */
     }
 }

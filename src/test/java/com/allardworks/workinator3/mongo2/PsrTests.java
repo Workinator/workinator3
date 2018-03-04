@@ -65,39 +65,4 @@ public class PsrTests {
             }
         }
     }
-
-    /*
-    @Test
-    public void Rule3() throws Exception {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        Logger rootLogger = loggerContext.getLogger("org.mongodb.driver");
-        rootLogger.setLevel(Level.OFF);
-
-        val dal = new MongoDal(MongoConfiguration.builder().databaseName("test").build());
-        val workinator = new MongoWorkinator(dal, new WhatsNextAssignmentStrategy(dal));
-        val assignments = new ArrayList<Assignment>();
-
-
-        try (val timer = new TimedActivity("create partitions")) {
-            for (int i = 0; i < partitionCount; i++) {
-                val create = CreatePartitionCommand.builder().partitionKey("p-" + i).maxIdleTimeSeconds(10).maxWorkerCount(10).build();
-                workinator.createPartition(create);
-            }
-        }
-
-        try (val timer = new TimedActivity("get assignments")) {
-            for (int i = 0; i < partitionCount; i++) {
-                val workerStatus = new WorkerStatus(new WorkerId(new ConsumerRegistration(new ConsumerId("ca"), ""), 1));
-                val assignment = workinator.getAssignment(workerStatus);
-                assignments.add(assignment);
-                //workinator.releaseAssignment(new ReleaseAssignmentCommand(assignment));
-            }
-        }
-
-        try (val timer = new TimedActivity("release assignments")) {
-            for (val a : assignments) {
-                workinator.releaseAssignment(new ReleaseAssignmentCommand(a));
-            }
-        }
-    }*/
 }
