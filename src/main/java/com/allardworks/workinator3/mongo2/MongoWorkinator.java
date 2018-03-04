@@ -41,16 +41,18 @@ public class MongoWorkinator implements Workinator {
                 "partitionKey", command.getPartitionKey(),
 
                 // configuration
-                "maxIdleTimeSeconds", command.getMaxIdleTimeSeconds(),
-                "maxWorkerCount", command.getMaxWorkerCount(),
+                "configuration", doc(
+                        "maxIdleTimeSeconds", command.getMaxIdleTimeSeconds(),
+                        "maxWorkerCount", command.getMaxWorkerCount()),
 
                 // status
-                "assignmentCount", 0,
-                "hasWork", false,
-                "lastCheckedDate", toDate(MIN_DATE),
-                "dueDate", toDate(MIN_DATE),
-                "workerCount", 0,
-                "workers", new ArrayList<BasicDBObject>());
+                "status", doc(
+                        "assignmentCount", 0,
+                        "hasWork", false,
+                        "lastCheckedDate", toDate(MIN_DATE),
+                        "dueDate", toDate(MIN_DATE),
+                        "workerCount", 0,
+                        "workers", new ArrayList<BasicDBObject>()));
 
         try {
             dal.getPartitionsCollection().insertOne(create);
@@ -71,8 +73,8 @@ public class MongoWorkinator implements Workinator {
 
             try {
                 val updatePartition = doc("$set", doc(
-                        "hasWork", status.isHasWork(),
-                        "lastCheckedDate", new Date()));
+                        "status.hasWork", status.isHasWork(),
+                        "status.lastCheckedDate", new Date()));
 
                 val find = doc("partitionKey", status.getCurrentAssignment().getPartitionKey());
                 dal.getPartitionsCollection().updateOne(find, updatePartition);
@@ -88,7 +90,7 @@ public class MongoWorkinator implements Workinator {
         val partitions = dal.getPartitionsCollection().find().iterator();
         partitions.forEachRemaining(doc -> {
             val workers = new ArrayList<WorkerInfo>();
-            val workersSource = (List<Document>)doc.get("workers");
+            val workersSource = (List<Document>)doc.get("status.workers");
             workersSource.iterator().forEachRemaining(d -> workers.add(WorkerInfo.builder()
                     .id(d.getString("id"))
                     .createDate(toLocalDateTime(d.getDate("insertDate")))
@@ -98,11 +100,11 @@ public class MongoWorkinator implements Workinator {
             result.add(PartitionInfo
                     .builder()
                     .partitionKey(doc.getString("partitionKey"))
-                    .currentWorkerCount(doc.getInteger("workerCount"))
-                    .hasMoreWork(doc.getBoolean("hasWork"))
-                    .lastChecked(toLocalDateTime(doc.getDate("lastCheckedDate")))
-                    .maxIdleTimeSeconds(doc.getInteger("maxIdleTimeSeconds"))
-                    .maxWorkerCount(doc.getInteger("maxWorkerCount"))
+                    .currentWorkerCount(doc.getInteger("status.workerCount"))
+                    .hasMoreWork(doc.getBoolean("status.hasWork"))
+                    .lastChecked(toLocalDateTime(doc.getDate("status.lastCheckedDate")))
+                    .maxIdleTimeSeconds(doc.getInteger("configuration.maxIdleTimeSeconds"))
+                    .maxWorkerCount(doc.getInteger("configuration.maxWorkerCount"))
                     .workers(workers)
                     .build());
         });

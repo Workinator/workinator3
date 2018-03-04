@@ -27,7 +27,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
 
     private final FindOneAndUpdateOptions updateOptions = new FindOneAndUpdateOptions()
             .returnDocument(AFTER)
-            .sort(doc("lastCheckedDate", 1));
+            .sort(doc("status.lastCheckedDate", 1));
 
     private final MongoDal dal;
     private final PartitionConfigurationCache partitionConfigurationCache;
@@ -37,7 +37,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
      * The WHERE for rule #3.
      * All documents that have work and capacity for more workers.
      */
-    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { hasWork: true }, { $expr :  { $lt: [ \"$workerCount\", \"$maxWorkerCount\" ] } } ] }");
+    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
 
     /**
      * The UPDATE options for rule #3.
@@ -45,13 +45,13 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
      */
     private final FindOneAndUpdateOptions alreadyBeingWorkedOnUpdateOptions =  new FindOneAndUpdateOptions()
                     .returnDocument(AFTER)
-                    .sort(doc("workerCount", 1, "lastCheckedDate", 1));
+                    .sort(doc("status.workerCount", 1, "status.lastCheckedDate", 1));
 
     /**
      * The WHERE for rule #4.
      * An partition that doesn't have any workers.
      */
-    private final Document noWorkers = doc("workerCount", 0);
+    private final Document noWorkers = doc("status.workerCount", 0);
 
 
     @Override
@@ -66,10 +66,11 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
         val findPartition = doc("partitionKey", assignment.getPartitionKey());
         val removeWorker =
                 doc("$pull",
-                        doc("workers",
+                        doc("status.workers",
                                 doc("id", assignment.getWorkerId().getAssignee())),
-                        "$inc", doc("workerCount", -1),
-                        "$set", doc("lastCheckedDate", new Date(), "dueDate", dueDate));
+                        "$inc", doc("status.workerCount", -1),
+                        "$set", doc("status.lastCheckedDate",
+                                new Date(), "status.dueDate", dueDate));
         val result = dal.getPartitionsCollection().findOneAndUpdate(findPartition, removeWorker, releaseOptions);
     }
 
@@ -96,12 +97,12 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          */
         private Document createWorkerUpdateDocument(final String ruleName) {
             return doc("$push",
-                    doc("workers",
+                    doc("status.workers",
                             doc("id", status.getWorkerId().getAssignee(),
                                     "insertDate", new Date(),
                                     "rule", ruleName)),
-                    "$inc", doc("workerCount", 1, "assignmentCount", 1),
-                    "$set", doc("lastCheckedDate", new Date()));
+                    "$inc", doc("status.workerCount", 1, "status.assignmentCount", 1),
+                    "$set", doc("status.lastCheckedDate", new Date()));
         }
 
         /**
@@ -130,7 +131,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          * @return
          */
         private Assignment due() {
-            val where = doc("workerCount", 0, "dueDate", doc("$lt", new Date()));
+            val where = doc("status.workerCount", 0, "status.dueDate", doc("$lt", new Date()));
             val update = createWorkerUpdateDocument("Rule 1");
             return toAssignment(strategy.dal.getPartitionsCollection()
                     .findOneAndUpdate(where, update, strategy.updateOptions), status, "Rule 1");

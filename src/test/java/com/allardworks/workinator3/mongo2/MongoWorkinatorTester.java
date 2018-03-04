@@ -25,13 +25,13 @@ public class MongoWorkinatorTester implements WorkinatorTester {
 
     public void setHasWork(final String partitionKey, final boolean hasWork) {
         val find = doc("partitionKey", partitionKey);
-        val update = doc("$set", doc("hasWork", hasWork));
+        val update = doc("$set", doc("status.hasWork", hasWork));
         dal.getPartitionsCollection().findOneAndUpdate(find, update);
     }
 
     public void setDueDate(final String partitionKey, final Date dueDate) {
         val find = doc("partitionKey", partitionKey);
-        val update = doc("$set", doc("dueDate", dueDate));
+        val update = doc("$set", doc("status.dueDate", dueDate));
         dal.getPartitionsCollection().findOneAndUpdate(find, update);
     }
 

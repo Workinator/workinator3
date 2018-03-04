@@ -6,19 +6,18 @@ Consumer
     maxExecutorCount
 
 Partitions
-    -- KEY
     partitionKey
 
-    -- CONFIGURATION
-    maxWorkerCount
-    maxIdleTimeSeconds
+    configuration
+        maxWorkerCount
+        maxIdleTimeSeconds
 
-    -- STATUS
-    hasMoreWork
-    assignmentCount - how many times a worker was assigned
-    lastChecked
-    workerCount
-    workers
-        id
-        insertDate
-        rule
+    status
+        hasMoreWork
+        assignmentCount - how many times a worker was assigned
+        lastChecked
+        workerCount
+        workers
+            id
+            insertDate
+            rule

@@ -61,8 +61,8 @@ public class MongoDal implements AutoCloseable {
                 PartitionConfiguration
                         .builder()
                         .partitionKey(partitionKey)
-                        .maxIdleTimeSeconds(found.getInteger("maxIdleTimeSeconds"))
-                        .maxWorkerCount(found.getInteger("maxWorkerCount"))
+                        .maxIdleTimeSeconds(((Document)found.get("configuration")).getInteger("maxIdleTimeSeconds"))
+                        .maxWorkerCount(((Document)found.get("configuration")).getInteger("maxWorkerCount"))
                         .build();
     }
 
