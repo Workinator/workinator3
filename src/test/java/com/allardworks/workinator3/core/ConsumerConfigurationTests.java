@@ -21,7 +21,7 @@ public class ConsumerConfigurationTests {
     public void workerCountSetter() {
         val config = ConsumerConfiguration
                 .builder()
-                .maxExecutorCount(10)
+                .maxWorkerCount(10)
                 .build();
         assertEquals(10, config.getMaxWorkerCount());
     }

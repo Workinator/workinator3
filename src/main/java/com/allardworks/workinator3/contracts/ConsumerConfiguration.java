@@ -31,7 +31,7 @@ public class ConsumerConfiguration {
 
     public static class ConsumerConfigurationBuilder {
         private int maxWorkerCount = 1;
-        private Duration getMinWorkTime = Duration.ofSeconds(5);
+        private Duration minWorkTime = Duration.ofSeconds(5);
         private Duration delayWhenNoAssignment = Duration.ofSeconds(5);
     }
 }
