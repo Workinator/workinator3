@@ -5,6 +5,7 @@ import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
 import com.allardworks.workinator3.commands.UnregisterConsumerCommand;
 import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.testsupport.WorkinatorTestHarness;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +13,12 @@ import org.junit.Test;
 import static com.allardworks.workinator3.mongo2.WhatsNextAssignmentStrategy.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+/*
+
+Use the WORKINATOR TEST HARNESS, as demonstrated in the A WHOLE BUNCH OF STUFF test.
+
+ */
 
 public abstract class WorkinatorTests {
     protected abstract WorkinatorTester getTester();
@@ -70,31 +77,6 @@ public abstract class WorkinatorTests {
                 // nothing is due, and current assignment has work,
                 // so keep with current assignment.
                 worker1.setHasWork(true);
-                val assignment2 = workinator.getAssignment(worker1);
-                assertEquals(RULE2, assignment2.getRuleName());
-                assertEquals(assignment1.getPartitionKey(), assignment2.getPartitionKey());
-            }
-        }
-    }
-
-    @Test
-    public void KNOWN_FAILURE_RULE2_getsSameAssignmentIfNothingElseAvailable_DoesntHaveWork() throws Exception {
-        try (val tester = getTester()) {
-            try (val workinator = tester.getWorkinator()) {
-                val partition = CreatePartitionCommand.builder().partitionKey("yadda").maxWorkerCount(1).build();
-                workinator.createPartition(partition);
-
-                val register = RegisterConsumerCommand.builder().id(new ConsumerId("smashing")).build();
-                val registration = workinator.registerConsumer(register);
-
-                val worker1 = new WorkerStatus(new WorkerId(registration, 1));
-                val assignment1 = workinator.getAssignment(worker1);
-                worker1.setCurrentAssignment(assignment1);
-                assertEquals("yadda", assignment1.getPartitionKey());
-                assertEquals(RULE1, assignment1.getRuleName());
-
-                // nothing else to do, so it will get the same assignment.
-                worker1.setHasWork(false);
                 val assignment2 = workinator.getAssignment(worker1);
                 assertEquals(RULE2, assignment2.getRuleName());
                 assertEquals(assignment1.getPartitionKey(), assignment2.getPartitionKey());
@@ -175,6 +157,7 @@ public abstract class WorkinatorTests {
 
     /**
      * Get the first due.
+     *
      * @throws Exception
      */
     @Test
@@ -202,6 +185,7 @@ public abstract class WorkinatorTests {
 
     /**
      * Get the first that is known to have work.
+     *
      * @throws Exception
      */
     @Test
@@ -237,13 +221,15 @@ public abstract class WorkinatorTests {
 
                 val a3 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("c", a3.getPartitionKey());
-                assertEquals(RULE4, a3.getRuleName());}
+                assertEquals(RULE4, a3.getRuleName());
+            }
         }
     }
 
     /**
      * None of the partitions are due, and none have work.
      * Thus Rule4 will take effect: the first partition
+     *
      * @throws Exception
      */
     @Test
@@ -273,7 +259,8 @@ public abstract class WorkinatorTests {
 
                 val a3 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("c", a3.getPartitionKey());
-                assertEquals(RULE4, a3.getRuleName());}
+                assertEquals(RULE4, a3.getRuleName());
+            }
         }
     }
 
@@ -335,6 +322,64 @@ public abstract class WorkinatorTests {
                 assertEquals("b", a7.getPartitionKey());
                 assertEquals(RULE3, a7.getRuleName());
             }
+        }
+    }
+
+    @Test
+    public void AWholeBunchOfStuff() throws Exception {
+        try (val tester = new WorkinatorTestHarness(getTester())) {
+            tester
+                    // create 3 partitions
+                    .createPartition("a")
+                    .createPartition("b")
+                    .createPartition("c")
+
+                    // ---------------------------------------------
+                    // Rule 1
+                    // ---------------------------------------------
+
+                    // partitions will be returned in the order created
+                    .createWorker("worker a")
+                    .assertGetAssignment("worker a", "a", RULE1)
+                    .createWorker("worker b")
+                    .assertGetAssignment("worker b", "b", RULE1)
+                    .createWorker("worker c")
+                    .assertGetAssignment("worker c", "c", RULE1)
+
+                    // nothing for the 4th worker to do.
+                    // all partitions have max concurrency = 1, and there are now more workers than partitions
+                    .createWorker("worker d")
+                    .assertNullAssignment("worker d")
+
+                    // release the worker b
+                    .releaseAssignment("worker b")
+
+                    // ---------------------------------------------
+                    // RULE 4
+                    // ---------------------------------------------
+                    // now d will get it
+                    // RULE 4 because it's not due and doesn't have work.
+                    // RULE 4 is first partition where worker count = 0
+                    .assertGetAssignment("worker d", "b", RULE4)
+
+                    // ---------------------------------------------
+                    // RULE 2
+                    // ---------------------------------------------
+                    // a has work, and there aren't any partitions due
+                    // getting assignment will result in rule 2
+                    .setWorkerHasWork("worker a")
+                    .assertGetAssignment("worker a", "a", RULE2)
+
+                    // ---------------------------------------------
+                    // RULE 5
+                    // ---------------------------------------------
+                    // c doesn't have work, and there aren't any partitions due.
+                    // RULE2 and RULE3 are for when there is work. there isn't.
+                    // RULE4 won't find this partition because it's still assigned.
+                    // RULE5 will prevail... nothing better to do, so do what you're doing
+                    // even though there isn't work.
+                    .setWorkerDoesntHaveWork("worker c")
+                    .assertGetAssignment("worker c", "c", RULE5);
         }
     }
 }

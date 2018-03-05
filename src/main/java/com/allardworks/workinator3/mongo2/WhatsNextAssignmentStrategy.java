@@ -28,6 +28,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
     public final static String RULE2 = "Rule 2 - Already busy, so keep going.";
     public final static String RULE3 = "Rule 3 - Partition already being worked on, but supports more workers.";
     public final static String RULE4 = "Rule 4 - Any partition that doesn't have a worker, even if it's not due yet.";
+    public final static String RULE5 = "Rule 5 - Nothing else to do, so might as well keep working with the current assignment.";
 
     private final FindOneAndUpdateOptions updateOptions = new FindOneAndUpdateOptions()
             .returnDocument(AFTER)
@@ -41,7 +42,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
      * The WHERE for rule #3.
      * All documents that have work and capacity for more workers.
      */
-    private final Document hasWorkAndCapacityFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
+    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
 
     /**
      * The UPDATE options for rule #3.
@@ -91,7 +92,8 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                 this::due,
                 this::ifBusyKeepGoing,
                 this::alreadyBeingWorkedOn,
-                this::anyPartitionWithoutWorkers);
+                this::anyPartitionWithoutWorkers,
+                this::existingAssignment);
 
         /**
          * Creates the update document. Most rules need this.
@@ -148,6 +150,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          * @return
          */
         private Assignment ifBusyKeepGoing() {
+            // TODO: update db with new rule
             if (status.isHasWork()) {
                 return status.getCurrentAssignment().setRule(RULE2);
             }
@@ -163,7 +166,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          */
         private Assignment alreadyBeingWorkedOn() {
             val update = createWorkerUpdateDocument(RULE3);
-            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.hasWorkAndCapacityFilter, update, strategy.alreadyBeingWorkedOnUpdateOptions), status, RULE3);
+            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.alreadyBeingWorkedOnFilter, update, strategy.alreadyBeingWorkedOnUpdateOptions), status, RULE3);
         }
 
         /**
@@ -174,6 +177,14 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
         private Assignment anyPartitionWithoutWorkers() {
             val update = createWorkerUpdateDocument(RULE4);
             return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.noWorkers, update, strategy.updateOptions), status, RULE4);
+        }
+
+        private Assignment existingAssignment() {
+            // TODO: update db with new rule
+            return
+                    status.getCurrentAssignment() == null
+                    ? null
+                    : status.getCurrentAssignment().setRule(RULE5);
         }
 
         /**
