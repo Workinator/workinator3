@@ -41,7 +41,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
      * The WHERE for rule #3.
      * All documents that have work and capacity for more workers.
      */
-    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, {\"status.workerCount\": { \"$gt\": 0 } }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
+    private final Document hasWorkAndCapacityFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
 
     /**
      * The UPDATE options for rule #3.
@@ -163,7 +163,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
          */
         private Assignment alreadyBeingWorkedOn() {
             val update = createWorkerUpdateDocument(RULE3);
-            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.alreadyBeingWorkedOnFilter, update, strategy.alreadyBeingWorkedOnUpdateOptions), status, RULE3);
+            return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.hasWorkAndCapacityFilter, update, strategy.alreadyBeingWorkedOnUpdateOptions), status, RULE3);
         }
 
         /**

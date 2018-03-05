@@ -67,7 +67,8 @@ public abstract class WorkinatorTests {
                 assertEquals("yadda", assignment1.getPartitionKey());
                 assertEquals(RULE1, assignment1.getRuleName());
 
-                // nothing else to do, so it will get the same assignment.
+                // nothing is due, and current assignment has work,
+                // so keep with current assignment.
                 worker1.setHasWork(true);
                 val assignment2 = workinator.getAssignment(worker1);
                 assertEquals(RULE2, assignment2.getRuleName());
@@ -216,6 +217,8 @@ public abstract class WorkinatorTests {
                 val par3 = CreatePartitionCommand.builder().partitionKey("c").maxWorkerCount(5).build();
                 workinator.createPartition(par3);
 
+                // a and c have work.b does not.
+                // b will be the first one to get picked up.
                 tester.setDueDateFuture("a");
                 tester.setHasWork("a", false);
                 tester.setDueDateFuture("b");
@@ -224,13 +227,13 @@ public abstract class WorkinatorTests {
                 tester.setHasWork("c", false);
 
                 val a1 = workinator.getAssignment(createStatus("zz"));
-                assertEquals("b", a1.getPartitionKey());
                 assertEquals(RULE3, a1.getRuleName());
+                assertEquals("b", a1.getPartitionKey());
                 tester.setHasWork("b", false);
 
                 val a2 = workinator.getAssignment(createStatus("zz"));
-                assertEquals("a", a2.getPartitionKey());
                 assertEquals(RULE4, a2.getRuleName());
+                assertEquals("a", a2.getPartitionKey());
 
                 val a3 = workinator.getAssignment(createStatus("zz"));
                 assertEquals("c", a3.getPartitionKey());

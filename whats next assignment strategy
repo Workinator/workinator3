@@ -1,0 +1,7 @@
+1: not being worked on and is due
+    worker count = 0 and duedate < now
+2: if current assignment exists and has work, return same assignment
+3: has work and capacity
+    hasWork = true and workerCount < maxWorkerCount
+4: any partition that doesn't have a worker
+    workerCount = 0
