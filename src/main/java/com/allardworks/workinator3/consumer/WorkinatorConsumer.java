@@ -85,8 +85,8 @@ public class WorkinatorConsumer extends ServiceBase {
                 maintenanceThread.getTransitionEventHandlers().onPostStopped(maintenanceTransition -> maintenanceThread = null);
                 maintenanceThread.start();
 
-                startCount = new CountDownLatch(configuration.getMaxExecutorCount());
-                stopCount = new CountDownLatch(configuration.getMaxExecutorCount());
+                startCount = new CountDownLatch(configuration.getMaxWorkerCount());
+                stopCount = new CountDownLatch(configuration.getMaxWorkerCount());
                 try {
                     // TODO: if consumer already exists, or other exception,
                     // then the wc is stuck in starting. need to work out proper error handling.
@@ -137,7 +137,7 @@ public class WorkinatorConsumer extends ServiceBase {
     private void setupAndStartExecutors() {
         // createPartitions the worker ids
         val executorIds = IntStream
-                .range(0, configuration.getMaxExecutorCount())
+                .range(0, configuration.getMaxWorkerCount())
                 .mapToObj(i -> new WorkerId(registration, i))
                 .collect(toList());
 

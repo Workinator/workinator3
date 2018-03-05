@@ -56,9 +56,8 @@ public class ExecutorAsync extends ServiceBase {
             while (getServiceStatus().getStatus().isStarted()) {
                 val runner = runnerProvider.lookupRunner();
                 if (runner == null) {
-                    // TODO: is null if there isn't an assignment.
-                    // log it or something.
-                    Thread.sleep(1000);
+                    // TODO: need a ManualResetEvent to abort the sleep when time to shutdown.
+                    Thread.sleep(consumerConfiguration.getDelayWhenNoAssignment().toMillis());
                     continue;
                 }
                 runner.run();
