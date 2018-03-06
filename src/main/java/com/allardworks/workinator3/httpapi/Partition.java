@@ -25,8 +25,13 @@ public class Partition {
     public static class Status {
         private boolean hasWork;
         private LocalDateTime dueDate;
+        private LocalDateTime lastCheckedDate;
         private int workerCount;
         private final List<Worker> workers = new ArrayList<>();
+
+        public boolean getIsOverDue() {
+            return workerCount == 0 && dueDate.isBefore(LocalDateTime.now());
+        }
     }
 
     @Data
@@ -39,4 +44,5 @@ public class Partition {
     private final String partitionKey;
     private final Configuration configuration;
     private final Status status;
+    private final LocalDateTime createDate;
 }

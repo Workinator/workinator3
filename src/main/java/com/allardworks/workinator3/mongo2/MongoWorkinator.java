@@ -40,6 +40,9 @@ public class MongoWorkinator implements Workinator {
                 // key
                 "partitionKey", command.getPartitionKey(),
 
+                // info
+                "createDate", new Date(),
+
                 // configuration
                 "configuration", doc(
                         "maxIdleTimeSeconds", command.getMaxIdleTimeSeconds(),
