@@ -316,12 +316,106 @@ public abstract class WorkinatorTests {
 
                 // release one, then get an assignment
                 // we'll get the same one back because rule 3 will see it has the fewest workers
-
                 workinator.releaseAssignment(new ReleaseAssignmentCommand(a2));
                 val a7 = workinator.getAssignment(createStatus("consumer b"));
                 assertEquals("b", a7.getPartitionKey());
                 assertEquals(RULE3, a7.getRuleName());
             }
+        }
+    }
+
+    @Test
+    public void RULE3_multipleConcurrency() throws Exception {
+        try (val tester = new WorkinatorTestHarness(getTester())) {
+            tester
+                    // setup the partition and 4 workers
+                    .createPartition("aaa", 3)
+                    .createWorker("worker a")
+                    .createWorker("worker b")
+                    .createWorker("worker c")
+                    .createWorker("worker d")
+
+                    // get worker a then save it.
+                    // this will udpate the partition with hasWork=true, which is necessary
+                    // in order for subsequent workers to be assigned to the same partition.
+                    .assertGetAssignment("worker a", "aaa", RULE1)
+                    .setWorkerHasWork("worker a")
+                    .saveWorkersStatus()
+
+                    // b and c will be assigned to the same partition.
+                    .assertGetAssignment("worker b", "aaa", RULE3)
+                    .assertGetAssignment("worker c", "aaa", RULE3)
+
+                    // max concurrency reached.
+                    // next worker won't get an assignment.
+                    .assertNullAssignment("worker d");
+        }
+    }
+
+    @Test
+    public void RULE3_MultipleConcurrencyAcrossPartitions() throws Exception {
+        try (val tester = new WorkinatorTestHarness(getTester())) {
+            tester
+                    // setup the partition and 4 workers
+                    .createPartition("aaa", 3)
+                    .createPartition("bbb", 3)
+                    .setPartitionHasWork("aaa")
+                    .setPartitionHasWork("bbb")
+                    .createWorker("worker a")
+                    .createWorker("worker b")
+                    .createWorker("worker c")
+                    .createWorker("worker d")
+                    .createWorker("worker e")
+                    .createWorker("worker f")
+                    .createWorker("worker g")
+
+                    .assertGetAssignment("worker a", "aaa", RULE1)
+                    .assertGetAssignment("worker b", "bbb", RULE1)
+                    .assertGetAssignment("worker c", "aaa", RULE3)
+                    .assertGetAssignment("worker d", "bbb", RULE3)
+                    .assertGetAssignment("worker e", "aaa", RULE3)
+                    .assertGetAssignment("worker f", "bbb", RULE3)
+
+                    // max concurrency reached for both partitions
+                    // next worker won't get an assignment.
+                    .assertNullAssignment("worker g");
+        }
+    }
+
+    /**
+     * New partitions always get priority.
+     * @throws Exception
+     */
+    @Test
+    public void RULE3_MultipleConcurrencyAcrossPartitions_TrumpedByRule1() throws Exception {
+        try (val tester = new WorkinatorTestHarness(getTester())) {
+            tester
+                    // setup the partition and 4 workers
+                    .createPartition("aaa", 3)
+                    .createPartition("bbb", 3)
+                    .setPartitionHasWork("aaa")
+                    .setPartitionHasWork("bbb")
+                    .createWorker("worker a")
+                    .createWorker("worker b")
+                    .createWorker("worker c")
+                    .createWorker("worker d")
+                    .createWorker("worker e")
+                    .createWorker("worker f")
+                    .createWorker("worker g")
+
+                    // assignments will alternate
+                    .assertGetAssignment("worker a", "aaa", RULE1)
+                    .assertGetAssignment("worker b", "bbb", RULE1)
+                    .assertGetAssignment("worker c", "aaa", RULE3)
+                    .assertGetAssignment("worker d", "bbb", RULE3)
+
+                    // now create a new partition. it will get priority.
+                    .createPartition("ccc")
+                    .assertGetAssignment("worker e", "ccc", RULE1)
+
+                    // now back to the others, which have work and multiple workeres
+                    .assertGetAssignment("worker f", "aaa", RULE3)
+                    .assertGetAssignment("worker g", "bbb", RULE3);
         }
     }
 

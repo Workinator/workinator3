@@ -3,12 +3,15 @@ package com.allardworks.workinator3.testsupport;
 import com.allardworks.workinator3.WorkinatorTester;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.commands.ReleaseAssignmentCommand;
+import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -33,13 +36,23 @@ public class WorkinatorTestHarness implements AutoCloseable {
     }
 
     public WorkinatorTestHarness createPartition(final String partitionKey) throws Exception {
+        return createPartition(partitionKey, 1);
+    }
+
+    public WorkinatorTestHarness createPartition(final String partitionKey, int maxWorkers) throws Exception {
         tester
                 .getWorkinator()
                 .createPartition(
                         CreatePartitionCommand
                                 .builder()
                                 .partitionKey(partitionKey)
+                                .maxWorkerCount(maxWorkers)
                                 .build());
+        return this;
+    }
+
+    public WorkinatorTestHarness setPartitionHasWork(final String partitionKey) {
+        tester.setHasWork(partitionKey, true);
         return this;
     }
 
@@ -61,6 +74,16 @@ public class WorkinatorTestHarness implements AutoCloseable {
         assertEquals(expectedPartitionKey, assignment.getPartitionKey());
         assertEquals(expectedRule, assignment.getRuleName());
         assignments.put(workerName, assignment);
+        return this;
+    }
+
+    public WorkinatorTestHarness assertGetAssignmentNull(final String workerName) {
+        assertNull(getAssignment(workerName));
+        return this;
+    }
+
+    public WorkinatorTestHarness saveWorkersStatus() {
+        tester.getWorkinator().updateStatus(new UpdateWorkersStatusCommand(new ArrayList<>(workers.values())));
         return this;
     }
 

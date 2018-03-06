@@ -4,6 +4,10 @@ import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ServiceBase;
+import com.allardworks.workinator3.httpapi.JsonUtility;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,13 +15,15 @@ import lombok.val;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.fasterxml.jackson.annotation.PropertyAccessor.ALL;
+import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
+import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
@@ -75,13 +81,15 @@ public class WorkinatorConsumer extends ServiceBase {
 
     private ScheduledTaskThread maintenanceThread;
 
+    private Date registrationDate;
+
     @Override
     public void start() {
         getServiceStatus().initialize(s -> {
             s.getEventHandlers().onPostStarting(t -> {
                 // setup and run the maintenance thread.
                 // when the maintenance thread stops, set it's reference to null.
-                maintenanceThread = new ScheduledTaskThread(Duration.ofSeconds(25), this::updateWorkerStatuses);
+                maintenanceThread = new ScheduledTaskThread(Duration.ofSeconds(5), this::maintenanceTasks);
                 maintenanceThread.getTransitionEventHandlers().onPostStopped(maintenanceTransition -> maintenanceThread = null);
                 maintenanceThread.start();
 
@@ -108,6 +116,16 @@ public class WorkinatorConsumer extends ServiceBase {
         super.start();
     }
 
+    @Override
+    public Map<String, Object> getInfo() {
+        return null;
+    }
+
+    private void maintenanceTasks() {
+        updateWorkerStatuses();
+        //updateConsumerStatus();
+    }
+
     private void updateWorkerStatuses() {
         val ex = executors;
         if (ex == null) {
@@ -118,18 +136,18 @@ public class WorkinatorConsumer extends ServiceBase {
 
         val statuses = ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList());
         workinator.updateStatus(new UpdateWorkersStatusCommand(statuses));
-        System.out.println("\n\n" + LocalDateTime.now() + " updated worker statues " + statuses.size());
+        out.println("\n\n" + LocalDateTime.now() + " updated worker statues " + statuses.size());
     }
 
-    public Map<String, Object> getInfo() {
-        val map = new HashMap<String, Object>();
-        map.put("consumerId", consumerId);
-        map.put("serviceStatus", getStatus().toString());
+    /*
+    private void updateConsumerStatus() {
+        val ex = executors;
+        val workers =
+                ex == null
+                ? new ArrayList<WorkerStatus>()
+                : ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList());
+    }*/
 
-        val executorInfo = executors.stream().map(Service::getInfo).collect(toList());
-        map.put("executors", executorInfo);
-        return map;
-    }
 
     /**
      * Create an executor for each worker.

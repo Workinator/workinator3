@@ -179,8 +179,15 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
             return toAssignment(strategy.dal.getPartitionsCollection().findOneAndUpdate(strategy.noWorkers, update, strategy.updateOptions), status, RULE4);
         }
 
+        /**
+         * Rule 5
+         * If there's nothing else to do, then continue with what it was already doing.
+         * This differs from rule 2 in that rule 2 is matched if the worker has work.
+         * Here, it doens't, but keep going anyway.
+         * TODO: we could make this optional or drop it altogether.
+         * @return
+         */
         private Assignment existingAssignment() {
-            // TODO: update db with new rule
             return
                     status.getCurrentAssignment() == null
                     ? null

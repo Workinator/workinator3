@@ -5,3 +5,6 @@
     hasWork = true and workerCount < maxWorkerCount
 4: any partition that doesn't have a worker
     workerCount = 0
+4: if already has an assignment, then keep going.
+    like 2, but without the HAS WORK requirement.
+    TODO: reconsider this. maybe make it optional, or put in a delay between attempts.
