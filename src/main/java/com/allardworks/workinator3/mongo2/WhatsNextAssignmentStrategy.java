@@ -42,7 +42,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
      * The WHERE for rule #3.
      * All documents that have work and capacity for more workers.
      */
-    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
+    private final Document alreadyBeingWorkedOnFilter = Document.parse("{ $and: [ { \"status.hasWork\": true }, { \"status.workerCount\": { \"$gt\": 0 } }, { $expr :  { $lt: [ \"$status.workerCount\", \"$configuration.maxWorkerCount\" ] } } ] }");
 
     /**
      * The UPDATE options for rule #3.

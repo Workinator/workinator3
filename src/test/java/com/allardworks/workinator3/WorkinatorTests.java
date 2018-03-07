@@ -203,13 +203,15 @@ public abstract class WorkinatorTests {
 
                 // a and c have work.b does not.
                 // b will be the first one to get picked up.
-                tester.setDueDateFuture("a");
+                //tester.setDueDateFuture("a");
                 tester.setHasWork("a", false);
                 tester.setDueDateFuture("b");
                 tester.setHasWork("b", true);
                 tester.setDueDateFuture("c");
                 tester.setHasWork("c", false);
 
+                // TODO: fails because A has workercount=1
+                // need to fix that
                 val a1 = workinator.getAssignment(createStatus("zz"));
                 assertEquals(RULE3, a1.getRuleName());
                 assertEquals("b", a1.getPartitionKey());
