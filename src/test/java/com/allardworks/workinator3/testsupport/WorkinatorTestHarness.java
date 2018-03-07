@@ -11,7 +11,6 @@ import lombok.val;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -83,7 +82,7 @@ public class WorkinatorTestHarness implements AutoCloseable {
     }
 
     public WorkinatorTestHarness saveWorkersStatus() {
-        tester.getWorkinator().updateStatus(new UpdateWorkersStatusCommand(new ArrayList<>(workers.values())));
+        tester.getWorkinator().updateWorkerStatus(new UpdateWorkersStatusCommand(new ArrayList<>(workers.values())));
         return this;
     }
 

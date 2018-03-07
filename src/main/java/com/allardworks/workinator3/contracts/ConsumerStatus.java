@@ -1,11 +1,8 @@
 package com.allardworks.workinator3.contracts;
 
-import com.allardworks.workinator3.commands.RegisterConsumerCommand;
-import com.allardworks.workinator3.commands.UnregisterConsumerCommand;
+import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,28 +10,14 @@ import java.util.List;
  * k?
  */
 @Data
+@Builder
 public class ConsumerStatus {
-    private final Workinator workinator;
-    private final ConsumerId id;
+    private List<ConsumerWorkerStatus> workers;
 
-    private ConsumerRegistration registration;
-    private final List<WorkerStatus> workers = new ArrayList<>();
-    private final Date connectDate = new Date();
-    private Date registrationDate;
-
-    public int getWorkerCount() {
-        return workers.size();
+    @Builder
+    @Data
+    public static class ConsumerWorkerStatus {
+        private int workerNumber;
+        private Assignment assignment;
     }
-
-    public void register() throws ConsumerExistsException {
-        registrationDate = new Date();
-        registration = workinator.registerConsumer(RegisterConsumerCommand.builder().id(id).build());
-    }
-
-    public void unregister() {
-        workinator.unregisterConsumer(new UnregisterConsumerCommand(registration));
-        registration = null;
-    }
-
-
 }

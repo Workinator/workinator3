@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 
 @SpringBootApplication
 public class Workinator3Application {
-
 	public static void main(String[] args) {
 		SpringApplication.run(Workinator3Application.class, args);
 	}

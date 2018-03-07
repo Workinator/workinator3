@@ -3,6 +3,7 @@ package com.allardworks.workinator3.contracts;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
 

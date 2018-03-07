@@ -1,8 +1,12 @@
 package com.allardworks.workinator3.mongo2;
 
+import com.allardworks.workinator3.contracts.Assignment;
+import com.allardworks.workinator3.contracts.ConsumerStatus;
 import com.allardworks.workinator3.contracts.PartitionConfiguration;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -10,9 +14,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import org.bson.Document;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.stereotype.Service;
 
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 @Service
 public class MongoDal implements AutoCloseable {
@@ -33,7 +40,22 @@ public class MongoDal implements AutoCloseable {
 
     public MongoDal(@NonNull MongoConfiguration config) {
         this.config = config;
-        client = new MongoClient(config.getHost(), config.getPort());
+
+        val pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider
+                        .builder()
+                        .register(ConsumerStatus.class)
+                        .register(ConsumerStatus.ConsumerWorkerStatus.class)
+                        .register(Assignment.class)
+                        .build()));
+
+        val options = MongoClientOptions
+                .builder()
+                .codecRegistry(pojoCodecRegistry)
+                .build();
+
+        val address = new ServerAddress(config.getHost(), config.getPort());
+        client = new MongoClient(address, options);
         database = client.getDatabase(config.getDatabaseName());
         partitionsCollection = database.getCollection(config.getPartitionsCollectionName(), Document.class);
         consumersCollection = database.getCollection(config.getConsumersCollectionName(), Document.class);

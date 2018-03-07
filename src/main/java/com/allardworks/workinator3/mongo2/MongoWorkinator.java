@@ -2,6 +2,8 @@ package com.allardworks.workinator3.mongo2;
 
 import com.allardworks.workinator3.commands.*;
 import com.allardworks.workinator3.contracts.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 import lombok.NonNull;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.allardworks.workinator3.core.ConvertUtility.*;
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
@@ -68,7 +71,7 @@ public class MongoWorkinator implements Workinator {
     }
 
     @Override
-    public void updateStatus(final UpdateWorkersStatusCommand workerStatus) {
+    public void updateWorkerStatus(final UpdateWorkersStatusCommand workerStatus) {
         for (val status : workerStatus.getStatus()) {
             if (status.getCurrentAssignment() == null) {
                 continue;
@@ -158,7 +161,8 @@ public class MongoWorkinator implements Workinator {
         val consumer =
                 doc("name", command.getId().getName(),
                         "connectDate", new Date(),
-                        "maxWorkerCount", command.getMaxWorkerCount());
+                        "maxWorkerCount", command.getMaxWorkerCount(),
+                        "status", null);
 
         try {
             dal.getConsumersCollection().insertOne(consumer);
@@ -169,6 +173,28 @@ public class MongoWorkinator implements Workinator {
             throw e;
         }
         return new ConsumerRegistration(command.getId(), "");
+    }
+
+    private final ObjectMapper mapSerializer =
+            new ObjectMapper()
+                    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+    @Override
+    public void updateConsumerStatus(final UpdateConsumerStatusCommand consumerStatus) {
+        // TODO: receipt
+        try {
+            if (consumerStatus.getRegistration() == null) {
+                // consumer isn't registered yet. nothing to save.
+                return;
+            }
+
+            val map = mapSerializer.convertValue(consumerStatus, Map.class);
+            val find = doc("name", consumerStatus.getRegistration().getConsumerId().getName());
+            val update = doc("$set", doc("status", map));
+            dal.getConsumersCollection().findOneAndUpdate(find, update);
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**

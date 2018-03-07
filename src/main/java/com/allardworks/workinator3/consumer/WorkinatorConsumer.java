@@ -1,13 +1,10 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
+import com.allardworks.workinator3.commands.UpdateConsumerStatusCommand;
 import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ServiceBase;
-import com.allardworks.workinator3.httpapi.JsonUtility;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +16,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-import static com.fasterxml.jackson.annotation.PropertyAccessor.ALL;
-import static com.fasterxml.jackson.annotation.PropertyAccessor.FIELD;
 import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 
@@ -81,8 +74,6 @@ public class WorkinatorConsumer extends ServiceBase {
 
     private ScheduledTaskThread maintenanceThread;
 
-    private Date registrationDate;
-
     @Override
     public void start() {
         getServiceStatus().initialize(s -> {
@@ -122,8 +113,17 @@ public class WorkinatorConsumer extends ServiceBase {
     }
 
     private void maintenanceTasks() {
-        updateWorkerStatuses();
-        //updateConsumerStatus();
+        try {
+            updateWorkerStatuses();
+        } catch (final Exception ex) {
+            log.error("update worker statuses", ex);
+        }
+
+        try {
+            updateConsumerStatus();
+        } catch (final Exception ex){
+            log.error("udpate consumer status", ex);
+        }
     }
 
     private void updateWorkerStatuses() {
@@ -135,18 +135,52 @@ public class WorkinatorConsumer extends ServiceBase {
         }
 
         val statuses = ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList());
-        workinator.updateStatus(new UpdateWorkersStatusCommand(statuses));
+        workinator.updateWorkerStatus(new UpdateWorkersStatusCommand(statuses));
         out.println("\n\n" + LocalDateTime.now() + " updated worker statues " + statuses.size());
     }
 
-    /*
     private void updateConsumerStatus() {
+        if (registration == null) {
+            // consumer isn't registered yet.
+            // nothing to do.
+            return;
+        }
+
+        // executors may be null if the method is called while the consumer is still starting.
         val ex = executors;
         val workers =
-                ex == null
+                (ex == null
                 ? new ArrayList<WorkerStatus>()
-                : ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList());
-    }*/
+                : ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList()))
+                .stream()
+                .map(w -> {
+                    Assignment a = w.getCurrentAssignment();
+                    if (a != null) {
+                        // null out the worker id. eliminates duplicate information in the output.
+                        a = w.getCurrentAssignment().setWorkerId(null);
+                    }
+
+                    return
+                            ConsumerStatus.ConsumerWorkerStatus
+                                    .builder()
+                                    .assignment(a)
+                                    .build();
+                }
+        ).collect(toList());
+
+        val status = ConsumerStatus
+                .builder()
+                .workers(workers)
+                .build();
+
+        val command = UpdateConsumerStatusCommand
+                .builder()
+                .registration(registration)
+                .status(status)
+                .build();
+
+        workinator.updateConsumerStatus(command);
+    }
 
 
     /**

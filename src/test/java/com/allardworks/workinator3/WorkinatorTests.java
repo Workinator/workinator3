@@ -353,7 +353,7 @@ public abstract class WorkinatorTests {
     }
 
     @Test
-    public void RULE3_MultipleConcurrencyAcrossPartitions() throws Exception {
+    public void RULE3_MultipleConcurrency() throws Exception {
         try (val tester = new WorkinatorTestHarness(getTester())) {
             tester
                     // setup the partition and 4 workers

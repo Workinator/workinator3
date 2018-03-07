@@ -4,6 +4,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @RequiredArgsConstructor
 @Getter
 public class Assignment {
@@ -20,5 +23,9 @@ public class Assignment {
      */
     public Assignment setRule(final String newRuleName) {
         return new Assignment(workerId, partitionKey, receipt, newRuleName);
+    }
+
+    public Assignment setWorkerId(final WorkerId workerId) {
+        return new Assignment(workerId, partitionKey, receipt, ruleName);
     }
 }

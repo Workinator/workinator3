@@ -15,7 +15,9 @@ public interface Workinator extends AutoCloseable {
 
     void createPartition(CreatePartitionCommand command) throws PartitionExistsException;
 
-    void updateStatus(UpdateWorkersStatusCommand workerStatus);
+    void updateWorkerStatus(UpdateWorkersStatusCommand workerStatus);
+
+    void updateConsumerStatus(UpdateConsumerStatusCommand consumerStatus);
 
     List<PartitionInfo> getPartitions();
 

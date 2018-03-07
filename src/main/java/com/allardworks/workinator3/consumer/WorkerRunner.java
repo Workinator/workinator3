@@ -53,7 +53,7 @@ class WorkerRunner {
             log.error("Error closing worker", e);
         }
 
-        workinator.updateStatus(new UpdateWorkersStatusCommand(Collections.singletonList(status)));
+        workinator.updateWorkerStatus(new UpdateWorkersStatusCommand(Collections.singletonList(status)));
         workinator.releaseAssignment(new ReleaseAssignmentCommand(status.getCurrentAssignment()));
     }
 }

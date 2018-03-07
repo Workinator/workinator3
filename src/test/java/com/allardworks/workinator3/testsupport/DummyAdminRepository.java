@@ -37,7 +37,12 @@ public class DummyAdminRepository implements Workinator {
     }
 
     @Override
-    public void updateStatus(UpdateWorkersStatusCommand workerStatus) {
+    public void updateWorkerStatus(UpdateWorkersStatusCommand workerStatus) {
+
+    }
+
+    @Override
+    public void updateConsumerStatus(UpdateConsumerStatusCommand consumerStatus) {
 
     }
 
