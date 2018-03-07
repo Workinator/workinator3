@@ -163,6 +163,7 @@ public class WorkinatorConsumer extends ServiceBase {
                     return
                             ConsumerStatus.ConsumerWorkerStatus
                                     .builder()
+                                    .workerNumber(w.getWorkerId().getWorkerNumber())
                                     .assignment(a)
                                     .build();
                 }
