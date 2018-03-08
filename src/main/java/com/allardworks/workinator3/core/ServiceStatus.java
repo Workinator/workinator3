@@ -36,6 +36,13 @@ public class ServiceStatus {
     private Status status = Status.Stopped;
 
 
+    /**
+     * Thread safe method to execute initialization code.
+     * The initialization method will only do work once regardless
+     * of how many times it's called.
+     * @param initializationMethod
+     * @return
+     */
     public ServiceStatus initialize(Consumer<ServiceStatus> initializationMethod) {
         synchronized (syncroot) {
             if (initialized) {
@@ -65,8 +72,7 @@ public class ServiceStatus {
     }
 
     private void executeHandlers(final Transition transition) {
-        val handlers = transitionEventHandlers;
-        for (val h : handlers) {
+        for (val h : transitionEventHandlers) {
             try {
                 h.accept(transition);
             } catch (final Exception e) {

@@ -1,0 +1,23 @@
+Consumer
+    -- KEY
+    consumerId
+
+    -- CONFIGURATION
+    maxExecutorCount
+
+Partitions
+    partitionKey
+
+    configuration
+        maxWorkerCount
+        maxIdleTimeSeconds
+
+    status
+        hasMoreWork
+        assignmentCount - how many times a worker was assigned
+        lastChecked
+        workerCount
+        workers
+            id
+            insertDate
+            rule

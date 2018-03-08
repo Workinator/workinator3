@@ -1,15 +1,13 @@
 package com.allardworks.workinator3.demo;
 
-import com.allardworks.workinator3.WorkinatorAdmin;
+import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.consumer.WorkinatorConsumer;
 import com.allardworks.workinator3.consumer.WorkinatorConsumerFactory;
 import com.allardworks.workinator3.contracts.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.apache.commons.cli.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +23,9 @@ import static java.lang.System.out;
 @Service
 @RequiredArgsConstructor
 public class Runner implements CommandLineRunner {
-
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    private final Map<String, WorkinatorConsumer> consumers = new HashMap<>();
-
-    @Autowired
-    private final WorkinatorAdmin admin;
-
-    @Autowired
+    private final Workinator workinator;
     private final WorkinatorConsumerFactory consumerFactory;
+    private final Map<String, WorkinatorConsumer> consumers = new HashMap<>();
 
     /**
      * Create a partition.
@@ -52,7 +43,7 @@ public class Runner implements CommandLineRunner {
                 .builder()
                 .partitionKey(partitionName)
                 .build();
-        admin.createPartition(partition);
+        workinator.createPartition(partition);
         return true;
     }
 
@@ -69,27 +60,34 @@ public class Runner implements CommandLineRunner {
         return true;
     }
 
-    private boolean showConsumerStatus(final CommandLine command) throws JsonProcessingException {
-        if (!command.hasOption("sc")) {
+    /**
+     * Shows the status of the consumers running in process.
+     * @param command
+     * @return
+     * @throws JsonProcessingException
+     */
+    private boolean showLocalConsumerStatus(final CommandLine command) {
+        if (!command.hasOption("scl")) {
             return false;
         }
 
         for (val c : consumers.values()) {
-            //out.println(mapper.writeValueAsString(c.getInfo()));
             val info = c.getInfo();
             val consumerId = (ConsumerId) info.get("consumerId");
             out.println(consumerId.getName());
             val executors = (List<Map<String, Object>>) info.get("executors");
             for (val e : executors) {
-                val eid = (ExecutorId) e.get("executorId");
+                val eid = (WorkerId) e.get("executorId");
                 val assignment = (Assignment)e.get("currentAssignment");
-                out.print("\t" + eid.getExecutorNumber() + ", Assignment=");
+                out.print("\t" + eid.getWorkerNumber() + ", Assignment=");
                 if (assignment == null) {
                     out.println();
                     continue;
                 }
-                out.println(assignment.getPartitionKey() + "." + assignment.getWorkerNumber());
+
+                out.println(assignment.getPartitionKey());
             }
+            out.println();
         }
         return true;
     }
@@ -109,27 +107,28 @@ public class Runner implements CommandLineRunner {
         return true;
     }
 
-    private boolean showPartitions(final CommandLine command) throws JsonProcessingException {
+    private boolean showPartitions(final CommandLine command) {
         if (!command.hasOption("sp")) {
             return false;
         }
 
-        val partitions = admin.getPartitions();
+        val partitions = workinator.getPartitions();
         for (val partition : partitions) {
-            out.println("Partition Key=" + partition.getPartitionKey() + ", Max Worker Count=" + partition.getMaxWorkerCount().getValue() + ", Last Check Complete=" + partition.getLastCheckEnd().getValue());
+            out.println("Partition Key=" + partition.getPartitionKey() + ", Max Worker Count=" + partition.getMaxWorkerCount() + ", Last Checked=" + partition.getLastChecked() + ", Current Worker Count=" + partition.getCurrentWorkerCount());
+            for (val worker : partition.getWorkers()) {
+                out.println("\t" + worker.getAssignee() + ", Rule: " + worker.getRule());
+            }
         }
-        //out.println(mapper.writerWithDefaultPrettyPrnter().writeValueAsString(partitions));
         return true;
     }
 
     @Override
-    public void run(String... strings) throws Exception {
-        // TODO: refactor this... should just be a list of stuff that works itself out
+    public void run(String... strings) {
         val parser = new DefaultParser();
         val options = new Options();
         options.addOption(new Option("cc", "createconsumer", true, "Create a consumer"));
         options.addOption(new Option("cp", "createpartition", true, "Create a partition"));
-        options.addOption(new Option("sc", "showconsumers", false, "Display Consumers"));
+        options.addOption(new Option("scl", "showconsumerslocal", false, "Display In Process Consumer Information"));
         options.addOption(new Option("help", "help", false, "print this message"));
         options.addOption(new Option("sp", "showpartitions", false, "show partitions"));
         while (true) {
@@ -138,7 +137,7 @@ public class Runner implements CommandLineRunner {
                 val processed =
                         createPartition(command)
                                 || createConsumer(command)
-                                || showConsumerStatus(command)
+                                || showLocalConsumerStatus(command)
                                 || showHelp(command, options)
                                 || showPartitions(command);
 

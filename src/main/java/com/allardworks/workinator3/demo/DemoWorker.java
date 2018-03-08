@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 public class DemoWorker implements AsyncWorker {
     @Override
     public void execute(WorkerContext context) {
+        context.setHasWork(true);
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
     }
 }

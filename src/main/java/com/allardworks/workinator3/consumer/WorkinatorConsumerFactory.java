@@ -1,8 +1,10 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.*;
+import com.allardworks.workinator3.contracts.ConsumerConfiguration;
+import com.allardworks.workinator3.contracts.ConsumerId;
+import com.allardworks.workinator3.contracts.WorkerFactory;
+import com.allardworks.workinator3.contracts.Workinator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,24 +12,17 @@ import org.springframework.stereotype.Component;
  * This is a convenience in cases where a single program
  * wants to createPartitions multiple consumers. Usually, that's not how WorkinatorConsumer should
  * be used. But, for tests and demos, you may need multiple.
- * In a usual program, you would just createPartitions the beans and inject WorkinatorConsumer, letting spring do the work.
+ * In a usual program, you would just create the beans and inject WorkinatorConsumer. Let spring do the work.
  */
 @Component
 @RequiredArgsConstructor
 public class WorkinatorConsumerFactory {
-    @Autowired
     private final ConsumerConfiguration consumerConfiguration;
-
-    @Autowired
-    private final WorkinatorClient client;
-
-    @Autowired
+    private final Workinator workinator;
     private final ExecutorFactory executorFactory;
-
-    @Autowired
     private final WorkerFactory workerFactory;
 
     public WorkinatorConsumer create(final ConsumerId id) {
-        return new WorkinatorConsumer(consumerConfiguration, client, executorFactory, workerFactory, id);
+        return new WorkinatorConsumer(consumerConfiguration, workinator, executorFactory, workerFactory, id);
     }
 }

@@ -4,12 +4,28 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @RequiredArgsConstructor
-@EqualsAndHashCode
 @Getter
 public class Assignment {
-    private final ExecutorId executorId;
+    private final WorkerId workerId;
     private final String partitionKey;
-    private final int workerNumber;
-    private final String rule;
+    private final String receipt;
+    private final String ruleName;
+
+    /**
+     * Returns a new assignment object with all of the same information
+     * except for rule name.
+     * @param newRuleName
+     * @return
+     */
+    public Assignment setRule(final String newRuleName) {
+        return new Assignment(workerId, partitionKey, receipt, newRuleName);
+    }
+
+    public Assignment setWorkerId(final WorkerId workerId) {
+        return new Assignment(workerId, partitionKey, receipt, ruleName);
+    }
 }

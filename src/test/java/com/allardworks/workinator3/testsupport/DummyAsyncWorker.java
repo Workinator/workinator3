@@ -30,11 +30,11 @@ public class DummyAsyncWorker implements AsyncWorker {
                 e.printStackTrace();
             }
         }
-        context.setHasMoreWork(false);
+        context.setHasWork(false);
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
 
     }
 }

@@ -1,7 +1,8 @@
 package com.allardworks.workinator3.testsupport;
 
-import com.allardworks.workinator3.contracts.*;
-import lombok.NonNull;
+import com.allardworks.workinator3.contracts.Assignment;
+import com.allardworks.workinator3.contracts.AsyncWorker;
+import com.allardworks.workinator3.contracts.AsyncWorkerFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.Supplier;

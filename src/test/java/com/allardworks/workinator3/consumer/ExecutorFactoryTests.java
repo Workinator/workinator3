@@ -1,12 +1,16 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.testsupport.DummyAsyncWorkerFactory;
-import com.allardworks.workinator3.testsupport.DummyWorkinatorRepository;
+import com.allardworks.workinator3.contracts.ConsumerConfiguration;
+import com.allardworks.workinator3.contracts.ConsumerId;
+import com.allardworks.workinator3.contracts.ConsumerRegistration;
+import com.allardworks.workinator3.contracts.WorkerId;
 import com.allardworks.workinator3.testsupport.DummyAsyncWorker;
+import com.allardworks.workinator3.testsupport.DummyAsyncWorkerFactory;
+import com.allardworks.workinator3.testsupport.DummyWorkinator;
 import lombok.val;
 import org.junit.Test;
-import org.springframework.util.Assert;
+
+import static org.junit.Assert.assertNotNull;
 
 
 public class ExecutorFactoryTests {
@@ -20,9 +24,9 @@ public class ExecutorFactoryTests {
                 .builder()
                 .build();
         val workerFactory = new DummyAsyncWorkerFactory(DummyAsyncWorker::new);
-        val factory = new ExecutorFactory(config, new DummyWorkinatorRepository());
-        val id = new ExecutorId(new ConsumerRegistration(new ConsumerId("boo")), 1);
+        val factory = new ExecutorFactory(config, new DummyWorkinator());
+        val id = new WorkerId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
         val executor = factory.createExecutor(id, workerFactory);
-        Assert.isTrue(executor instanceof ExecutorAsync, "expected AsyncWorker");
+        assertNotNull(executor);
     }
 }

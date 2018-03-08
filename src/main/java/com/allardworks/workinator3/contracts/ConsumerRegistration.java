@@ -7,4 +7,5 @@ import lombok.EqualsAndHashCode;
 @Data
 public class ConsumerRegistration {
     private final ConsumerId consumerId;
+    private final String receipt;
 }

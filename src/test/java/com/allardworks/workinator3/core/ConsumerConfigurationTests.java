@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ConsumerConfigurationTests {
     @Test
@@ -14,16 +14,16 @@ public class ConsumerConfigurationTests {
         val config = ConsumerConfiguration
                 .builder()
                 .build();
-        assertEquals(1, config.getMaxExecutorCount());
+        assertEquals(1, config.getMaxWorkerCount());
     }
 
     @Test
     public void workerCountSetter() {
         val config = ConsumerConfiguration
                 .builder()
-                .maxExecutorCount(10)
+                .maxWorkerCount(10)
                 .build();
-        assertEquals(10, config.getMaxExecutorCount());
+        assertEquals(10, config.getMaxWorkerCount());
     }
 
     @Test

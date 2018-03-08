@@ -1,18 +1,12 @@
 package com.allardworks.workinator3.consumer;
 
 import com.allardworks.workinator3.contracts.*;
-import com.allardworks.workinator3.core.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.allardworks.workinator3.core.ServiceBase;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import static java.lang.System.out;
 
 /**
  * Creates one thread per worker.
@@ -20,21 +14,25 @@ import static java.lang.System.out;
 @Slf4j
 public class ExecutorAsync extends ServiceBase {
     private final WorkerRunnerProvider runnerProvider;
-    private final ExecutorId id;
+    private final WorkerId id;
     private final ConsumerConfiguration consumerConfiguration;
+    private final WorkerStatus workerStatus;
     private Thread thread;
 
     public ExecutorAsync(
-            final ExecutorId executorId,
+            final WorkerId workerId,
             final ConsumerConfiguration configuration,
             final AsyncWorkerFactory workerFactory,
-            final WorkinatorRepository workinatorRepository) {
+            final Workinator workinatorRepository) {
 
-        // can continue = true for the partition's minimum work time
-        //Function<Context, Boolean> canContinue = c -> ;
+        workerStatus = new WorkerStatus(workerId);
         consumerConfiguration = configuration;
-        runnerProvider = new WorkerRunnerProvider(this::canContinue, workerFactory, workinatorRepository, executorId, getServiceStatus());
-        id = executorId;
+        runnerProvider = new WorkerRunnerProvider(this::canContinue, workerFactory, workinatorRepository, workerStatus, getServiceStatus());
+        id = workerId;
+    }
+
+    public WorkerStatus getWorkerStatus() {
+        return workerStatus.clone();
     }
 
     private boolean canContinue(final Context context) {
@@ -51,37 +49,39 @@ public class ExecutorAsync extends ServiceBase {
     }
 
     private void run() {
+        // The executor runs as long as the service is started.
+        // the assignment it executes may change many times, but the thread nor executor stops.
         try {
             getServiceStatus().started();
             while (getServiceStatus().getStatus().isStarted()) {
                 val runner = runnerProvider.lookupRunner();
                 if (runner == null) {
-                    // TODO
+                    // TODO: need a ManualResetEvent to abort the sleep when time to shutdown.
+                    Thread.sleep(consumerConfiguration.getDelayWhenNoAssignment().toMillis());
                     continue;
                 }
-
                 runner.run();
             }
 
             try {
                 runnerProvider.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (final Exception e) {
+                log.error("Error when closing runnerProvider", e);
             }
+
+            log.info("Stopped ExecutorAsync. Consumer={0}, Worker Number={1} " + getWorkerStatus().getWorkerId().getConsumer().getConsumerId().getName(), getWorkerStatus().getWorkerId().getWorkerNumber());
             getServiceStatus().stopped();
-        } catch (Exception e2) {
-            e2.printStackTrace();
+        } catch (final Exception e2) {
+            log.error("Error in run", e2);
         }
     }
 
     @Override
     public void start() {
-        getServiceStatus().initialize(s -> {
-            s.getEventHandlers().onPostStarting(t -> {
-                thread = new Thread(this::run);
-                thread.start();
-            });
-        });
+        getServiceStatus().initialize(s -> s.getEventHandlers().onPostStarting(t -> {
+            thread = new Thread(this::run);
+            thread.start();
+        }));
         super.start();
     }
 

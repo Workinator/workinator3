@@ -13,17 +13,28 @@ import static java.lang.System.out;
 public class TimedActivity implements AutoCloseable {
     @NonNull
     private final String name;
-    private final LocalDateTime start = LocalDateTime.now();
-    private LocalDateTime stop;
+
+    private final LocalDateTime started = LocalDateTime.now();
+    private LocalDateTime stopped;
+    private boolean isRunning = true;
 
     public TimedActivity stop() {
-        stop = LocalDateTime.now();
+        stopped = LocalDateTime.now();
+        isRunning = false;
         return this;
     }
+
+    public Duration getElapsed() {
+        return
+                isRunning
+                        ? Duration.between(started, LocalDateTime.now())
+                        : Duration.between(started, stopped);
+    }
+
     @Override
-    public void close() throws Exception {
+    public void close() {
         stop();
-        val elapsed = Duration.between(start, stop).toMillis();
+        val elapsed = Duration.between(started, stopped).toMillis();
         out.println("--------------------------" + name + ": " + elapsed + "ms");
     }
 }

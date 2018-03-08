@@ -6,11 +6,10 @@ import lombok.val;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 public class EventHandlers {
-    private final Set<Runnable> handlers = new HashSet<>();
+    private final HashSet<Runnable> handlers = new HashSet<>();
 
     public EventHandlers add(@NonNull Runnable eventHandler) {
         handlers.add(eventHandler);
@@ -33,8 +32,7 @@ public class EventHandlers {
     }
 
     public void execute() {
-        val torun = handlers;
-        for (val r : torun) {
+        for (val r : handlers) {
             try {
                 r.run();
             } catch (final Exception ex) {

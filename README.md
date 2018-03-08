@@ -13,7 +13,7 @@ A worker does the worker. The application developer implements a `Worker` interf
 
 Status: In Progress
 
-Implementations of this intervace are exected by AsyncExecutors.
+Implementations of this interface are expected by AsyncExecutors.
 
 ### WorkerSync
 
@@ -23,7 +23,7 @@ Implementations of this interface are executed by SyncExecutors.
 
 # Executors
 
-Each worker is managed by an executor. The executor retrieves assignments from the coordinator, and forwards it to the worker. It instructs the worker when to stop working.
+Each worker is managed by an executor. The executor retrieves assignments from the workinator, and forwards it to the worker. It instructs the worker when to stop working.
 
 The executor manages the worker. The worker does the work.
 
@@ -49,7 +49,7 @@ while (context.canContinue) {
 
 Status: Saw it in a dream
 
-The SyncExecutor does not create a thread per worker. This only appropriate if your code is using other code that starts it's own thread. For example: a RabbitMq consmer or Kafka Stream client. The worker would just set those up and run. They create their own threads and go.
+The SyncExecutor does not create a thread per worker. This only appropriate if your code is using other code that starts it's own thread. For example: a RabbitMq consumer or Kafka Stream client. The worker would just set those up and run. They create their own threads and go.
 
 The worker needs to catch Stop events from the worker context so that it knows when to stop.
 
@@ -81,9 +81,9 @@ Using this strategy, multiple partitions are assigned to each executor.
 
 This may be useful for some applications. There was a concrete use case of this that has slipped my mind.
 
-IE: Executor A handles Partitions 1,2,3,4,5. Executor B handles Partiton 6,7,8.
+IE: Executor A handles Partitions 1,2,3,4,5. Executor B handles Partition 6,7,8.
 
-# Rebalance Strategies
+# Assignment Strategies
 
 The strategies are implement at the repository level. This could, perhaps, be abstracted, but that's not a short-term priority.
 
@@ -105,7 +105,7 @@ The total number of available threads is `(# of partitions) * (# of threads per 
 
 The number of executors could be significantly less than the number of partitions.
 
-Each thread requests and assignment from the coordinator. If an assignment is given, then the executor starts working on that partition.
+Each thread requests and assignment from the workinator. If an assignment is given, then the executor starts working on that partition.
 
 
 ## The "Assignment" Strategy
@@ -130,12 +130,12 @@ The `What's Next` strategy covers the same use cases. If the number of executors
 
 ## Partition Settings
 
-* MaxIdleTime - the maximum amount of time that a partition can go without being checked. It doesn't mean that it will be checked immediately once this time elapses, only that it will be scheduled.
+* MaxIdleTime - the maximum amount of time that a partition can go without being checked. It does not mean that it will be checked immediately once this time elapses, only that it will be scheduled.
 * MaxWorkerCount - the maximum number of workers that can consume the partition concurrently.
 
 ## Consumer Settings
 
-* MinWorkTime - the minimum amount of time that an executor will work on a parition uninterruped (assuming that the partition has work)
+* MinWorkTime - the minimum amount of time that an executor will work on a partition uninterrupted (assuming that the partition has work)
     * Considering making this a partition setting.
 * MaxExecutorCount - the maximum number of executors that the consumer can support.
 

@@ -1,0 +1,10 @@
+1: not being worked on and is due
+    worker count = 0 and duedate < now
+2: if current assignment exists and has work, return same assignment
+3: has work and capacity
+    hasWork = true and workerCount > 0 and wokerCount < maxWorkerCount
+4: any partition that doesn't have a worker
+    workerCount = 0
+5: if already has an assignment, then keep going.
+    like 2, but without the HAS WORK requirement.
+    TODO: reconsider this. maybe make it optional, or put in a delay between attempts.
