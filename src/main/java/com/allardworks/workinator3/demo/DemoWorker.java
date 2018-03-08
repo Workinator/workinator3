@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class DemoWorker implements AsyncWorker {
     @Override
     public void execute(WorkerContext context) {
-        context.setHasWork(true);
+        context.setHasWork(DemoHelper.getHack().getHasWork(context.getAssignment().getPartitionKey()));
     }
 
     @Override

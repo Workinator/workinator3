@@ -80,7 +80,8 @@ public class WorkinatorConsumer extends ServiceBase {
             s.getEventHandlers().onPostStarting(t -> {
                 // setup and run the maintenance thread.
                 // when the maintenance thread stops, set it's reference to null.
-                maintenanceThread = new ScheduledTaskThread(Duration.ofSeconds(5), this::maintenanceTasks);
+                // TODO: very fast maintenance thread for demo/testing
+                maintenanceThread = new ScheduledTaskThread(Duration.ofMillis(5), this::maintenanceTasks);
                 maintenanceThread.getTransitionEventHandlers().onPostStopped(maintenanceTransition -> maintenanceThread = null);
                 maintenanceThread.start();
 
@@ -136,10 +137,10 @@ public class WorkinatorConsumer extends ServiceBase {
 
         val statuses = ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList());
         workinator.updateWorkerStatus(new UpdateWorkersStatusCommand(statuses));
-        out.println("\n\n" + LocalDateTime.now() + " updated worker statues " + statuses.size());
+        //out.println("\n\n" + LocalDateTime.now() + " updated worker statues " + statuses.size());
     }
 
-    private void updateConsumerStatus() {
+    public void updateConsumerStatus() {
         if (registration == null) {
             // consumer isn't registered yet.
             // nothing to do.

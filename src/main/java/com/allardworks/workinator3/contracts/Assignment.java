@@ -10,6 +10,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Getter
 public class Assignment {
+    // TODO: this is a problem in RunnerProvider. need to stabilize this.
+    // revisit id and status objects.
+    // could get rid of it, but RELEASE uses it.
     private final WorkerId workerId;
     private final String partitionKey;
     private final String receipt;

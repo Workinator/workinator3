@@ -122,6 +122,22 @@ public class Runner implements CommandLineRunner {
         return true;
     }
 
+    private boolean setPartitionHasWork(final CommandLine command) {
+        if (command.hasOption("pwork")) {
+            DemoHelper.getHack().setHasWork(command.getOptionValue("pwork"), true);
+            out.println("The partition has been set: hasWork=true");
+            return true;
+        }
+
+        if (command.hasOption("pnwork")) {
+            DemoHelper.getHack().setHasWork(command.getOptionValue("pnwork"), false);
+            out.println("The partition has been set: hasWork=false");
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void run(String... strings) {
         val parser = new DefaultParser();
@@ -131,6 +147,8 @@ public class Runner implements CommandLineRunner {
         options.addOption(new Option("scl", "showconsumerslocal", false, "Display In Process Consumer Information"));
         options.addOption(new Option("help", "help", false, "print this message"));
         options.addOption(new Option("sp", "showpartitions", false, "show partitions"));
+        options.addOption(new Option("pwork", "partitionhaswork", true, "for emulation: indicate that a partition has work."));
+        options.addOption(new Option("pnwork", "partitionnowork", true, "for emulation: indicate that a partition doesn't have work."));
         while (true) {
             try {
                 val command = parser.parse(options, getInput());
@@ -139,6 +157,7 @@ public class Runner implements CommandLineRunner {
                                 || createConsumer(command)
                                 || showLocalConsumerStatus(command)
                                 || showHelp(command, options)
+                                || setPartitionHasWork(command)
                                 || showPartitions(command);
 
                 if (!processed) {
