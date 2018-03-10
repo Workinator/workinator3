@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.Date;
 
 import static java.lang.System.out;
 
@@ -14,12 +15,12 @@ public class TimedActivity implements AutoCloseable {
     @NonNull
     private final String name;
 
-    private final LocalDateTime started = LocalDateTime.now();
-    private LocalDateTime stopped;
+    private final Date started = Date.from(Instant.now());
+    private Date stopped;
     private boolean isRunning = true;
 
     public TimedActivity stop() {
-        stopped = LocalDateTime.now();
+        stopped = Date.from(Instant.now());
         isRunning = false;
         return this;
     }
@@ -27,14 +28,14 @@ public class TimedActivity implements AutoCloseable {
     public Duration getElapsed() {
         return
                 isRunning
-                        ? Duration.between(started, LocalDateTime.now())
-                        : Duration.between(started, stopped);
+                        ? Duration.ofMillis(Date.from(Instant.now()).getTime() - started.getTime())
+                        : Duration.ofMillis(stopped.getTime() - started.getTime());
     }
 
     @Override
     public void close() {
         stop();
-        val elapsed = Duration.between(started, stopped).toMillis();
+        val elapsed = stopped.getTime() - started.getTime();
         out.println("--------------------------" + name + ": " + elapsed + "ms");
     }
 }

@@ -1,11 +1,11 @@
 package com.allardworks.workinator3.httpapi;
 
 import lombok.Data;
-import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,13 +24,13 @@ public class Partition {
     @Data
     public static class Status {
         private boolean hasWork;
-        private LocalDateTime dueDate;
-        private LocalDateTime lastCheckedDate;
+        private Date dueDate;
+        private Date lastCheckedDate;
         private int workerCount;
         private final List<Worker> workers = new ArrayList<>();
 
         public boolean getIsOverDue() {
-            return workerCount == 0 && dueDate.isBefore(LocalDateTime.now());
+            return workerCount == 0 && dueDate.before(Date.from(Instant.now()));
         }
     }
 
@@ -44,5 +44,5 @@ public class Partition {
     private final String partitionKey;
     private final Configuration configuration;
     private final Status status;
-    private final LocalDateTime createDate;
+    private final Date createDate;
 }

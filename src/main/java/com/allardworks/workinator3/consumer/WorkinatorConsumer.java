@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
@@ -137,7 +136,6 @@ public class WorkinatorConsumer extends ServiceBase {
 
         val statuses = ex.stream().map(ExecutorAsync::getWorkerStatus).collect(toList());
         workinator.updateWorkerStatus(new UpdateWorkersStatusCommand(statuses));
-        //out.println("\n\n" + LocalDateTime.now() + " updated worker statues " + statuses.size());
     }
 
     public void updateConsumerStatus() {

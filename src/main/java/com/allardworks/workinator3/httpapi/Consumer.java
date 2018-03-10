@@ -1,12 +1,10 @@
 package com.allardworks.workinator3.httpapi;
 
-import com.allardworks.workinator3.contracts.ConsumerRegistration;
 import com.allardworks.workinator3.contracts.ConsumerStatus;
 import lombok.Data;
-import lombok.val;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by jaya on 3/3/18.
@@ -15,15 +13,8 @@ import java.time.LocalDateTime;
 @Data
 @Document(collection = "Consumers")
 public class Consumer {
-    // TODO: matches what's in the db, but the db needs some work. status/status needs to go.
-    @Data
-    private static class Status {
-        private ConsumerRegistration registration;
-        private ConsumerStatus status;
-    }
-
-    private Status status;
+    private ConsumerStatus status;
     private String name;
-    private LocalDateTime connectDate;
+    private Date connectDate;
     private int maxWorkerCount;
 }

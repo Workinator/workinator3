@@ -55,8 +55,8 @@ public class MongoWorkinator implements Workinator {
                 "status", doc(
                         "assignmentCount", 0,
                         "hasWork", false,
-                        "lastCheckedDate", toDate(MIN_DATE),
-                        "dueDate", toDate(MIN_DATE),
+                        "lastCheckedDate", MIN_DATE,
+                        "dueDate", MIN_DATE,
                         "workerCount", 0,
                         "workers", new ArrayList<BasicDBObject>()));
 
@@ -99,7 +99,7 @@ public class MongoWorkinator implements Workinator {
             val workersSource = (List<Document>)doc.get("status.workers");
             workersSource.iterator().forEachRemaining(d -> workers.add(WorkerInfo.builder()
                     .assignee(d.getString("assignee"))
-                    .createDate(toLocalDateTime(d.getDate("insertDate")))
+                    .createDate(d.getDate("insertDate"))
                     .rule(d.getString("rule"))
                     .build()));
 
@@ -108,7 +108,7 @@ public class MongoWorkinator implements Workinator {
                     .partitionKey(doc.getString("partitionKey"))
                     .currentWorkerCount(doc.getInteger("status.workerCount"))
                     .hasMoreWork(doc.getBoolean("status.hasWork"))
-                    .lastChecked(toLocalDateTime(doc.getDate("status.lastCheckedDate")))
+                    .lastChecked(doc.getDate("status.lastCheckedDate"))
                     .maxIdleTimeSeconds(doc.getInteger("configuration.maxIdleTimeSeconds"))
                     .maxWorkerCount(doc.getInteger("configuration.maxWorkerCount"))
                     .workers(workers)
@@ -177,18 +177,19 @@ public class MongoWorkinator implements Workinator {
 
     private final ObjectMapper mapSerializer =
             new ObjectMapper()
-                    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+                    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                    .findAndRegisterModules();
 
     @Override
     public void updateConsumerStatus(final UpdateConsumerStatusCommand consumerStatus) {
-        // TODO: receipt
         try {
             if (consumerStatus.getRegistration() == null) {
                 // consumer isn't registered yet. nothing to save.
                 return;
             }
 
-            val map = mapSerializer.convertValue(consumerStatus, Map.class);
+
+            val map = mapSerializer.convertValue(consumerStatus.getStatus(), Map.class);
             val find = doc("name", consumerStatus.getRegistration().getConsumerId().getName());
             val update = doc("$set", doc("status", map));
             dal.getConsumersCollection().findOneAndUpdate(find, update);

@@ -84,35 +84,33 @@ class WorkerRunnerProvider implements AutoCloseable {
      */
     public WorkerRunner lookupRunner() {
         val newAssignment = workinator.getAssignment(workerStatus);
+        val me = workerStatus.getWorkerId().getConsumer().getConsumerId().getName() + "." + workerStatus.getWorkerId().getWorkerNumber() + ": ";
 
         // no assignment. close the current, if there is one.
         if (newAssignment == null) {
+            //System.out.println(me + "new assignment: null");
             closeCurrent();
-            System.out.println("new assignment " + workerStatus.getWorkerId().getAssignee() + " = " + newAssignment.getWorkerId());
             return null;
         }
 
         // new assignment, no old assignment.
         // setup the new assignment.
         if (current == null || current.getStatus().getCurrentAssignment() == null) {
+            //System.out.println(me + "new assignment, no old: " + newAssignment.getPartitionKey());
             current = createWorkerRunner(newAssignment);
-            System.out.println("new assignment no old " + workerStatus.getWorkerId().getAssignee() + " = " + newAssignment.getWorkerId());
             workerStatus.setCurrentAssignment(newAssignment);
             return current;
         }
 
         // old assignment and new assignment are the same. nothing to do.
         if (current.getStatus().getCurrentAssignment().getPartitionKey().equals(newAssignment.getPartitionKey())) {
-            System.out.println("keep current assignment " + workerStatus.getWorkerId().getAssignee() + " = " + newAssignment.getWorkerId());
+            //System.out.println(me + "no change: " + current.getStatus().getCurrentAssignment().getPartitionKey());
             return current;
         }
 
         // new assignment is different than the old.
         // close the old. setup the new.
-        val me = workerStatus.getWorkerId().getConsumer().getConsumerId().getName() + "." + workerStatus.getWorkerId().getWorkerNumber();
-        System.out.println(me + ": replacement: old=" +
-                current.getStatus().getCurrentAssignment().getPartitionKey() +
-                ", new=" + newAssignment.getPartitionKey());
+        //System.out.println(me + ": replacement: old=" + current.getStatus().getCurrentAssignment().getPartitionKey() + ", new=" + newAssignment.getPartitionKey());
         closeCurrent();
         current = createWorkerRunner(newAssignment);
         workerStatus.setCurrentAssignment(newAssignment);

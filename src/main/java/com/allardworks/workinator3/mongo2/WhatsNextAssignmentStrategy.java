@@ -6,15 +6,15 @@ import com.mongodb.client.model.FindOneAndUpdateOptions;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang3.time.DateUtils;
 import org.bson.Document;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static com.allardworks.workinator3.core.ConvertUtility.toDate;
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 import static com.mongodb.client.model.ReturnDocument.AFTER;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -67,7 +67,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
     @Override
     public void releaseAssignment(final Assignment assignment) {
         // due date is now + maxIdleTimeSeconds.
-        val dueDate = toDate(LocalDateTime.now().plus(partitionConfigurationCache.getConfiguration(assignment.getPartitionKey()).getMaxIdleTimeSeconds(), SECONDS));
+        val dueDate = DateUtils.addSeconds(Date.from(Instant.now()), partitionConfigurationCache.getConfiguration(assignment.getPartitionKey()).getMaxIdleTimeSeconds());
         val findPartition = doc("partitionKey", assignment.getPartitionKey());
         val removeWorker =
                 doc("$pull",

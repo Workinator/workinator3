@@ -3,12 +3,12 @@ package com.allardworks.workinator3.contracts;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Builder
 @Data
 public class WorkerInfo {
     private final String assignee;
-    private final LocalDateTime createDate;
+    private final Date createDate;
     private final String rule;
 }
