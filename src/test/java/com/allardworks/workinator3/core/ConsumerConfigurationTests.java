@@ -37,6 +37,6 @@ public class ConsumerConfigurationTests {
                 .getMethods()).filter(m -> m.getName().startsWith("set"))
                 .count();
         assertEquals(0, setterCount);
-     */
     }
+     */
 }
