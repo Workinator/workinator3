@@ -1,6 +1,6 @@
 package com.allardworks.workinator3.core;
 
-import com.allardworks.workinator3.contracts.ConsumerConfiguration;
+import com.allardworks.workinator3.consumer.config.ConsumerConfiguration;
 import lombok.val;
 import org.junit.Test;
 
@@ -26,6 +26,8 @@ public class ConsumerConfigurationTests {
         assertEquals(10, config.getMaxWorkerCount());
     }
 
+    /*
+    had to put the setters in to support duration.
     @Test
     public void noSetters() {
         val setterCount =
@@ -35,5 +37,6 @@ public class ConsumerConfigurationTests {
                 .getMethods()).filter(m -> m.getName().startsWith("set"))
                 .count();
         assertEquals(0, setterCount);
+     */
     }
 }

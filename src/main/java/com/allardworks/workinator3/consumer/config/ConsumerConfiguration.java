@@ -1,4 +1,4 @@
-package com.allardworks.workinator3.contracts;
+package com.allardworks.workinator3.consumer.config;
 
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;

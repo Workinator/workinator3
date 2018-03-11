@@ -3,6 +3,7 @@ package com.allardworks.workinator3.consumer;
 import com.allardworks.workinator3.commands.RegisterConsumerCommand;
 import com.allardworks.workinator3.commands.UpdateConsumerStatusCommand;
 import com.allardworks.workinator3.commands.UpdateWorkersStatusCommand;
+import com.allardworks.workinator3.consumer.config.ConsumerConfiguration;
 import com.allardworks.workinator3.contracts.*;
 import com.allardworks.workinator3.core.ServiceBase;
 import lombok.NonNull;
@@ -15,7 +16,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
-import static java.lang.System.out;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor

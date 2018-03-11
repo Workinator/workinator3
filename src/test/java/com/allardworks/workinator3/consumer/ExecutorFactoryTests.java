@@ -1,6 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
-import com.allardworks.workinator3.contracts.ConsumerConfiguration;
+import com.allardworks.workinator3.consumer.config.ConsumerConfiguration;
 import com.allardworks.workinator3.contracts.ConsumerId;
 import com.allardworks.workinator3.contracts.ConsumerRegistration;
 import com.allardworks.workinator3.contracts.WorkerId;

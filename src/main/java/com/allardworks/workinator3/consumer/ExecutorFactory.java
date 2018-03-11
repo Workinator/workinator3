@@ -1,5 +1,6 @@
 package com.allardworks.workinator3.consumer;
 
+import com.allardworks.workinator3.consumer.config.ConsumerConfiguration;
 import com.allardworks.workinator3.contracts.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
