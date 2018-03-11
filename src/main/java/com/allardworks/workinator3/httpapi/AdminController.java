@@ -3,12 +3,18 @@ package com.allardworks.workinator3.httpapi;
 import com.allardworks.workinator3.commands.CreatePartitionCommand;
 import com.allardworks.workinator3.contracts.PartitionExistsException;
 import com.allardworks.workinator3.contracts.Workinator;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by jaya on 2/28/18.
@@ -22,9 +28,36 @@ public class AdminController {
     private final PartitionService partitionService;
     private final Workinator workinator;
 
+    @Data
+    public static class ConsumerMini {
+        private final String name;
+        private final List<String> assignedPartitions;
+    }
+
     @GetMapping("consumers")
     public Iterable<Consumer> getConsumers() {
         return consumerService.getConsumers();
+    }
+
+    @GetMapping("consumers/mini")
+    public Iterable<ConsumerMini> getConsumersMini() {
+        return StreamSupport
+                .stream(getConsumers().spliterator(), false)
+                .map(c -> {
+                        val workers =
+                                c
+                                .getStatus()
+                                .getWorkers()
+                                .stream()
+                                .map(w -> {
+                                    val a = w.getAssignment();
+                                    return (String)(a == null ? null : a.getPartitionKey());
+                                })
+                                .filter(Objects::nonNull)
+                                .collect(toList());
+                        return new ConsumerMini(c.getName(), workers);
+                })
+                .collect(toList());
     }
 
     @GetMapping("partitions")

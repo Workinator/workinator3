@@ -175,11 +175,6 @@ public class MongoWorkinator implements Workinator {
         return new ConsumerRegistration(command.getId(), "");
     }
 
-    /*public final static ObjectMapper mapSerializer =
-            new ObjectMapper()
-                    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                    .findAndRegisterModules();*/
-
     @Override
     public void updateConsumerStatus(final UpdateConsumerStatusCommand consumerStatus) {
         try {
@@ -188,12 +183,11 @@ public class MongoWorkinator implements Workinator {
                 return;
             }
 
-            //val map = json().convertValue(consumerStatus.getStatus(), Map.class);
             val find = doc("name", consumerStatus.getRegistration().getConsumerId().getName());
             val update = doc("$set", doc("status", consumerStatus.getStatus()));
             dal.getConsumersCollection().findOneAndUpdate(find, update);
         } catch (final Exception ex) {
-            ex.printStackTrace();
+            log.error("Error updating consumer status", ex);
         }
     }
 
