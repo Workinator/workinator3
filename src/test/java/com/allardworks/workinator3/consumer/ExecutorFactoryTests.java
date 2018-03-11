@@ -20,9 +20,7 @@ public class ExecutorFactoryTests {
      */
     @Test
     public void createAsyncExecutor() {
-        val config = ConsumerConfiguration
-                .builder()
-                .build();
+        val config = new ConsumerConfiguration();
         val workerFactory = new DummyAsyncWorkerFactory(DummyAsyncWorker::new);
         val factory = new ExecutorFactory(config, new DummyWorkinator());
         val id = new WorkerId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);

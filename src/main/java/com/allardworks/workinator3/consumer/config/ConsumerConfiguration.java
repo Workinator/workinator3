@@ -13,36 +13,30 @@ import static lombok.AccessLevel.PRIVATE;
  * Binding doesn't work for private setters.
  * So, this class isn't how I would like it.
  * I want to make these properties FINAL.
+ * Can't use the builder either.... this sucks.
  */
 
 @Data
 @Configuration
 @ConfigurationProperties("consumer")
-@Builder
 public class ConsumerConfiguration {
     /**
      * The minimum amount of time that a worker will work
      * without interruption, as long as it has work.
      */
     @NonNull
-    private Duration minWorkTime;
+    private Duration minWorkTime = Duration.ofSeconds(30);
 
     /**
      * If there isn't an assignment for a worker,
      * then delay before checking agian.
      */
     @NonNull
-    private Duration delayWhenNoAssignment;
+    private Duration delayWhenNoAssignment = Duration.ofSeconds(5);
 
     /**
      * The maximum number of workers the consumer
      * can process at once.
      */
-    private int maxWorkerCount;
-
-    public static class ConsumerConfigurationBuilder {
-        private int maxWorkerCount = 1;
-        private Duration minWorkTime = Duration.ofSeconds(5);
-        private Duration delayWhenNoAssignment = Duration.ofSeconds(5);
-    }
+    private int maxWorkerCount = 1;
 }

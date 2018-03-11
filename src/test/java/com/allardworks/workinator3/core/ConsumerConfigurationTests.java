@@ -4,39 +4,17 @@ import com.allardworks.workinator3.consumer.config.ConsumerConfiguration;
 import lombok.val;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
 public class ConsumerConfigurationTests {
     @Test
-    public void workerCountDefaultsTo1() {
-        val config = ConsumerConfiguration
-                .builder()
-                .build();
+    public void defaults() {
+        val config = new ConsumerConfiguration();
         assertEquals(1, config.getMaxWorkerCount());
+        assertEquals(Duration.ofSeconds(5), config.getDelayWhenNoAssignment());
+        assertEquals(Duration.ofSeconds(30), config.getMinWorkTime());
     }
-
-    @Test
-    public void workerCountSetter() {
-        val config = ConsumerConfiguration
-                .builder()
-                .maxWorkerCount(10)
-                .build();
-        assertEquals(10, config.getMaxWorkerCount());
-    }
-
-    /*
-    had to put the setters in to support duration.
-    @Test
-    public void noSetters() {
-        val setterCount =
-                Arrays.stream(
-                ConsumerConfiguration
-                .class
-                .getMethods()).filter(m -> m.getName().startsWith("set"))
-                .count();
-        assertEquals(0, setterCount);
-    }
-     */
 }

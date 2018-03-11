@@ -23,9 +23,7 @@ public class ExecutorAsyncTests {
      */
     @Test
     public void startAndStop() throws Exception {
-        val configuration = ConsumerConfiguration
-                .builder()
-                .build();
+        val configuration = new ConsumerConfiguration();
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "");
         val workerId = new WorkerId(registration, 1);
@@ -53,9 +51,7 @@ public class ExecutorAsyncTests {
     @Test
     public void wontStopWhileWorkerFIsBusy() throws Exception {
         val freezeTime = 100;
-        val configuration = ConsumerConfiguration
-                .builder()
-                .build();
+        val configuration = new ConsumerConfiguration();
         val consumerId = new ConsumerId("booyea");
         val registration = new ConsumerRegistration(consumerId, "");
         val workerId = new WorkerId(registration, 1);
