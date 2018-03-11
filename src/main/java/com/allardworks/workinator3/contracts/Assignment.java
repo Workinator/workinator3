@@ -25,7 +25,6 @@ public class Assignment {
         return new Assignment(source.getWorkerId(), source.getPartitionKey(), source.getReceipt(), newRuleName);
     }
 
-    // TODO: i don't think this should be necessary??? see if this needs to go away
     public static Assignment setWorkerId(final Assignment source, final WorkerId workerId) {
         return new Assignment(workerId, source.getPartitionKey(), source.getReceipt(), source.getRuleName());
     }

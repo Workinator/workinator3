@@ -16,22 +16,6 @@ public class Config {
         return MongoConfiguration.builder().build();
     }
 
-    // TODO: i tried using duration, but didn't work. figure  it out.
-    @Bean
-    public ConsumerConfiguration getConsumerConfiguration(
-            @Value("${consumer.maxWorkerCount}") int maxWorkerCount,
-            @Value("${consumer.minWorkTime}") String minWorkTimeSeconds,
-            @Value("${consumer.delayWhenNoAssignment}") String delayWhenNoAssignmentSeconds
-
-    ) {
-        return ConsumerConfiguration
-                .builder()
-                .maxWorkerCount(maxWorkerCount)
-                .minWorkTime(Duration.ofSeconds(Long.parseLong(minWorkTimeSeconds)))
-                .delayWhenNoAssignment(Duration.ofSeconds(Integer.parseInt(minWorkTimeSeconds)))
-                .build();
-    }
-
     @Autowired
     @Bean
     public AssignmentStrategy getAssignmentStrategy(final MongoDal dal, final PartitionConfigurationCache cache) {

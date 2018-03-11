@@ -76,8 +76,7 @@ public class ServiceStatus {
             try {
                 h.accept(transition);
             } catch (final Exception e) {
-                // todo
-                e.printStackTrace();
+                log.error("error in transition handlers", e);
             }
         }
     }
