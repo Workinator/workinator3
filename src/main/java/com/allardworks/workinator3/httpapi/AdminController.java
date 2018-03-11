@@ -6,9 +6,8 @@ import com.allardworks.workinator3.contracts.Workinator;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,22 +23,22 @@ public class AdminController {
     private final Workinator workinator;
 
     @GetMapping("consumers")
-    public Flux<Consumer> getConsumers() {
+    public Iterable<Consumer> getConsumers() {
         return consumerService.getConsumers();
     }
 
     @GetMapping("partitions")
-    public Flux<Partition> getPartitions() {
+    public Iterable<Partition> getPartitions() {
         return partitionService.getPartitions();
     }
 
     @GetMapping("partitions/{partitionKey}")
-    public Mono<Partition> getPartition(@PathVariable("partitionKey") final String partitionKey) {
+    public Partition getPartition(@PathVariable("partitionKey") final String partitionKey) {
         return partitionService.getPartition(partitionKey);
     }
 
     @PutMapping("partitions/{partitionKey}")
-    public Mono<Partition> createPartition(@PathVariable("partitionKey") String partitionKey, @RequestBody final CreatePartitionRequest request) throws PartitionExistsException {
+    public Partition createPartition(@PathVariable("partitionKey") String partitionKey, @RequestBody final CreatePartitionRequest request) throws PartitionExistsException {
         // TODO: currently results in 500 if partition exists.
         // should be idempotent
         val createCommand = CreatePartitionCommand

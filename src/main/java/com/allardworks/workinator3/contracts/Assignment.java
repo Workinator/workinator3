@@ -21,11 +21,12 @@ public class Assignment {
      * @param newRuleName
      * @return
      */
-    public Assignment setRule(final String newRuleName) {
-        return new Assignment(workerId, partitionKey, receipt, newRuleName);
+    public static Assignment setRule(final Assignment source, final String newRuleName) {
+        return new Assignment(source.getWorkerId(), source.getPartitionKey(), source.getReceipt(), newRuleName);
     }
 
-    public Assignment setWorkerId(final WorkerId workerId) {
-        return new Assignment(workerId, partitionKey, receipt, ruleName);
+    // TODO: i don't think this should be necessary??? see if this needs to go away
+    public static Assignment setWorkerId(final Assignment source, final WorkerId workerId) {
+        return new Assignment(workerId, source.getPartitionKey(), source.getReceipt(), source.getRuleName());
     }
 }

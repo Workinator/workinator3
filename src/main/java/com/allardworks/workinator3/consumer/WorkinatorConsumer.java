@@ -156,7 +156,7 @@ public class WorkinatorConsumer extends ServiceBase {
                     Assignment a = w.getCurrentAssignment();
                     if (a != null) {
                         // null out the worker id. eliminates duplicate information in the output.
-                        a = w.getCurrentAssignment().setWorkerId(null);
+                        a =Assignment.setWorkerId(w.getCurrentAssignment(),null);
                     }
 
                     return

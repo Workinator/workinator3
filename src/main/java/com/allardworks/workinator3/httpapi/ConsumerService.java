@@ -1,8 +1,8 @@
 package com.allardworks.workinator3.httpapi;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
 /**
  * Created by jaya on 3/3/18.
@@ -11,9 +11,9 @@ import reactor.core.publisher.Flux;
 @Service
 @RequiredArgsConstructor
 public class ConsumerService {
-    private final ConsumerReactiveRepository repository;
+    private final ConsumerRepository repository;
 
-    public Flux<Consumer> getConsumers() {
+    public Iterable<Consumer> getConsumers() {
         return repository.findAll();
     }
 }

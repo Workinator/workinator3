@@ -2,8 +2,6 @@ package com.allardworks.workinator3.mongo2;
 
 import com.allardworks.workinator3.commands.*;
 import com.allardworks.workinator3.contracts.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 import lombok.NonNull;
@@ -11,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.allardworks.workinator3.core.ConvertUtility.*;
+import static com.allardworks.workinator3.httpapi.JsonUtility.json;
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 
 /**
@@ -175,10 +175,10 @@ public class MongoWorkinator implements Workinator {
         return new ConsumerRegistration(command.getId(), "");
     }
 
-    private final ObjectMapper mapSerializer =
+    /*public final static ObjectMapper mapSerializer =
             new ObjectMapper()
                     .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                    .findAndRegisterModules();
+                    .findAndRegisterModules();*/
 
     @Override
     public void updateConsumerStatus(final UpdateConsumerStatusCommand consumerStatus) {
@@ -188,10 +188,9 @@ public class MongoWorkinator implements Workinator {
                 return;
             }
 
-
-            val map = mapSerializer.convertValue(consumerStatus.getStatus(), Map.class);
+            //val map = json().convertValue(consumerStatus.getStatus(), Map.class);
             val find = doc("name", consumerStatus.getRegistration().getConsumerId().getName());
-            val update = doc("$set", doc("status", map));
+            val update = doc("$set", doc("status", consumerStatus.getStatus()));
             dal.getConsumersCollection().findOneAndUpdate(find, update);
         } catch (final Exception ex) {
             ex.printStackTrace();

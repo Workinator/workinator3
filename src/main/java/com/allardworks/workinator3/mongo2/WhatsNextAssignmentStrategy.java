@@ -152,7 +152,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
         private Assignment ifBusyKeepGoing() {
             // TODO: update db with new rule
             if (status.isHasWork()) {
-                return status.getCurrentAssignment().setRule(RULE2);
+                return Assignment.setRule(status.getCurrentAssignment(), RULE2);
             }
 
             return null;
@@ -191,7 +191,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
             return
                     status.getCurrentAssignment() == null
                     ? null
-                    : status.getCurrentAssignment().setRule(RULE5);
+                    : Assignment.setRule(status.getCurrentAssignment(), RULE5);
         }
 
         /**
