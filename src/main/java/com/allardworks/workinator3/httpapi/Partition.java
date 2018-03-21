@@ -40,7 +40,6 @@ public class Partition {
         private String rule;
     }
 
-
     private final String partitionKey;
     private final Configuration configuration;
     private final Status status;

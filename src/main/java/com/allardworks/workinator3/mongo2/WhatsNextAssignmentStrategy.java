@@ -122,7 +122,7 @@ public class WhatsNextAssignmentStrategy implements AssignmentStrategy {
                 return null;
             }
 
-            return new Assignment(status.getWorkerId(), partition.getString("partitionKey"), "", ruleName);
+            return new Assignment(status.getWorkerId(), partition.getString("partitionKey"), "", ruleName, new Date());
         }
 
         /**

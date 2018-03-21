@@ -28,27 +28,50 @@ public class DemoHelper {
     }
 
     @Data
-    private class DemoStuff {
+    private class PartitionEmulatorSettings {
         public boolean hasWork;
     }
 
-    private final Map<String, DemoStuff> stuff = new HashMap<>();
-
-    private DemoStuff getStuff(final String partitionKey) {
-        return stuff.computeIfAbsent(partitionKey, pk -> new DemoStuff());
+    @Data
+    private class WorkerEmulatorSettings {
+        public boolean frozen;
     }
 
-    public DemoHelper setHasWork(final String partitionKey, boolean hasWork) {
-        getStuff(partitionKey).setHasWork(hasWork);
+    private final Map<String, PartitionEmulatorSettings> partitions = new HashMap<>();
+    private final Map<String, WorkerEmulatorSettings> workers = new HashMap<>();
+
+    private PartitionEmulatorSettings getPartition(final String partitionKey) {
+        return partitions.computeIfAbsent(partitionKey, pk -> new PartitionEmulatorSettings());
+    }
+
+    private WorkerEmulatorSettings getWorker(final String workerAlias) {
+        return workers.computeIfAbsent(workerAlias, a -> new WorkerEmulatorSettings());
+    }
+
+    public DemoHelper setHasWork(final String partitionKey, final boolean hasWork) {
+        getPartition(partitionKey).setHasWork(hasWork);
         return this;
     }
 
-    public boolean getHasWork(final String partitionKey){
-        return getStuff(partitionKey).isHasWork();
+    public DemoHelper freezeWorker(final String alias) {
+        getWorker(alias).setFrozen(true);
+        return this;
+    }
+
+    public DemoHelper thawWorker(final String alias) {
+        getWorker(alias).setFrozen(false);
+        return this;
+    }
+    public boolean getPartitionHasWork(final String partitionKey){
+        return getPartition(partitionKey).isHasWork();
+    }
+
+    public boolean getWorkerIsFrozen(final String consumerName, final int workerNumber) {
+        return getWorker(consumerName + "." + workerNumber).isFrozen();
     }
 
     public DemoHelper clear() {
-        stuff.clear();
+        partitions.clear();
         return this;
     }
 }

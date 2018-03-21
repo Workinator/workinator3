@@ -49,7 +49,7 @@ public class AdminController {
                                 .stream()
                                 .map(w -> {
                                     val a = w.getAssignment();
-                                    return a == null ? null : a.getPartitionKey();
+                                    return (String)(a == null ? null : a.getPartitionKey());
                                 })
                                 .filter(Objects::nonNull)
                                 .collect(toList());

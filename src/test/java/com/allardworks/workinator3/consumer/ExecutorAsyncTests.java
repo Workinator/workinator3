@@ -10,6 +10,8 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Date;
+
 import static com.allardworks.workinator3.testsupport.TestUtility.startAndWait;
 
 public class ExecutorAsyncTests {
@@ -31,7 +33,7 @@ public class ExecutorAsyncTests {
         val factory = new DummyAsyncWorkerFactory(() -> worker);
         val workinator = new DummyWorkinator();
 
-        workinator.setNextAssignment(new Assignment(workerId, "ab", "", ""));
+        workinator.setNextAssignment(new Assignment(workerId, "ab", "", "", new Date()));
         val id = new WorkerId(new ConsumerRegistration(new ConsumerId("boo"), ""), 1);
         try (val executor = new ExecutorAsync(id, configuration, factory, workinator)) {
             startAndWait(executor);
@@ -59,7 +61,7 @@ public class ExecutorAsyncTests {
         val worker = new DummyAsyncWorker();
         val workerFactory = new DummyAsyncWorkerFactory(() -> worker);
 
-        workinator.setNextAssignment(new Assignment(workerId, "ab", "", ""));
+        workinator.setNextAssignment(new Assignment(workerId, "ab", "", "", new Date()));
         val id = new WorkerId(new ConsumerRegistration(new ConsumerId("aaa"), ""),1);
         try (val executor = new ExecutorAsync(id, configuration, workerFactory, workinator)) {
             startAndWait(executor);

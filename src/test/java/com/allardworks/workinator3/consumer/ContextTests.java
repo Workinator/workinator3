@@ -5,6 +5,8 @@ import com.allardworks.workinator3.core.ServiceStatus;
 import lombok.val;
 import org.junit.Test;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -22,7 +24,7 @@ public class ContextTests {
         val consumerId = new ConsumerId("a");
         val consumerRegistration = new ConsumerRegistration(consumerId, "");
         val workerId = new WorkerId(consumerRegistration, 1);
-        val assignment = new Assignment(workerId, "a", "", "");
+        val assignment = new Assignment(workerId, "a", "", "", new Date());
         val workerStatus = new WorkerStatus(workerId);
         val context = new Context(assignment, workerStatus, ServiceStatus::new, c -> true);
 

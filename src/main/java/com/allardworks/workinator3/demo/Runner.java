@@ -62,6 +62,7 @@ public class Runner implements CommandLineRunner {
 
     /**
      * Shows the status of the consumers running in process.
+     *
      * @param command
      * @return
      * @throws JsonProcessingException
@@ -78,7 +79,7 @@ public class Runner implements CommandLineRunner {
             val executors = (List<Map<String, Object>>) info.get("executors");
             for (val e : executors) {
                 val eid = (WorkerId) e.get("executorId");
-                val assignment = (Assignment)e.get("currentAssignment");
+                val assignment = (Assignment) e.get("currentAssignment");
                 out.print("\t" + eid.getWorkerNumber() + ", Assignment=");
                 if (assignment == null) {
                     out.println();
@@ -138,6 +139,26 @@ public class Runner implements CommandLineRunner {
         return false;
     }
 
+    private boolean freezeWorker(final CommandLine command) {
+        if (!command.hasOption("wfreeze")) {
+            return false;
+        }
+
+        DemoHelper.getHack().freezeWorker(command.getOptionValue("wfreeze"));
+        out.println("The worker has been set: frozen=true");
+        return true;
+    }
+
+    private boolean thawWorker(final CommandLine command) {
+        if (!command.hasOption("wthaw")) {
+            return false;
+        }
+
+        DemoHelper.getHack().thawWorker(command.getOptionValue("wthaw"));
+        out.println("The worker has been set: frozen=false");
+        return true;
+    }
+
     @Override
     public void run(String... strings) {
         val parser = new DefaultParser();
@@ -149,6 +170,8 @@ public class Runner implements CommandLineRunner {
         options.addOption(new Option("sp", "showpartitions", false, "show partitions"));
         options.addOption(new Option("pwork", "partitionhaswork", true, "for emulation: indicate that a partition has work."));
         options.addOption(new Option("pnwork", "partitionnowork", true, "for emulation: indicate that a partition doesn't have work."));
+        options.addOption(new Option("wfreeze", "workerfreeze", true, "for emulation: freeze a worker. format = consumername.workernumber. IE: a.3 (0 based)"));
+        options.addOption(new Option("wthaw", "workerthaw", true, "for emulation: thaw a worker. format = consumername.workernumber. IE: a.3 (0 based)"));
         while (true) {
             try {
                 val command = parser.parse(options, getInput());
@@ -158,7 +181,9 @@ public class Runner implements CommandLineRunner {
                                 || showLocalConsumerStatus(command)
                                 || showHelp(command, options)
                                 || setPartitionHasWork(command)
-                                || showPartitions(command);
+                                || showPartitions(command)
+                                || freezeWorker(command)
+                                || thawWorker(command);
 
                 if (!processed) {
                     showHelp(options);

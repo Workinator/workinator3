@@ -13,8 +13,8 @@ public class Assignment {
     private final String partitionKey;
     private final String receipt;
     private final String ruleName;
+    private final Date assignmentDate;
 
-    private final Date assignmentDate = new Date();
     /**
      * Returns a new assignment object with all of the same information
      * except for rule name.
@@ -22,10 +22,10 @@ public class Assignment {
      * @return
      */
     public static Assignment setRule(final Assignment source, final String newRuleName) {
-        return new Assignment(source.getWorkerId(), source.getPartitionKey(), source.getReceipt(), newRuleName);
+        return new Assignment(source.getWorkerId(), source.getPartitionKey(), source.getReceipt(), newRuleName, source.getAssignmentDate());
     }
 
     public static Assignment setWorkerId(final Assignment source, final WorkerId workerId) {
-        return new Assignment(workerId, source.getPartitionKey(), source.getReceipt(), source.getRuleName());
+        return new Assignment(workerId, source.getPartitionKey(), source.getReceipt(), source.getRuleName(), source.getAssignmentDate());
     }
 }
