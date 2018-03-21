@@ -9,16 +9,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static com.allardworks.workinator3.core.ConvertUtility.*;
-import static com.allardworks.workinator3.httpapi.JsonUtility.json;
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 
 /**

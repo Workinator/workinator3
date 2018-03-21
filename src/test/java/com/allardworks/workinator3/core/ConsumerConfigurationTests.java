@@ -5,7 +5,6 @@ import lombok.val;
 import org.junit.Test;
 
 import java.time.Duration;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 

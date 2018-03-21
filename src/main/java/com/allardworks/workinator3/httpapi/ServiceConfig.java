@@ -1,6 +1,5 @@
 package com.allardworks.workinator3.httpapi;
 
-import com.allardworks.workinator3.mongo2.MongoWorkinator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

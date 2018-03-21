@@ -1,7 +1,6 @@
 package com.allardworks.workinator3.httpapi;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 /**

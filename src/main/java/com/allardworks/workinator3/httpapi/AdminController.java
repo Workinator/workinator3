@@ -9,9 +9,7 @@ import lombok.val;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -51,7 +49,7 @@ public class AdminController {
                                 .stream()
                                 .map(w -> {
                                     val a = w.getAssignment();
-                                    return (String)(a == null ? null : a.getPartitionKey());
+                                    return a == null ? null : a.getPartitionKey();
                                 })
                                 .filter(Objects::nonNull)
                                 .collect(toList());

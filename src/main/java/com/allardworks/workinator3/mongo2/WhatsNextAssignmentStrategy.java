@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 
 import static com.allardworks.workinator3.mongo2.DocumentUtility.doc;
 import static com.mongodb.client.model.ReturnDocument.AFTER;
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 /**
  * Assignment strategy that determines a worker's assignment.

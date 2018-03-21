@@ -1,12 +1,11 @@
 package com.allardworks.workinator3.consumer.config;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
-
-import static lombok.AccessLevel.PRIVATE;
 
 /**
  * DURATION isn't working with constructors.
