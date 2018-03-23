@@ -30,7 +30,7 @@ public class DummyAsyncWorker implements AsyncWorker {
                 e.printStackTrace();
             }
         }
-        context.setHasWork(false);
+        context.hasWork(false);
     }
 
     @Override

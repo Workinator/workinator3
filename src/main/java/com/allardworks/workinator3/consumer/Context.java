@@ -31,10 +31,14 @@ public class Context implements WorkerContext {
      * This is important for prioritization. It defaults to false.
      * If set to true, then the workinator will give the assigned partition priority
      * over partitions that don't have work.
-     * @param hasMoreWork
+     * @param hasWork
      */
-    public void setHasWork(boolean hasMoreWork) {
-        workerStatus.setHasWork(hasMoreWork);
+    public void hasWork(boolean hasWork) {
+        workerStatus.setHasWork(hasWork);
+    }
+
+    public boolean hasWork() {
+        return workerStatus.isHasWork();
     }
 
     /**

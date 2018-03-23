@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.apache.commons.cli.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -22,6 +23,7 @@ import static java.lang.System.out;
 
 @Service
 @RequiredArgsConstructor
+@Profile("Temporary")
 public class Runner implements CommandLineRunner {
     private final Workinator workinator;
     private final WorkinatorConsumerFactory consumerFactory;

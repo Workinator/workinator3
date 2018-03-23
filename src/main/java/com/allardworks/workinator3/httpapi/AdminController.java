@@ -6,6 +6,7 @@ import com.allardworks.workinator3.contracts.Workinator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import static java.util.stream.Collectors.toList;
  * Created by jaya on 2/28/18.
  * k?
  */
+@Profile("Temporary")
 @RestController
 @RequestMapping(value = "/api/v1")
 @RequiredArgsConstructor
