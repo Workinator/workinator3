@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.*;
@@ -18,6 +19,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class WorkinatorConsumer extends ServiceBase {
