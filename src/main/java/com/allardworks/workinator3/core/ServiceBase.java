@@ -1,7 +1,5 @@
 package com.allardworks.workinator3.core;
 
-import com.allardworks.workinator3.contracts.Service;
-
 public abstract class ServiceBase implements Service {
     private final ServiceStatus serviceStatus = new ServiceStatus();
 

@@ -1,0 +1,35 @@
+DESCRIBES HOW TO SETUP NEW PROJECTS - NAMING CONVENTIONS
+
+projects
+    workinator3
+    workinator3-consumer-rabbitmq
+    workinator3-coordinator-mongodb
+
+
+group = com.allardworks.workinator3
+
+artifactid
+project name
+project location =
+	workinator3-consumer-rabbitmq
+	workinator3-coordinator-mongodb
+
+package =
+	com.allardworks.workinator3.consumer.rabbitmq TODO
+	com.allardworks.workinator3.coordinator.mongodb
+
+
+
+FRAMEWORK
+
+	workinator3
+	    workinator3-coordinator
+	        workinator3-coordinator-mongodb         IMPLEMENTATION
+	    workinator3-consumer
+	        workinator3-consumer-rabbitmq           IMPLEMENTATION
+
+
+APPLICATIONS
+
+	  rabbitmq-demo : workinator3-coordinator-mongodb, workinator3-consumer-rabbitmq
+
