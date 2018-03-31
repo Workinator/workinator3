@@ -15,5 +15,5 @@ public class PartitionInfo {
     private final boolean hasMoreWork;
     private final Date lastChecked;
     private final int currentWorkerCount;
-    private final List<WorkerInfo> workers;
+    private final List<PartitionWorkerInfo> workers;
 }

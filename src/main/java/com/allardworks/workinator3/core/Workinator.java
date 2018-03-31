@@ -21,5 +21,7 @@ public interface Workinator extends AutoCloseable {
 
     List<PartitionInfo> getPartitions();
 
+    List<ConsumerInfo> getConsumers();
+
     PartitionConfiguration getPartitionConfiguration(String partitionKey);
 }

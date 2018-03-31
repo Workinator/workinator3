@@ -7,8 +7,9 @@ import java.util.Date;
 
 @Builder
 @Data
-public class WorkerInfo {
-    private final String assignee;
-    private final Date createDate;
+public class ConsumerWorkerInfo {
+    private final int workerNumber;
+    private final Date assignmentDate;
+    private final String partitionKey;
     private final String rule;
 }
